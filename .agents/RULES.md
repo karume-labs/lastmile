@@ -5,6 +5,10 @@
 - **Exports:** Use `export default` ONLY if it is the single thing being exported from the file (like Next.js pages or configs); otherwise, use named exports.
 - **Props:** Use `interface` specifically for prop types, and type components using `React.FC<Props>`. Do not type the component with `React.FC` if it does not have props.
 - **Client Components:** Do NOT use the `"use client"` directive inside any Next.js `page.tsx` file. Keep pages as Server Components and extract interactive pieces into separate client components.
+- **State Management:** Do NOT use `useState` or `useEffect` unless absolutely necessary. Instead:
+  - Use **React Hook Form** for all forms.
+  - Use **TanStack Query** for all server state and data fetching.
+  - Use **TanStack Table** for all tables.
 
 ## Styling & Theme
 - **Theming:** Strictly use existing Tailwind CSS theme tokens (e.g., `bg-background`, `text-muted-foreground`). 
