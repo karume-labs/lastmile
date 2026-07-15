@@ -1,15 +1,23 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
-  "vcs": {
-    "enabled": true,
-    "clientKind": "git",
-    "useIgnoreFile": true
+  "$schema": "https://biomejs.dev/schemas/2.2.0/schema.json",
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    },
+    "enabled": true
+  },
+  "css": {
+    "formatter": {
+      "enabled": false
+    },
+    "parser": {
+      "cssModules": false
+    }
   },
   "files": {
     "ignoreUnknown": true
-  },
-  "organizeImports": {
-    "enabled": true
   },
   "formatter": {
     "enabled": true,
@@ -24,35 +32,29 @@
       "recommended": true
     }
   },
-  "css": {
-    "parser": {
-      "tailwindDirectives": true
-    },
-    "formatter": {
-      "enabled": false
-    }
-  },
   "overrides": [
     {
+      "assist": {
+        "enabled": false
+      },
+      "formatter": {
+        "enabled": false
+      },
       "includes": [
-        "apps/admin-web/src/components/ui/**",
-        "apps/staff-mobile/src/components/ui/**"
+        "**/src/components/ui/**/*",
+        "**/components/ui/**/*",
+        "**/globals.css",
+        "**/global.css",
+        "**/*.svg"
       ],
       "linter": {
         "enabled": false
-      },
-      "formatter": {
-        "enabled": false
-      }
-    },
-    {
-      "includes": ["**/globals.css"],
-      "linter": {
-        "enabled": false
-      },
-      "formatter": {
-        "enabled": false
       }
     }
-  ]
+  ],
+  "vcs": {
+    "clientKind": "git",
+    "enabled": true,
+    "useIgnoreFile": true
+  }
 }

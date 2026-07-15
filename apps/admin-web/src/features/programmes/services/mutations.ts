@@ -32,10 +32,7 @@ export const useToggleProgrammeStatus = () => {
       programmeId: string;
       status: "active" | "paused";
     }) => {
-      const response = await apiClient.patch(
-        `/programmes/${programmeId}/status`,
-        { status },
-      );
+      const response = await apiClient.patch(`/programmes/${programmeId}/status`, { status });
       return response.data;
     },
     onSuccess: () => {

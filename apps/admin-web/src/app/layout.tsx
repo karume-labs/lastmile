@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Newsreader, Public_Sans } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
 import { Providers } from "@/app/providers";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import "@/app/globals.css";
 
 const newsreader = Newsreader({

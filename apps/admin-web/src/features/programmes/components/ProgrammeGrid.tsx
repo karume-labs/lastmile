@@ -1,37 +1,55 @@
 "use client";
 
-import { type ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
+import { parseAsString, useQueryState } from "nuqs";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useProgrammes } from "@/features/programmes/services/queries";
 import { DataTable } from "@/features/shared/components/table/DataTable";
+import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
 import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
 import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
-import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
-import { useProgrammes } from "@/features/programmes/services/queries";
 import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
-import { useState } from "react";
 
 interface ProgrammeRecord {
   id: string;
   name: string;
-  batchSize: number;
-  disbursed: number;
-  pending: number;
-  totalAmount: string;
-  currency: string;
-  status: "active" | "paused" | "completed";
-  createdAt: string;
+  status: string;
+  targetAudience: string;
+  startDate: string;
+  endDate: string;
+  budget: number;
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  active: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-  paused: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
-  completed: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+  Active: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
+  Draft: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
+  Completed: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
 };
 
 export const ProgrammeGrid = () => {
-  const [searchValue, setSearchValue] = useState("");
-  const { state, handlers } = useDataTablePagination();
-  const { data: programmes, isLoading } = useProgrammes();
+  const { search, setSearch, clearFilters } = useDataTablePagination();
+
+  const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
+
+  const [audienceFilter, setAudienceFilter] = useQueryState(
+    "audience",
+    parseAsString.withDefault(""),
+  );
+
+  const { data: programmesResponse, isLoading } = useProgrammes();
+
+  const handleClearFilters = () => {
+    clearFilters();
+    setStatusFilter("");
+    setAudienceFilter("");
+  };
 
   const columns: ColumnDef<ProgrammeRecord, unknown>[] = [
     {
@@ -39,47 +57,32 @@ export const ProgrammeGrid = () => {
       header: "Programme",
     },
     {
-      accessorKey: "batchSize",
-      header: "Batch Size",
+      accessorKey: "targetAudience",
+      header: "Target Audience",
     },
     {
-      accessorKey: "disbursed",
-      header: "Disbursed",
-    },
-    {
-      accessorKey: "pending",
-      header: "Pending",
-    },
-    {
-      accessorKey: "totalAmount",
-      header: "Total Amount",
-      cell: ({ row }) => {
-        const record = row.original;
-        return (
-          <span className="font-medium">
-            {record.totalAmount} {record.currency}
-          </span>
-        );
-      },
+      accessorKey: "budget",
+      header: "Budget",
+      cell: ({ row }) => (
+        <span className="font-medium">${row.original.budget.toLocaleString()}</span>
+      ),
     },
     {
       accessorKey: "status",
       header: "Status",
       cell: ({ row }) => {
-        const status = row.getValue("status") as string;
+        const status = row.original.status;
         return (
-          <Badge variant="secondary" className={STATUS_STYLES[status]}>
-            {status.charAt(0).toUpperCase() + status.slice(1)}
+          <Badge variant="secondary" className={STATUS_STYLES[status] || ""}>
+            {status}
           </Badge>
         );
       },
     },
     {
-      accessorKey: "createdAt",
-      header: "Created",
-      cell: ({ row }) => {
-        return new Date(row.getValue("createdAt") as string).toLocaleDateString();
-      },
+      accessorKey: "startDate",
+      header: "Start Date",
+      cell: ({ row }) => new Date(row.original.startDate).toLocaleDateString(),
     },
     {
       id: "actions",
@@ -97,7 +100,12 @@ export const ProgrammeGrid = () => {
                 onClick: () => {},
               },
               {
-                label: record.status === "active" ? "Pause" : "Resume",
+                label: record.status === "Active" ? "Pause" : "Resume",
+                onClick: () => {},
+              },
+              {
+                label: "Delete",
+                destructive: true,
                 onClick: () => {},
               },
             ]}
@@ -108,13 +116,19 @@ export const ProgrammeGrid = () => {
   ];
 
   if (isLoading) {
-    return <DataTableSkeleton columnCount={8} />;
+    return <DataTableSkeleton columnCount={6} />;
   }
 
-  const filteredData = (programmes ?? []).filter(
-    (p: ProgrammeRecord) =>
-      p.name.toLowerCase().includes(searchValue.toLowerCase()),
-  );
+  const rawData = programmesResponse?.data || [];
+
+  const filteredData = rawData.filter((p: ProgrammeRecord) => {
+    const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus =
+      statusFilter === "" || statusFilter === "all" || p.status === statusFilter;
+    const matchesAudience =
+      audienceFilter === "" || audienceFilter === "all" || p.targetAudience === audienceFilter;
+    return matchesSearch && matchesStatus && matchesAudience;
+  });
 
   return (
     <DataTable
@@ -123,9 +137,37 @@ export const ProgrammeGrid = () => {
       toolbar={
         <DataToolbar
           searchKey="name"
-          searchValue={searchValue}
-          onSearchChange={setSearchValue}
+          searchValue={search}
+          onSearchChange={setSearch}
           searchPlaceholder="Search programmes..."
+          onClear={handleClearFilters}
+          filters={
+            <>
+              <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
+                <SelectTrigger className="w-37.5">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="Draft">Draft</SelectItem>
+                  <SelectItem value="Completed">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={audienceFilter} onValueChange={(val) => setAudienceFilter(val)}>
+                <SelectTrigger className="w-37.5">
+                  <SelectValue placeholder="Audience" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Audiences</SelectItem>
+                  <SelectItem value="Families">Families</SelectItem>
+                  <SelectItem value="Homeless">Homeless</SelectItem>
+                  <SelectItem value="Children">Children</SelectItem>
+                </SelectContent>
+              </Select>
+            </>
+          }
         />
       }
       emptyMessage="No programmes found."

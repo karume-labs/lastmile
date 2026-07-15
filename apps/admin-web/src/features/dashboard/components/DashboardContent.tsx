@@ -1,16 +1,9 @@
 "use client";
 
+import { AlertTriangle, Clock, DollarSign, Send, TrendingUp, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useDashboardMetrics } from "@/features/dashboard/services/queries";
-import {
-  DollarSign,
-  Send,
-  AlertTriangle,
-  Users,
-  TrendingUp,
-  Clock,
-} from "lucide-react";
 
 interface MetricCardProps {
   title: string;
@@ -20,13 +13,7 @@ interface MetricCardProps {
   description?: string;
 }
 
-const MetricCard: React.FC<MetricCardProps> = ({
-  title,
-  value,
-  change,
-  icon,
-  description,
-}) => {
+const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, icon, description }) => {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -40,9 +27,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
             <span className="text-green-600">{change}</span> from last period
           </p>
         )}
-        {description && (
-          <p className="text-xs text-muted-foreground">{description}</p>
-        )}
+        {description && <p className="text-xs text-muted-foreground">{description}</p>}
       </CardContent>
     </Card>
   );
@@ -56,28 +41,28 @@ export const DashboardContent = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           title="Total Disbursed"
-          value={isLoading ? "..." : metrics?.totalDisbursed ?? "$0"}
+          value={isLoading ? "..." : (metrics?.totalDisbursed ?? "$0")}
           change="+12.5%"
           icon={<DollarSign className="size-4 text-muted-foreground" />}
           description="Across all programmes"
         />
         <MetricCard
           title="Active Deliveries"
-          value={isLoading ? "..." : metrics?.activeDeliveries ?? "0"}
+          value={isLoading ? "..." : (metrics?.activeDeliveries ?? "0")}
           change="+8.2%"
           icon={<Send className="size-4 text-muted-foreground" />}
           description="Currently in transit"
         />
         <MetricCard
           title="Stagnant Funds"
-          value={isLoading ? "..." : metrics?.stagnantFunds ?? "0"}
+          value={isLoading ? "..." : (metrics?.stagnantFunds ?? "0")}
           change="-3.1%"
           icon={<AlertTriangle className="size-4 text-muted-foreground" />}
           description="Require attention"
         />
         <MetricCard
           title="Active Proxies"
-          value={isLoading ? "..." : metrics?.activeProxies ?? "0"}
+          value={isLoading ? "..." : (metrics?.activeProxies ?? "0")}
           change="+5.0%"
           icon={<Users className="size-4 text-muted-foreground" />}
           description="Authorized proxy agents"
@@ -99,10 +84,8 @@ export const DashboardContent = () => {
               {isLoading ? (
                 <div className="space-y-2">
                   {Array.from({ length: 4 }).map((_, i) => (
-                    <div
-                      key={`skel-${i}`}
-                      className="h-8 animate-pulse rounded bg-muted"
-                    />
+                    // biome-ignore lint/suspicious/noArrayIndexKey: skeleton items are static
+                    <div key={`skel-${i}`} className="h-8 animate-pulse rounded bg-muted" />
                   ))}
                 </div>
               ) : (
@@ -113,9 +96,7 @@ export const DashboardContent = () => {
                       className="flex items-center justify-between border-b pb-2 last:border-0"
                     >
                       <span className="text-sm">{activity.description}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {activity.time}
-                      </span>
+                      <span className="text-xs text-muted-foreground">{activity.time}</span>
                     </div>
                   ),
                 )
@@ -136,10 +117,8 @@ export const DashboardContent = () => {
               {isLoading ? (
                 <div className="space-y-2">
                   {Array.from({ length: 4 }).map((_, i) => (
-                    <div
-                      key={`skel-${i}`}
-                      className="h-8 animate-pulse rounded bg-muted"
-                    />
+                    // biome-ignore lint/suspicious/noArrayIndexKey: skeleton items are static
+                    <div key={`skel-${i}`} className="h-8 animate-pulse rounded bg-muted" />
                   ))}
                 </div>
               ) : (
@@ -150,9 +129,7 @@ export const DashboardContent = () => {
                       className="flex items-center justify-between border-b pb-2 last:border-0"
                     >
                       <span className="text-sm">{sync.participantName}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {sync.status}
-                      </span>
+                      <span className="text-xs text-muted-foreground">{sync.status}</span>
                     </div>
                   ),
                 )

@@ -1,17 +1,25 @@
 "use client";
 
-import { type ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
+import { AlertTriangle } from "lucide-react";
+import { parseAsString, useQueryState } from "nuqs";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { DataTable } from "@/features/shared/components/table/DataTable";
+import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
 import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
 import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
-import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
-import { Button } from "@/components/ui/button";
-import { useStagnantFunds } from "@/features/stagnant-funds/services/queries";
 import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
-import { useState } from "react";
-import { AlertTriangle } from "lucide-react";
+import { useStagnantFunds } from "@/features/stagnant-funds/services/queries";
 
 interface StagnantFundRecord {
   id: string;
@@ -35,13 +43,12 @@ interface StagnantAlertsTableProps {
   onClawbackSelect?: (record: StagnantFundRecord) => void;
 }
 
-export const StagnantAlertsTable = ({
-  onClawbackSelect,
-}: StagnantAlertsTableProps) => {
-  const [searchValue, setSearchValue] = useState("");
+export const StagnantAlertsTable = ({ onClawbackSelect }: StagnantAlertsTableProps) => {
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const { state, handlers } = useDataTablePagination();
-  const { data: stagnantFunds, isLoading } = useStagnantFunds();
+  const { search, setSearch, clearFilters } = useDataTablePagination();
+  const { data: stagnantFundsResponse, isLoading } = useStagnantFunds();
+
+  const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
 
   const columns: ColumnDef<StagnantFundRecord, unknown>[] = [
     {
@@ -50,9 +57,7 @@ export const StagnantAlertsTable = ({
         <Checkbox
           checked={table.getIsAllPageRowsSelected()}
           indeterminate={table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()}
-          onCheckedChange={(value) =>
-            table.toggleAllPageRowsSelected(!!value)
-          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
         />
       ),
@@ -64,9 +69,7 @@ export const StagnantAlertsTable = ({
             if (value) {
               setSelectedRows((prev) => [...prev, row.original.id]);
             } else {
-              setSelectedRows((prev) =>
-                prev.filter((id) => id !== row.original.id),
-              );
+              setSelectedRows((prev) => prev.filter((id) => id !== row.original.id));
             }
           }}
           aria-label="Select row"
@@ -109,11 +112,7 @@ export const StagnantAlertsTable = ({
       header: "Days Stagnant",
       cell: ({ row }) => {
         const days = row.getValue("daysSinceActivity") as number;
-        return (
-          <span className={days > 90 ? "font-bold text-destructive" : ""}>
-            {days} days
-          </span>
-        );
+        return <span className={days > 90 ? "font-bold text-destructive" : ""}>{days} days</span>;
       },
     },
     {
@@ -160,24 +159,49 @@ export const StagnantAlertsTable = ({
     return <DataTableSkeleton columnCount={8} />;
   }
 
-  const filteredData = (stagnantFunds ?? []).filter(
-    (f: StagnantFundRecord) =>
-      f.participantName.toLowerCase().includes(searchValue.toLowerCase()) ||
-      f.referenceId.toLowerCase().includes(searchValue.toLowerCase()),
-  );
+  const rawData = stagnantFundsResponse?.data || [];
+
+  const filteredData = rawData.filter((f: StagnantFundRecord) => {
+    const matchesSearch =
+      f.participantName.toLowerCase().includes(search.toLowerCase()) ||
+      f.referenceId.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus =
+      statusFilter === "" || statusFilter === "all" || f.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
 
   return (
     <DataTable
       columns={columns}
       data={filteredData}
       toolbar={
-        <div className="flex items-center justify-between">
-          <DataToolbar
-            searchKey="participantName"
-            searchValue={searchValue}
-            onSearchChange={setSearchValue}
-            searchPlaceholder="Search stagnant funds..."
-          />
+        <div className="flex items-center justify-between gap-4 w-full flex-wrap">
+          <div className="flex-1">
+            <DataToolbar
+              searchKey="participantName"
+              searchValue={search}
+              onSearchChange={setSearch}
+              searchPlaceholder="Search stagnant funds..."
+              onClear={() => {
+                clearFilters();
+                setStatusFilter("");
+              }}
+              filters={
+                <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
+                  <SelectTrigger className="w-37.5">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="stagnant">Stagnant</SelectItem>
+                    <SelectItem value="under-review">Under Review</SelectItem>
+                    <SelectItem value="clawed-back">Clawed Back</SelectItem>
+                  </SelectContent>
+                </Select>
+              }
+            />
+          </div>
           {selectedRows.length > 0 && (
             <Button
               variant="destructive"

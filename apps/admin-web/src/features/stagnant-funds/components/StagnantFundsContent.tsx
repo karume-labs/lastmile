@@ -1,8 +1,8 @@
 "use client";
 
-import { StagnantAlertsTable } from "@/features/stagnant-funds/components/StagnantAlertsTable";
-import { ClawbackConfirmationDialog } from "@/features/stagnant-funds/components/ClawbackConfirmationDialog";
 import { useState } from "react";
+import { ClawbackConfirmationDialog } from "@/features/stagnant-funds/components/ClawbackConfirmationDialog";
+import { StagnantAlertsTable } from "@/features/stagnant-funds/components/StagnantAlertsTable";
 
 interface ClawbackRecord {
   id: string;
@@ -13,8 +13,7 @@ interface ClawbackRecord {
 }
 
 export const StagnantFundsContent = () => {
-  const [clawbackTarget, setClawbackTarget] =
-    useState<ClawbackRecord | null>(null);
+  const [clawbackTarget, setClawbackTarget] = useState<ClawbackRecord | null>(null);
   const [clawbackDialogOpen, setClawbackDialogOpen] = useState(false);
 
   const handleClawbackSelect = (record: ClawbackRecord) => {

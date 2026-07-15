@@ -1,5 +1,5 @@
-import { AdminPanelPageLayout } from "@/features/shared/components/AdminPanelPageLayout";
 import { AuditsContent } from "@/features/audits/components/AuditsContent";
+import { AdminPanelPageLayout } from "@/features/shared/components/AdminPanelPageLayout";
 
 const AuditsPage = () => {
   return (

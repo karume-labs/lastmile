@@ -1,12 +1,22 @@
 "use client";
 
 import {
+  AlertTriangle,
+  ClipboardList,
+  FolderOpen,
+  LayoutDashboard,
+  Send,
+  Users,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Separator } from "@/components/ui/separator";
+import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
@@ -15,20 +25,8 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { ThemeToggle } from "@/features/shared/components/ThemeToggle";
-import { Separator } from "@/components/ui/separator";
-import {
-  LayoutDashboard,
-  Send,
-  FolderOpen,
-  AlertTriangle,
-  ClipboardList,
-  Users,
-  LogOut,
-} from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { SignOutButton } from "@/features/auth/components/SignOutButton";
+import { ThemeToggle } from "@/features/shared/components/ThemeToggle";
 
 const NAV_ITEMS = [
   { title: "Dashboard", url: "/admin/dashboard", icon: LayoutDashboard },
@@ -54,7 +52,6 @@ export const SidebarLayout = ({ children }: SidebarLayoutProps) => {
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>Navigation</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {NAV_ITEMS.map((item) => (

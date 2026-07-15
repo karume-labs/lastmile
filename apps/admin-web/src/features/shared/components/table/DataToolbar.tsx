@@ -1,7 +1,7 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 interface DataToolbarProps {
   searchKey?: string;
@@ -9,6 +9,7 @@ interface DataToolbarProps {
   onSearchChange?: (value: string) => void;
   searchPlaceholder?: string;
   filters?: React.ReactNode;
+  onClear?: () => void;
 }
 
 export const DataToolbar = ({

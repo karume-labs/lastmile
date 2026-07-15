@@ -1,5 +1,6 @@
 "use client";
 
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,7 +12,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { useInitiateClawback } from "@/features/stagnant-funds/services/mutations";
-import { toast } from "sonner";
 
 interface ClawbackRecord {
   id: string;
@@ -46,8 +46,7 @@ export const ClawbackConfirmationDialog = ({
       },
       onError: (error) => {
         toast.error("Clawback failed", {
-          description:
-            error.message || "An error occurred while initiating the clawback.",
+          description: error.message || "An error occurred while initiating the clawback.",
         });
       },
     });
@@ -59,15 +58,12 @@ export const ClawbackConfirmationDialog = ({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-destructive">
-            Confirm Clawback
-          </AlertDialogTitle>
+          <AlertDialogTitle className="text-destructive">Confirm Clawback</AlertDialogTitle>
           <AlertDialogDescription className="space-y-3">
             <p>
-              You are about to initiate a Soroban transaction reversal for the
-              following participant. This action is{" "}
-              <strong className="text-destructive">irreversible</strong> once
-              confirmed on-chain.
+              You are about to initiate a Soroban transaction reversal for the following
+              participant. This action is <strong className="text-destructive">irreversible</strong>{" "}
+              once confirmed on-chain.
             </p>
             <div className="rounded-md border p-4 space-y-2">
               <div className="flex justify-between">
@@ -91,17 +87,13 @@ export const ClawbackConfirmationDialog = ({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={clawbackMutation.isPending}>
-            Cancel
-          </AlertDialogCancel>
+          <AlertDialogCancel disabled={clawbackMutation.isPending}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={clawbackMutation.isPending}
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
-            {clawbackMutation.isPending
-              ? "Processing..."
-              : "Confirm Clawback"}
+            {clawbackMutation.isPending ? "Processing..." : "Confirm Clawback"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

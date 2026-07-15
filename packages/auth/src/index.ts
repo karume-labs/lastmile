@@ -1,5 +1,5 @@
-import { db, schema } from "@lastmile/db";
 import { env } from "@lastmile/auth/env";
+import { db, schema } from "@lastmile/db";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin } from "better-auth/plugins";
@@ -15,11 +15,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  trustedOrigins: [
-    env.NEXT_PUBLIC_APP_URL,
-    env.EXPO_PUBLIC_APP_URL,
-    "exp://",
-  ],
+  trustedOrigins: [env.NEXT_PUBLIC_APP_URL, env.EXPO_PUBLIC_APP_URL, "exp://"],
   advanced: {
     crossSubDomainCookies: {
       enabled: false,

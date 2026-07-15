@@ -1,19 +1,22 @@
 "use client";
 
-import { type ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
+import { parseAsString, useQueryState } from "nuqs";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useDeliveries } from "@/features/deliveries/services/queries";
 import { DataTable } from "@/features/shared/components/table/DataTable";
+import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
 import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
 import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
-import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
-import { useDeliveries } from "@/features/deliveries/services/queries";
 import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
-import { useState } from "react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 
 interface DeliveryRecord {
   id: string;
@@ -39,14 +42,14 @@ const METHOD_STYLES: Record<string, string> = {
   "proxy-led": "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
 };
 
-interface DeliveryTrackerProps {
-  actions?: React.ReactNode;
-}
+export const DeliveryTracker: React.FC = () => {
+  const { search, setSearch, clearFilters } = useDataTablePagination();
 
-export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => {
-  const [searchValue, setSearchValue] = useState("");
-  const { state, handlers } = useDataTablePagination();
-  const { data: deliveries, isLoading } = useDeliveries();
+  const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
+
+  const [methodFilter, setMethodFilter] = useQueryState("method", parseAsString.withDefault(""));
+
+  const { data: deliveriesResponse, isLoading } = useDeliveries();
 
   const columns: ColumnDef<DeliveryRecord, unknown>[] = [
     {
@@ -57,7 +60,9 @@ export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => 
         return (
           <Tooltip>
             <TooltipTrigger>
-              <span className="font-mono text-sm">{id.slice(0, 8)}...</span>
+              <span className="font-mono text-sm cursor-pointer border-b border-dashed">
+                {id.slice(0, 8)}...
+              </span>
             </TooltipTrigger>
             <TooltipContent>{id}</TooltipContent>
           </Tooltip>
@@ -117,8 +122,7 @@ export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => 
     },
     {
       id: "actions",
-      cell: ({ row }) => {
-        const record = row.original;
+      cell: () => {
         return (
           <TableMenuActions
             actions={[
@@ -141,11 +145,18 @@ export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => 
     return <DataTableSkeleton columnCount={8} />;
   }
 
-  const filteredData = (deliveries ?? []).filter(
-    (d: DeliveryRecord) =>
-      d.participantName.toLowerCase().includes(searchValue.toLowerCase()) ||
-      d.referenceId.toLowerCase().includes(searchValue.toLowerCase()),
-  );
+  const rawData = deliveriesResponse?.data || [];
+
+  const filteredData = rawData.filter((d: DeliveryRecord) => {
+    const matchesSearch =
+      d.participantName.toLowerCase().includes(search.toLowerCase()) ||
+      d.referenceId.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus =
+      statusFilter === "" || statusFilter === "all" || d.status === statusFilter;
+    const matchesMethod =
+      methodFilter === "" || methodFilter === "all" || d.deliveryMethod === methodFilter;
+    return matchesSearch && matchesStatus && matchesMethod;
+  });
 
   return (
     <DataTable
@@ -154,9 +165,41 @@ export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => 
       toolbar={
         <DataToolbar
           searchKey="participantName"
-          searchValue={searchValue}
-          onSearchChange={setSearchValue}
+          searchValue={search}
+          onSearchChange={setSearch}
           searchPlaceholder="Search by name or reference..."
+          onClear={() => {
+            clearFilters();
+            setStatusFilter("");
+            setMethodFilter("");
+          }}
+          filters={
+            <>
+              <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
+                <SelectTrigger className="w-37.5">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="sent">Sent</SelectItem>
+                  <SelectItem value="delivered">Delivered</SelectItem>
+                  <SelectItem value="failed">Failed</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={methodFilter} onValueChange={(val) => setMethodFilter(val)}>
+                <SelectTrigger className="w-37.5">
+                  <SelectValue placeholder="Method" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Methods</SelectItem>
+                  <SelectItem value="direct">Direct</SelectItem>
+                  <SelectItem value="proxy-led">Proxy-Led</SelectItem>
+                </SelectContent>
+              </Select>
+            </>
+          }
         />
       }
       emptyMessage="No deliveries found."

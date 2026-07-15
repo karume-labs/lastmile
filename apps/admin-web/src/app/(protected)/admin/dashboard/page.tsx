@@ -1,5 +1,5 @@
-import { AdminPanelPageLayout } from "@/features/shared/components/AdminPanelPageLayout";
 import { DashboardContent } from "@/features/dashboard/components/DashboardContent";
+import { AdminPanelPageLayout } from "@/features/shared/components/AdminPanelPageLayout";
 
 const DashboardPage = () => {
   return (
