@@ -10,6 +10,8 @@
     "isolatedModules": true,
     "baseUrl": ".",
     "paths": {
+      "@lastmile/db/*": ["packages/db/src/*"],
+      "@lastmile/auth/*": ["packages/auth/src/*"],
       "@lastmile/*": ["packages/*/src/index.ts"]
     }
   }
