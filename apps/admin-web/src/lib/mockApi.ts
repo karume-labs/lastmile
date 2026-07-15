@@ -54,6 +54,27 @@ export function initMockApi() {
 
   mock.onGet("/stagnant-funds").reply(() => [200, { data: stagnantFunds, meta: { total: stagnantFunds.length } }]);
 
+  // 6. Dashboard Metrics
+  const dashboardMetrics = {
+    totalDisbursed: "$145,250",
+    activeDeliveries: "128",
+    stagnantFunds: "4",
+    activeProxies: "32",
+    recentActivity: [
+      { id: "ACT-01", description: "Batch PROG-001 disbursement started", time: "2 hours ago" },
+      { id: "ACT-02", description: "System audit completed successfully", time: "5 hours ago" },
+      { id: "ACT-03", description: "Proxy PRX-01 reported 15 deliveries", time: "8 hours ago" },
+      { id: "ACT-04", description: "Stagnant funds flag raised for 2 accounts", time: "1 day ago" },
+    ],
+    pendingSyncs: [
+      { id: "SYNC-01", participantName: "Alice Smith", status: "Waiting for network" },
+      { id: "SYNC-02", participantName: "Bob Johnson", status: "Retrying (1/3)" },
+      { id: "SYNC-03", participantName: "Charlie Brown", status: "Pending approval" },
+    ]
+  };
+
+  mock.onGet("/dashboard/metrics").reply(() => [200, dashboardMetrics]);
+
   mock.onAny().passThrough();
   console.log("Mock API initialized.");
 }
