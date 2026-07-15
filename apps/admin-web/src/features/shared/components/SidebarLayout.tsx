@@ -24,9 +24,11 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarTrigger,
+  useSidebar,
 } from "@/components/ui/sidebar";
-import { SignOutButton } from "@/features/auth/components/SignOutButton";
+import { SidebarUserNav } from "@/features/shared/components/SidebarUserNav";
 import { ThemeToggle } from "@/features/shared/components/ThemeToggle";
+import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   { title: "Dashboard", url: "/admin/dashboard", icon: LayoutDashboard },
@@ -37,51 +39,100 @@ const NAV_ITEMS = [
   { title: "Proxies", url: "/admin/proxies", icon: Users },
 ] as const;
 
+const AppSidebar = () => {
+  const pathname = usePathname();
+  const { state, isMobile } = useSidebar();
+  const isCollapsed = state === "collapsed";
+
+  return (
+    <Sidebar collapsible="icon" className="border-border">
+      <SidebarHeader className="border-b border-border/50">
+        <div className="flex flex-col items-start justify-center gap-0.5 px-6 py-6 transition-all duration-200 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:items-center h-20">
+          <span
+            className={cn(
+              "text-lg font-semibold tracking-tight",
+              isCollapsed && !isMobile ? "hidden" : "block",
+            )}
+          >
+            Last Mile
+          </span>
+          <span
+            className={cn(
+              "text-lg font-bold tracking-tight text-primary",
+              isCollapsed && !isMobile ? "block" : "hidden",
+            )}
+          >
+            LM
+          </span>
+        </div>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu className="gap-2 px-2 py-4">
+              {NAV_ITEMS.map((item) => {
+                const isActive = pathname === item.url || pathname.startsWith(`${item.url}/`);
+                return (
+                  <SidebarMenuItem key={item.url}>
+                    <SidebarMenuButton
+                      tooltip={item.title}
+                      size="lg"
+                      className={cn(
+                        "transition-all duration-300 py-7 px-5 group-data-[collapsible=icon]:p-2 rounded-2xl group",
+                        isActive
+                          ? "bg-primary/10 hover:bg-primary/10 text-primary hover:text-primary font-semibold dark:bg-primary/20 dark:hover:bg-primary/20"
+                          : "hover:bg-transparent text-muted-foreground",
+                      )}
+                      render={
+                        <Link
+                          href={item.url}
+                          className="flex items-center gap-4 w-full group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0!"
+                        />
+                      }
+                    >
+                      <item.icon
+                        className={cn(
+                          "size-6 transition-transform duration-300 shrink-0",
+                          isActive ? "text-primary" : "text-muted-foreground",
+                        )}
+                      />
+                      <span className="text-lg tracking-tight truncate group-data-[collapsible=icon]:hidden">
+                        {item.title}
+                      </span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter className="border-t p-2">
+        <SidebarUserNav />
+      </SidebarFooter>
+    </Sidebar>
+  );
+};
+
 interface SidebarLayoutProps {
   children: React.ReactNode;
 }
 
 export const SidebarLayout = ({ children }: SidebarLayoutProps) => {
-  const pathname = usePathname();
-
   return (
     <SidebarProvider>
-      <Sidebar>
-        <SidebarHeader className="border-b px-4 py-3">
-          <span className="text-lg font-semibold tracking-tight">Last Mile</span>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {NAV_ITEMS.map((item) => (
-                  <SidebarMenuItem key={item.url}>
-                    <SidebarMenuButton
-                      isActive={pathname === item.url}
-                      render={<Link href={item.url} />}
-                    >
-                      <item.icon className="size-4" />
-                      <span>{item.title}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-        <SidebarFooter className="border-t p-4">
-          <div className="flex items-center justify-between">
-            <ThemeToggle />
-            <SignOutButton />
+      <AppSidebar />
+      <SidebarInset className="bg-background flex flex-col h-screen overflow-hidden">
+        <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b px-6 bg-background/80 backdrop-blur-md sticky top-0 z-10 transition-colors">
+          <div className="flex items-center gap-3">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4 hidden sm:block" />
           </div>
-        </SidebarFooter>
-      </Sidebar>
-      <SidebarInset>
-        <header className="flex h-14 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
+          <ThemeToggle />
         </header>
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 overflow-auto p-4 md:p-6 lg:p-8 bg-background transition-colors">
+          <div className="max-w-6xl mx-auto space-y-4">{children}</div>
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );
