@@ -14,7 +14,22 @@
     "android": {
       "package": "org.lastmile.staffmobile"
     },
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "LastMile uses your location to record where each beneficiary was registered."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "LastMile needs photo access to attach a beneficiary photo.",
+          "cameraPermission": "LastMile needs camera access to take a beneficiary photo."
+        }
+      ]
+    ],
     "experiments": {
       "typedRoutes": true
     }
