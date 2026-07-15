@@ -96,6 +96,7 @@ lerna-debug.log*
 .vercel/
 .turbo/
 .swc/
+next-env.d.ts
 
 # =========================
 # Mobile / React Native (Expo)
