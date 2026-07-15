@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -27,7 +28,7 @@ export const SidebarUserNav = () => {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <div className="flex w-full cursor-pointer items-center gap-2 rounded-md p-2 transition-colors hover:bg-muted group-data-[collapsible=icon]:justify-center" />
+          <button type="submit" className="flex w-full cursor-pointer items-center gap-2 rounded-md p-2 transition-colors hover:bg-muted group-data-[collapsible=icon]:justify-center" />
         }
       >
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted shrink-0 overflow-hidden">
@@ -54,24 +55,28 @@ export const SidebarUserNav = () => {
         side="right"
         sideOffset={12}
       >
-        <DropdownMenuLabel className="font-normal p-0">
-          <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted overflow-hidden">
-              <Avatar className="h-full w-full rounded-none">
-                <AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || ""} />
-                <AvatarFallback className="rounded-none text-xs font-semibold">
-                  {session?.user?.name?.slice(0, 2)?.toUpperCase() || "AD"}
-                </AvatarFallback>
-              </Avatar>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="font-normal p-0">
+            <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted overflow-hidden">
+                <Avatar className="h-full w-full rounded-none">
+                  <AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || ""} />
+                  <AvatarFallback className="rounded-none text-xs font-semibold">
+                    {session?.user?.name?.slice(0, 2)?.toUpperCase() || "AD"}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+              <div className="flex flex-col flex-1 leading-none overflow-hidden text-left">
+                <span className="font-semibold truncate">
+                  {session?.user?.name || "Administrator"}
+                </span>
+                <span className="text-xs text-muted-foreground truncate">
+                  {session?.user?.email}
+                </span>
+              </div>
             </div>
-            <div className="flex flex-col flex-1 leading-none overflow-hidden text-left">
-              <span className="font-semibold truncate">
-                {session?.user?.name || "Administrator"}
-              </span>
-              <span className="text-xs text-muted-foreground truncate">{session?.user?.email}</span>
-            </div>
-          </div>
-        </DropdownMenuLabel>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <div className="px-2 py-1.5">
           <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
