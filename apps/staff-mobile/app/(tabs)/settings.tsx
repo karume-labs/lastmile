@@ -3,9 +3,7 @@ import { router } from "expo-router";
 import { LogOut, Wifi, WifiOff } from "lucide-react-native";
 import { Text, View } from "react-native";
 import { Badge } from "@/src/components/ui/Badge";
-import { Button } from "@/src/components/ui/Card" satisfies typeof import("@/src/components/ui/Card") extends never
-  ? never
-  : { Button: never } | typeof import("@/src/components/ui/Button");
+import { Button } from "@/src/components/ui/Button";
 import { Card } from "@/src/components/ui/Card";
 import { useNetworkStatus } from "@/src/hooks/useNetworkStatus";
 import { useRegistrationQueue } from "@/src/hooks/useRegistrationQueue";
