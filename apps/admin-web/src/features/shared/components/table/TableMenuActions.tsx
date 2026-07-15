@@ -1,5 +1,7 @@
 "use client";
 
+import { MoreHorizontal } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,8 +9,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { MoreHorizontal } from "lucide-react";
 
 interface TableMenuAction {
   label: string;
@@ -25,8 +25,8 @@ export const TableMenuActions = ({ actions }: TableMenuActionsProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger render={<Button variant="ghost" className="size-8 p-0" />}>
-          <span className="sr-only">Open menu</span>
-          <MoreHorizontal className="size-4" />
+        <span className="sr-only">Open menu</span>
+        <MoreHorizontal className="size-4" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {actions.map((action, index) => (

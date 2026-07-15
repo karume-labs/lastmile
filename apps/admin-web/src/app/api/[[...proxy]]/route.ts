@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { env } from "@/env";
 
 const apiBase = env.NEXT_PUBLIC_API_URL;
@@ -43,9 +43,8 @@ const proxyRequest = async (request: NextRequest, proxy: string[]) => {
     }
   });
 
-  const body = request.method !== "GET" && request.method !== "HEAD"
-    ? await request.arrayBuffer()
-    : undefined;
+  const body =
+    request.method !== "GET" && request.method !== "HEAD" ? await request.arrayBuffer() : undefined;
 
   try {
     const response = await fetch(targetUrl, {
@@ -62,9 +61,6 @@ const proxyRequest = async (request: NextRequest, proxy: string[]) => {
       headers: Object.fromEntries(response.headers.entries()),
     });
   } catch {
-    return NextResponse.json(
-      { error: "Failed to proxy request" },
-      { status: 502 },
-    );
+    return NextResponse.json({ error: "Failed to proxy request" }, { status: 502 });
   }
 };

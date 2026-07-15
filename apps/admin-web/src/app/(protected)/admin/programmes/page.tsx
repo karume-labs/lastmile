@@ -1,5 +1,5 @@
-import { AdminPanelPageLayout } from "@/features/shared/components/AdminPanelPageLayout";
 import { ProgrammesContent } from "@/features/programmes/components/ProgrammesContent";
+import { AdminPanelPageLayout } from "@/features/shared/components/AdminPanelPageLayout";
 
 const ProgrammesPage = () => {
   return (

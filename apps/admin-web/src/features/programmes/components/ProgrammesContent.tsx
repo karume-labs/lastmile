@@ -1,16 +1,12 @@
 "use client";
 
-import { ProgrammeGrid } from "@/features/programmes/components/ProgrammeGrid";
-import { CreateBatchForm } from "@/features/programmes/components/CreateBatchForm";
-import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { CreateBatchForm } from "@/features/programmes/components/CreateBatchForm";
+import { ProgrammeGrid } from "@/features/programmes/components/ProgrammeGrid";
 
-interface ProgrammesContentProps {
-  actions?: React.ReactNode;
-}
-
-export const ProgrammesContent: React.FC<ProgrammesContentProps> = ({ actions }) => {
+export const ProgrammesContent: React.FC = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
 
   return (

@@ -1,18 +1,8 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
+import { parseAsString, useQueryState } from "nuqs";
 import { Badge } from "@/components/ui/badge";
-import { DataTable } from "@/features/shared/components/table/DataTable";
-import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
-import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
-import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
-import { useDeliveries } from "@/features/deliveries/services/queries";
-import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import {
   Select,
   SelectContent,
@@ -20,7 +10,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useQueryState, parseAsString } from "nuqs";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useDeliveries } from "@/features/deliveries/services/queries";
+import { DataTable } from "@/features/shared/components/table/DataTable";
+import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
+import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
+import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
+import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
 
 interface DeliveryRecord {
   id: string;
@@ -48,16 +44,10 @@ const METHOD_STYLES: Record<string, string> = {
 
 export const DeliveryTracker: React.FC = () => {
   const { search, setSearch, clearFilters } = useDataTablePagination();
-  
-  const [statusFilter, setStatusFilter] = useQueryState(
-    "status",
-    parseAsString.withDefault("")
-  );
 
-  const [methodFilter, setMethodFilter] = useQueryState(
-    "method",
-    parseAsString.withDefault("")
-  );
+  const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
+
+  const [methodFilter, setMethodFilter] = useQueryState("method", parseAsString.withDefault(""));
 
   const { data: deliveriesResponse, isLoading } = useDeliveries();
 
@@ -70,7 +60,9 @@ export const DeliveryTracker: React.FC = () => {
         return (
           <Tooltip>
             <TooltipTrigger>
-              <span className="font-mono text-sm cursor-pointer border-b border-dashed">{id.slice(0, 8)}...</span>
+              <span className="font-mono text-sm cursor-pointer border-b border-dashed">
+                {id.slice(0, 8)}...
+              </span>
             </TooltipTrigger>
             <TooltipContent>{id}</TooltipContent>
           </Tooltip>
@@ -154,12 +146,15 @@ export const DeliveryTracker: React.FC = () => {
   }
 
   const rawData = deliveriesResponse?.data || [];
-  
+
   const filteredData = rawData.filter((d: DeliveryRecord) => {
-    const matchesSearch = d.participantName.toLowerCase().includes(search.toLowerCase()) ||
-                          d.referenceId.toLowerCase().includes(search.toLowerCase());
-    const matchesStatus = statusFilter === "" || statusFilter === "all" || d.status === statusFilter;
-    const matchesMethod = methodFilter === "" || methodFilter === "all" || d.deliveryMethod === methodFilter;
+    const matchesSearch =
+      d.participantName.toLowerCase().includes(search.toLowerCase()) ||
+      d.referenceId.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus =
+      statusFilter === "" || statusFilter === "all" || d.status === statusFilter;
+    const matchesMethod =
+      methodFilter === "" || methodFilter === "all" || d.deliveryMethod === methodFilter;
     return matchesSearch && matchesStatus && matchesMethod;
   });
 
@@ -192,7 +187,7 @@ export const DeliveryTracker: React.FC = () => {
                   <SelectItem value="failed">Failed</SelectItem>
                 </SelectContent>
               </Select>
-              
+
               <Select value={methodFilter} onValueChange={(val) => setMethodFilter(val)}>
                 <SelectTrigger className="w-37.5">
                   <SelectValue placeholder="Method" />

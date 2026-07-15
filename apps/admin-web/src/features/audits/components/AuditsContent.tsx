@@ -1,13 +1,9 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { ColumnDef } from "@tanstack/react-table";
+import { parseAsString, useQueryState } from "nuqs";
 import { Badge } from "@/components/ui/badge";
-import { useAudits } from "@/features/audits/services/queries";
-import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
-import { DataTable } from "@/features/shared/components/table/DataTable";
-import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
-import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
-import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -15,8 +11,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useQueryState, parseAsString } from "nuqs";
-import type { ColumnDef } from "@tanstack/react-table";
+import { useAudits } from "@/features/audits/services/queries";
+import { DataTable } from "@/features/shared/components/table/DataTable";
+import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
+import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
+import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
+import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
 
 interface AuditRecord {
   id: string;
@@ -29,10 +29,10 @@ interface AuditRecord {
 
 export const AuditsContent = () => {
   const { search, setSearch, clearFilters } = useDataTablePagination();
-  
+
   const [severityFilter, setSeverityFilter] = useQueryState(
     "severity",
-    parseAsString.withDefault("")
+    parseAsString.withDefault(""),
   );
 
   const { data: auditsResponse, isLoading } = useAudits();
@@ -100,13 +100,14 @@ export const AuditsContent = () => {
   }
 
   const rawData = auditsResponse?.data || [];
-  
+
   const filteredData = rawData.filter((a: AuditRecord) => {
-    const matchesSearch = 
+    const matchesSearch =
       a.action.toLowerCase().includes(search.toLowerCase()) ||
       a.actor.toLowerCase().includes(search.toLowerCase()) ||
       a.target.toLowerCase().includes(search.toLowerCase());
-    const matchesSeverity = severityFilter === "" || severityFilter === "all" || a.severity === severityFilter;
+    const matchesSeverity =
+      severityFilter === "" || severityFilter === "all" || a.severity === severityFilter;
     return matchesSearch && matchesSeverity;
   });
 

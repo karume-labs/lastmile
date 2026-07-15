@@ -1,13 +1,8 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
+import { parseAsString, useQueryState } from "nuqs";
 import { Badge } from "@/components/ui/badge";
-import { DataTable } from "@/features/shared/components/table/DataTable";
-import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
-import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
-import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
-import { useProgrammes } from "@/features/programmes/services/queries";
-import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
 import {
   Select,
   SelectContent,
@@ -15,7 +10,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useQueryState, parseAsString } from "nuqs";
+import { useProgrammes } from "@/features/programmes/services/queries";
+import { DataTable } from "@/features/shared/components/table/DataTable";
+import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
+import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
+import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
+import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
 
 interface ProgrammeRecord {
   id: string;
@@ -35,15 +35,12 @@ const STATUS_STYLES: Record<string, string> = {
 
 export const ProgrammeGrid = () => {
   const { search, setSearch, clearFilters } = useDataTablePagination();
-  
-  const [statusFilter, setStatusFilter] = useQueryState(
-    "status",
-    parseAsString.withDefault("")
-  );
+
+  const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
 
   const [audienceFilter, setAudienceFilter] = useQueryState(
     "audience",
-    parseAsString.withDefault("")
+    parseAsString.withDefault(""),
   );
 
   const { data: programmesResponse, isLoading } = useProgrammes();
@@ -67,9 +64,7 @@ export const ProgrammeGrid = () => {
       accessorKey: "budget",
       header: "Budget",
       cell: ({ row }) => (
-        <span className="font-medium">
-          ${row.original.budget.toLocaleString()}
-        </span>
+        <span className="font-medium">${row.original.budget.toLocaleString()}</span>
       ),
     },
     {
@@ -125,11 +120,13 @@ export const ProgrammeGrid = () => {
   }
 
   const rawData = programmesResponse?.data || [];
-  
+
   const filteredData = rawData.filter((p: ProgrammeRecord) => {
     const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
-    const matchesStatus = statusFilter === "" || statusFilter === "all" || p.status === statusFilter;
-    const matchesAudience = audienceFilter === "" || audienceFilter === "all" || p.targetAudience === audienceFilter;
+    const matchesStatus =
+      statusFilter === "" || statusFilter === "all" || p.status === statusFilter;
+    const matchesAudience =
+      audienceFilter === "" || audienceFilter === "all" || p.targetAudience === audienceFilter;
     return matchesSearch && matchesStatus && matchesAudience;
   });
 

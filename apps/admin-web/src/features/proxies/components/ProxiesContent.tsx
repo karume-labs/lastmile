@@ -1,13 +1,10 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { ColumnDef } from "@tanstack/react-table";
+import { UserCheck, UserMinus, UserX } from "lucide-react";
+import { parseAsString, useQueryState } from "nuqs";
 import { Badge } from "@/components/ui/badge";
-import { useProxies } from "@/features/proxies/services/queries";
-import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
-import { DataTable } from "@/features/shared/components/table/DataTable";
-import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
-import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
-import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -15,9 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useQueryState, parseAsString } from "nuqs";
-import type { ColumnDef } from "@tanstack/react-table";
-import { UserCheck, UserX, UserMinus } from "lucide-react";
+import { useProxies } from "@/features/proxies/services/queries";
+import { DataTable } from "@/features/shared/components/table/DataTable";
+import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
+import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
+import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
+import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
 
 interface ProxyRecord {
   id: string;
@@ -31,16 +31,10 @@ interface ProxyRecord {
 
 export const ProxiesContent = () => {
   const { search, setSearch, clearFilters } = useDataTablePagination();
-  
-  const [statusFilter, setStatusFilter] = useQueryState(
-    "status",
-    parseAsString.withDefault("")
-  );
 
-  const [roleFilter, setRoleFilter] = useQueryState(
-    "role",
-    parseAsString.withDefault("")
-  );
+  const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
+
+  const [roleFilter, setRoleFilter] = useQueryState("role", parseAsString.withDefault(""));
 
   const { data: proxiesResponse, isLoading } = useProxies();
 
@@ -105,7 +99,12 @@ export const ProxiesContent = () => {
               {
                 label: record.status === "active" ? "Suspend Access" : "Restore Access",
                 destructive: record.status === "active",
-                icon: record.status === "active" ? <UserMinus className="size-4" /> : <UserCheck className="size-4" />,
+                icon:
+                  record.status === "active" ? (
+                    <UserMinus className="size-4" />
+                  ) : (
+                    <UserCheck className="size-4" />
+                  ),
                 onClick: () => {},
               },
             ]}
@@ -120,16 +119,17 @@ export const ProxiesContent = () => {
   }
 
   const rawData = proxiesResponse?.data || [];
-  
+
   const filteredData = rawData.filter((p: ProxyRecord) => {
-    const matchesSearch = 
+    const matchesSearch =
       p.name.toLowerCase().includes(search.toLowerCase()) ||
       p.phone.includes(search) ||
       p.location.toLowerCase().includes(search.toLowerCase());
-    
-    const matchesStatus = statusFilter === "" || statusFilter === "all" || p.status === statusFilter;
+
+    const matchesStatus =
+      statusFilter === "" || statusFilter === "all" || p.status === statusFilter;
     const matchesRole = roleFilter === "" || roleFilter === "all" || p.role === roleFilter;
-    
+
     return matchesSearch && matchesStatus && matchesRole;
   });
 

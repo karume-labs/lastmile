@@ -1,8 +1,9 @@
 "use client";
 
+import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -11,6 +12,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -19,9 +22,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useCreateBatch } from "@/features/programmes/services/mutations";
-import { useForm } from "react-hook-form";
-import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
-import { z } from "zod";
 
 const batchSchema = z.object({
   programmeName: z.string().min(1, "Programme name is required"),
@@ -56,9 +56,7 @@ export const CreateBatchForm = () => {
     <Card>
       <CardHeader>
         <CardTitle>Create New Batch</CardTitle>
-        <CardDescription>
-          Create a new disbursement batch for a programme.
-        </CardDescription>
+        <CardDescription>Create a new disbursement batch for a programme.</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardContent className="space-y-4">
@@ -70,16 +68,16 @@ export const CreateBatchForm = () => {
               {...register("programmeName")}
             />
             {errors.programmeName && (
-              <p className="text-sm text-destructive">
-                {errors.programmeName.message}
-              </p>
+              <p className="text-sm text-destructive">{errors.programmeName.message}</p>
             )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="targetCurrency">Target Currency</Label>
             <Select
               value={watch("targetCurrency")}
-              onValueChange={(value) => { if (value) setValue("targetCurrency", value); }}
+              onValueChange={(value) => {
+                if (value) setValue("targetCurrency", value);
+              }}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select currency" />
@@ -92,9 +90,7 @@ export const CreateBatchForm = () => {
               </SelectContent>
             </Select>
             {errors.targetCurrency && (
-              <p className="text-sm text-destructive">
-                {errors.targetCurrency.message}
-              </p>
+              <p className="text-sm text-destructive">{errors.targetCurrency.message}</p>
             )}
           </div>
           <div className="space-y-2">
@@ -106,18 +102,12 @@ export const CreateBatchForm = () => {
               {...register("batchSize", { valueAsNumber: true })}
             />
             {errors.batchSize && (
-              <p className="text-sm text-destructive">
-                {errors.batchSize.message}
-              </p>
+              <p className="text-sm text-destructive">{errors.batchSize.message}</p>
             )}
           </div>
         </CardContent>
         <CardFooter>
-          <Button
-            type="submit"
-            disabled={createBatchMutation.isPending}
-            className="w-full"
-          >
+          <Button type="submit" disabled={createBatchMutation.isPending} className="w-full">
             {createBatchMutation.isPending ? "Creating..." : "Create Batch"}
           </Button>
         </CardFooter>

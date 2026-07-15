@@ -1,7 +1,7 @@
-import { createClient } from "@libsql/client";
-import { drizzle } from "drizzle-orm/libsql";
 import { env } from "@lastmile/db/env";
 import * as authSchema from "@lastmile/db/schema/auth";
+import { createClient } from "@libsql/client";
+import { drizzle } from "drizzle-orm/libsql";
 
 const schema = {
   ...authSchema,

@@ -1,33 +1,25 @@
 "use client";
 
-import { useMemo, useCallback, useState } from "react";
-import type { SortingState, ColumnFiltersState, Updater } from "@tanstack/react-table";
+import type { ColumnFiltersState, SortingState, Updater } from "@tanstack/react-table";
 import { parseAsInteger, parseAsString, useQueryState } from "nuqs";
+import { useCallback, useMemo, useState } from "react";
 
 interface UseDataTablePaginationOptions {
   defaultPageSize?: number;
   initialSort?: SortingState;
 }
 
-export const useDataTablePagination = (
-  options: UseDataTablePaginationOptions = {},
-) => {
+export const useDataTablePagination = (options: UseDataTablePaginationOptions = {}) => {
   const { defaultPageSize = 10, initialSort = [] } = options;
 
-  const [pageIndex, setPageIndex] = useQueryState(
-    "page",
-    parseAsInteger.withDefault(0)
-  );
+  const [pageIndex, setPageIndex] = useQueryState("page", parseAsInteger.withDefault(0));
 
   const [pageSize, setPageSize] = useQueryState(
     "pageSize",
-    parseAsInteger.withDefault(defaultPageSize)
+    parseAsInteger.withDefault(defaultPageSize),
   );
 
-  const [search, setSearch] = useQueryState(
-    "search",
-    parseAsString.withDefault("")
-  );
+  const [search, setSearch] = useQueryState("search", parseAsString.withDefault(""));
 
   const [sorting, setSorting] = useState<SortingState>(initialSort);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -52,7 +44,10 @@ export const useDataTablePagination = (
       onColumnFiltersChange: setColumnFilters,
       onRowSelectionChange: setRowSelection,
       onPaginationChange: (updater: Updater<{ pageIndex: number; pageSize: number }>) => {
-        const nextState = typeof updater === "function" ? updater({ pageIndex: pageIndex ?? 0, pageSize: pageSize ?? defaultPageSize }) : updater;
+        const nextState =
+          typeof updater === "function"
+            ? updater({ pageIndex: pageIndex ?? 0, pageSize: pageSize ?? defaultPageSize })
+            : updater;
         setPageIndex(nextState.pageIndex);
         setPageSize(nextState.pageSize);
       },
@@ -66,7 +61,7 @@ export const useDataTablePagination = (
 
   const resetSelection = useCallback(() => {
     setRowSelection({});
-  }, [setRowSelection]);
+  }, []);
 
   const clearFilters = useCallback(() => {
     setSearch("");
