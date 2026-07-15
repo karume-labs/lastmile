@@ -1,8 +1,8 @@
-import { env } from "./env";
 import { db, schema } from "@lastmile/db";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin } from "better-auth/plugins";
+import { env } from "./env";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
