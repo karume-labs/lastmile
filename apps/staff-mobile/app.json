@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "LastMile Staff",
+    "slug": "lastmile-staff-mobile",
+    "scheme": "lastmile",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "org.lastmile.staffmobile"
+    },
+    "android": {
+      "package": "org.lastmile.staffmobile"
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
