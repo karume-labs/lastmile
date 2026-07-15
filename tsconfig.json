@@ -12,6 +12,7 @@
     "paths": {
       "@lastmile/db/*": ["packages/db/src/*"],
       "@lastmile/auth/*": ["packages/auth/src/*"],
+      "@lastmile/api/*": ["apps/api/src/*"],
       "@lastmile/*": ["packages/*/src/index.ts"]
     }
   }
