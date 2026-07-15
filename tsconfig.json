@@ -15,5 +15,7 @@
       "@lastmile/api/*": ["apps/api/src/*"],
       "@lastmile/*": ["packages/*/src/index.ts"]
     }
-  }
+  },
+  "include": ["apps/api/**/*.ts", "packages/*/src/**/*.ts"],
+  "exclude": ["node_modules", "apps/admin-web", "apps/staff-mobile", "**/dist", "**/build"]
 }
