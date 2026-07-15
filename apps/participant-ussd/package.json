@@ -1,5 +1,12 @@
 {
   "name": "participant-ussd",
   "version": "0.1.0",
-  "private": true
+  "private": true,
+  "scripts": {
+    "dev": "bun --watch ussd.js",
+    "start": "bun ussd.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
 }
