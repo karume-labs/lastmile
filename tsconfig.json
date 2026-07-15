@@ -8,12 +8,11 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
-    "baseUrl": ".",
     "paths": {
-      "@lastmile/db/*": ["packages/db/src/*"],
-      "@lastmile/auth/*": ["packages/auth/src/*"],
-      "@lastmile/api/*": ["apps/api/src/*"],
-      "@lastmile/*": ["packages/*/src/index.ts"]
+      "@lastmile/db/*": ["./packages/db/src/*"],
+      "@lastmile/auth/*": ["./packages/auth/src/*"],
+      "@lastmile/api/*": ["./apps/api/src/*"],
+      "@lastmile/*": ["./packages/*/src/index.ts"]
     }
   },
   "include": ["apps/api/**/*.ts", "packages/*/src/**/*.ts"],
