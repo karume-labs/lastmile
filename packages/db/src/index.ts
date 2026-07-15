@@ -1,5 +1,5 @@
-import { env } from "@lastmile/db/env";
-import * as authSchema from "@lastmile/db/schema/auth";
+import { env } from "./env";
+import * as authSchema from "./schema/auth";
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
 
