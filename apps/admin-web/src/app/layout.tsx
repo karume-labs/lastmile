@@ -3,8 +3,8 @@ import { IBM_Plex_Mono, Newsreader, Public_Sans } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "sonner";
-import { Providers } from "./providers";
-import "./globals.css";
+import { Providers } from "@/app/providers";
+import "@/app/globals.css";
 
 const newsreader = Newsreader({
   variable: "--font-display",
