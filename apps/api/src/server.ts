@@ -4,6 +4,7 @@ import { toNodeHandler } from "better-auth/node";
 import cors from "cors";
 import express from "express";
 import helmet from "helmet";
+import ussdGatewayRouter from "./features/ussd-gateway/routers";
 
 const app = express();
 
@@ -32,6 +33,9 @@ app.get("/api/health", (_req: Request, res: Response) => {
 
 // Better Auth Mount
 app.all("/api/auth/*", toNodeHandler(auth.handler));
+
+// USSD Gateway Mount
+app.use("/api/v1/ussd", ussdGatewayRouter);
 
 // Start server
 app.listen(env.PORT, () => {

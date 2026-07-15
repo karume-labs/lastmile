@@ -15,6 +15,7 @@
     "@lastmile/auth": "workspace:*",
     "@lastmile/db": "workspace:*",
     "@lastmile/validators": "workspace:*",
-    "@lastmile/types": "workspace:*"
+    "@lastmile/types": "workspace:*",
+    "@lastmile/participant-ussd": "workspace:*"
   }
 }
