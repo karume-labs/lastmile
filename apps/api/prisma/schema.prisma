@@ -1,0 +1,162 @@
+datasource db {
+  provider = "postgresql"
+ 
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+enum Role {
+  ADMIN
+  REGISTRAR
+}
+
+enum SyncStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum DisbursementStatus {
+  PENDING
+  COMPLETED
+  CLAIMED
+  EXPIRED
+  CLAWED_BACK
+}
+
+enum ClawbackStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ==========================================
+// MODELS
+// ==========================================
+model User {
+  id          String            @id @default(cuid())
+  email       String            @unique
+  password    String
+  name        String
+  role        Role
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  deletedAt   DateTime?
+  clawbacks   ClawbackRequest[]
+  auditLogs   AuditLog[]
+}
+
+model Programme {
+  id            String                @id @default(cuid())
+  name          String
+  currency      String                @default("KES")
+  amount        Decimal               @db.Decimal(12, 2)
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  deletedAt     DateTime?
+  participants  Participant[]
+  enrollments   ProgrammeEnrollment[]
+  registrations Registration[]
+}
+
+model Participant {
+  id            String               @id @default(cuid())
+  referenceId   String               @unique
+  name          String
+  nationalId    String               @unique
+  phone         String?
+  hasProxy      Boolean              @default(false)
+  programmeId   String
+  programme     Programme            @relation(fields: [programmeId], references: [id], onDelete: Restrict)
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+  deletedAt     DateTime?
+  proxy         Proxy?
+  enrollments   ProgrammeEnrollment[]
+  disbursements Disbursement[]
+}
+
+model Proxy {
+  id            String     @id @default(cuid())
+  participantId String     @unique
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  name          String
+  phone         String
+  relationship  String
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  deletedAt     DateTime?
+}
+
+model ProgrammeEnrollment {
+  id           String    @id @default(cuid())
+  participantId String
+  participant  Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  programmeId  String
+  programme    Programme   @relation(fields: [programmeId], references: [id], onDelete: Cascade)
+  enrolledAt   DateTime  @default(now())
+
+  @@unique([participantId, programmeId])
+}
+
+model Registration {
+  id            String      @id @default(cuid())
+  referenceId   String      @unique
+  programmeId   String
+  programme     Programme   @relation(fields: [programmeId], references: [id], onDelete: Restrict)
+  payload       Json
+  syncStatus    SyncStatus  @default(PENDING)
+  failureReason String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  syncJobs      SyncJob[]
+}
+
+model SyncJob {
+  id            String      @id @default(cuid())
+  registrationId String
+  registration  Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+  status        SyncStatus
+  attempts      Int         @default(1)
+  errorLog      String?
+  runAt         DateTime    @default(now())
+}
+
+model Disbursement {
+  id            String             @id @default(cuid())
+  sdpId         String             @unique
+  participantId String
+  participant   Participant        @relation(fields: [participantId], references: [id], onDelete: Restrict)
+  amount        Decimal            @db.Decimal(12, 2)
+  status        DisbursementStatus @default(PENDING)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  clawback      ClawbackRequest?
+}
+
+model ClawbackRequest {
+  id             String         @id @default(cuid())
+  disbursementId String         @unique
+  disbursement   Disbursement   @relation(fields: [disbursementId], references: [id], onDelete: Restrict)
+  requestedById  String
+  requestedBy    User           @relation(fields: [requestedById], references: [id], onDelete: Restrict)
+  status         ClawbackStatus @default(PENDING)
+  reason         String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action      String
+  details     String
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+}

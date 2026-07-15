@@ -10,6 +10,7 @@
     "isolatedModules": true,
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
+    "types": ["node"],                   
     "paths": {
       "@lastmile/db/*": ["packages/db/src/*"],
       "@lastmile/auth/*": ["packages/auth/src/*"],
