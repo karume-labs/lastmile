@@ -23,7 +23,9 @@
     "db:generate-auth": "bun --cwd packages/auth db:generate-auth",
     "typecheck": "bun run --filter '*' typecheck",
     "ui:web": "bunx shadcn@latest add --cwd apps/admin-web",
-    "ui:mobile": "cd apps/staff-mobile && bunx @react-native-reusables/cli@latest add"
+    "ui:mobile": "cd apps/staff-mobile && bunx @react-native-reusables/cli@latest add",
+    "mobile:doctor": "cd apps/staff-mobile && bun run doctor",
+    "mobile:install:check": "cd apps/staff-mobile && bunx expo install --check"
   },
   "dependencies": {
     "react": "19.2.4",
