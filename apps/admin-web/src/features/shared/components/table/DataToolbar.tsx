@@ -9,6 +9,7 @@ interface DataToolbarProps {
   onSearchChange?: (value: string) => void;
   searchPlaceholder?: string;
   filters?: React.ReactNode;
+  onClear?: () => void;
 }
 
 export const DataToolbar = ({
