@@ -27,7 +27,9 @@
           "photosPermission": "LastMile needs photo access to attach a beneficiary photo.",
           "cameraPermission": "LastMile needs camera access to take a beneficiary photo."
         }
-      ]
+      ],
+      "@react-native-community/datetimepicker",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
