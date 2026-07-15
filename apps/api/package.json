@@ -1,0 +1,13 @@
+{
+  "name": "api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "bun --watch src/server.ts"
+  },
+  "dependencies": {
+    "@lastmile/db": "workspace:*",
+    "@lastmile/validators": "workspace:*",
+    "@lastmile/types": "workspace:*"
+  }
+}
