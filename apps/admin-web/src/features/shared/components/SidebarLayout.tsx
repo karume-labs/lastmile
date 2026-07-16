@@ -3,7 +3,9 @@
 import {
   AlertTriangle,
   ClipboardList,
+  FileSpreadsheet,
   FolderOpen,
+  HelpCircle,
   LayoutDashboard,
   Send,
   Users,
@@ -31,12 +33,24 @@ import { ThemeToggle } from "@/features/shared/components/ThemeToggle";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { title: "Dashboard", url: "/admin/dashboard", icon: LayoutDashboard },
-  { title: "Deliveries", url: "/admin/deliveries", icon: Send },
-  { title: "Programmes", url: "/admin/programmes", icon: FolderOpen },
-  { title: "Stagnant Funds", url: "/admin/stagnant-funds", icon: AlertTriangle },
-  { title: "Audits", url: "/admin/audits", icon: ClipboardList },
-  { title: "Proxies", url: "/admin/proxies", icon: Users },
+  { title: "Dashboard", url: "/admin/dashboard", icon: LayoutDashboard, id: "tour-dashboard" },
+  {
+    title: "Registration",
+    url: "/admin/registration",
+    icon: FileSpreadsheet,
+    id: "tour-registration",
+  },
+  { title: "Deliveries", url: "/admin/deliveries", icon: Send, id: "tour-deliveries" },
+  { title: "Programmes", url: "/admin/programmes", icon: FolderOpen, id: "tour-programmes" },
+  {
+    title: "Stagnant Funds",
+    url: "/admin/stagnant-funds",
+    icon: AlertTriangle,
+    id: "tour-stagnant-funds",
+  },
+  { title: "Audits", url: "/admin/audits", icon: ClipboardList, id: "tour-audits" },
+  { title: "Proxies", url: "/admin/proxies", icon: Users, id: "tour-proxies" },
+  { title: "Tours & Help", url: "/admin/tours", icon: HelpCircle, id: "tour-help" },
 ] as const;
 
 const AppSidebar = () => {
@@ -73,7 +87,7 @@ const AppSidebar = () => {
               {NAV_ITEMS.map((item) => {
                 const isActive = pathname === item.url || pathname.startsWith(`${item.url}/`);
                 return (
-                  <SidebarMenuItem key={item.url}>
+                  <SidebarMenuItem key={item.url} id={item.id}>
                     <SidebarMenuButton
                       tooltip={item.title}
                       size="lg"

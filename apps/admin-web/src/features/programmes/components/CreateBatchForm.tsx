@@ -5,13 +5,12 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -31,7 +30,11 @@ const batchSchema = z.object({
 
 type BatchFormValues = z.infer<typeof batchSchema>;
 
-export const CreateBatchForm = () => {
+export interface CreateBatchFormProps {
+  onSuccess?: () => void;
+}
+
+export const CreateBatchForm = ({ onSuccess }: CreateBatchFormProps = {}) => {
   const createBatchMutation = useCreateBatch();
   const {
     register,
@@ -48,18 +51,19 @@ export const CreateBatchForm = () => {
     createBatchMutation.mutate(data, {
       onSuccess: () => {
         reset();
+        onSuccess?.();
       },
     });
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Create New Batch</CardTitle>
-        <CardDescription>Create a new disbursement batch for a programme.</CardDescription>
-      </CardHeader>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Create New Batch</DialogTitle>
+        <DialogDescription>Create a new disbursement batch for a programme.</DialogDescription>
+      </DialogHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="space-y-4">
+        <div className="space-y-4 px-1 py-4">
           <div className="space-y-2">
             <Label htmlFor="programmeName">Programme Name</Label>
             <Input
@@ -105,13 +109,13 @@ export const CreateBatchForm = () => {
               <p className="text-sm text-destructive">{errors.batchSize.message}</p>
             )}
           </div>
-        </CardContent>
-        <CardFooter>
+        </div>
+        <DialogFooter>
           <Button type="submit" disabled={createBatchMutation.isPending} className="w-full">
             {createBatchMutation.isPending ? "Creating..." : "Create Batch"}
           </Button>
-        </CardFooter>
+        </DialogFooter>
       </form>
-    </Card>
+    </DialogContent>
   );
 };
