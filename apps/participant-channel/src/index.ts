@@ -1,4 +1,4 @@
-import type { ussdParams } from "@lastmile/types";
+import type { ussdParams } from "@lastmile/types/ussd";
 
 interface Beneficiary {
   name: string;

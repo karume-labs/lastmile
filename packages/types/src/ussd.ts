@@ -9,3 +9,8 @@ export type UssdSessionResponse = {
   sessionId: string;
   response: string;
 };
+
+export type ussdParams = {
+  phoneNumber: string;
+  text: string;
+};

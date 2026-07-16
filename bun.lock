@@ -64,6 +64,7 @@
       "dependencies": {
         "@lastmile/auth": "workspace:*",
         "@lastmile/db": "workspace:*",
+        "@lastmile/participant-channel": "workspace:*",
         "@lastmile/types": "workspace:*",
         "@lastmile/validators": "workspace:*",
         "@types/cors": "^2.8.17",
@@ -71,6 +72,7 @@
         "better-auth": "^1.1.20",
         "cors": "^2.8.5",
         "dotenv": "^17.0.1",
+        "drizzle-orm": "^0.33.0",
         "express": "^4.21.1",
         "helmet": "^8.0.0",
       },
@@ -82,8 +84,8 @@
       "name": "contract",
       "version": "0.1.0",
     },
-    "apps/participant-ussd": {
-      "name": "@lastmile/participant-ussd",
+    "apps/participant-channel": {
+      "name": "@lastmile/participant-channel",
       "version": "0.1.0",
     },
     "packages/auth": {
@@ -553,7 +555,7 @@
 
     "@lastmile/db": ["@lastmile/db@workspace:packages/db"],
 
-    "@lastmile/participant-ussd": ["@lastmile/participant-ussd@workspace:apps/participant-ussd"],
+    "@lastmile/participant-channel": ["@lastmile/participant-channel@workspace:apps/participant-channel"],
 
     "@lastmile/types": ["@lastmile/types@workspace:packages/types"],
 

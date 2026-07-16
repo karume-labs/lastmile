@@ -30,7 +30,7 @@
       "@lastmile/types/offramp": ["packages/types/src/offramp.ts"],
       "@lastmile/auth/*": ["packages/auth/src/*"],
       "@lastmile/api/*": ["apps/api/src/*"],
-      "@lastmile/participant-ussd": ["apps/participant-ussd/src/index.ts"],
+      "@lastmile/participant-channel": ["apps/participant-channel/src/index.ts"],
       "@lastmile/*": ["packages/*/src/index.ts"]
     }
   }
