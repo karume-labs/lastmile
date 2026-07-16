@@ -7,7 +7,7 @@
 - **Client Components:** Do NOT use the `"use client"` directive inside any Next.js `page.tsx` file. Keep pages as Server Components and extract interactive pieces into separate client components.
 - **State Management:** Do NOT use `useState` or `useEffect` unless absolutely necessary. Instead:
   - Use **React Hook Form** for all forms.
-  - Use **TanStack Query** for all server state and data fetching.
+  - Use **TanStack Query** for all server state and data fetching. Organize data fetching into `services` folders inside each feature (e.g., `src/features/[feature-name]/services/`) and separate them into `queries.ts` (using `useQuery`) and `mutations.ts` (using `useMutation`).
   - Use **TanStack Table** for all tables.
 
 ## Styling & Theme
