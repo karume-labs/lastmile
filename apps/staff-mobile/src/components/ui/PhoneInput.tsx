@@ -5,7 +5,7 @@ interface PhoneInputProps {
   label?: string;
   error?: string;
   hint?: string;
-  value: string;
+  value: string | undefined;
   onChangeText: (text: string) => void;
   onBlur?: () => void;
   placeholder?: string;
@@ -71,7 +71,7 @@ export const PhoneInput = ({
           autoCapitalize="none"
           autoCorrect={false}
           autoComplete="tel"
-          value={value}
+          value={value ?? ""}
           onChangeText={handleChangeText}
           onBlur={onBlur}
           placeholder={placeholder}
