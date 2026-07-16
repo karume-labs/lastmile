@@ -25,7 +25,7 @@ export const ProgrammesContent: React.FC = () => {
             <Plus className="mr-2 size-4" />
             New Disbursement
           </DialogTrigger>
-          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-4xl sm:max-w-4xl md:max-w-5xl lg:max-w-275 w-[95vw] max-h-[90vh] overflow-y-auto p-6 md:p-8">
             <DialogHeader>
               <DialogTitle>New Disbursement / Beneficiary Registration</DialogTitle>
               <DialogDescription>
@@ -33,7 +33,7 @@ export const ProgrammesContent: React.FC = () => {
               </DialogDescription>
             </DialogHeader>
             <BulkUploadZone
-              className="border-0 shadow-none p-0"
+              className="border-0 shadow-none p-0 w-full max-w-none"
               onSuccess={() => setShowDisbursementDialog(false)}
             />
           </DialogContent>
