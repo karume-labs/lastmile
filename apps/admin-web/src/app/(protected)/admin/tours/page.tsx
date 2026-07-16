@@ -12,14 +12,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AdminPanelPageLayout } from "@/features/shared/components/AdminPanelPageLayout";
-import { startSystemOnboardingTour } from "@/features/tours/utils";
+import { triggerDashboardOnboardingTour } from "@/features/tours/components/DashboardOnboardingTour";
 
 const TOURS = [
   {
     id: "system-onboarding",
     title: "System Onboarding",
     description: "A quick walkthrough of the main navigation and platform capabilities.",
-    action: startSystemOnboardingTour,
+    action: () => triggerDashboardOnboardingTour(true),
   },
   {
     id: "bulk-uploads",

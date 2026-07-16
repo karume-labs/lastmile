@@ -6,7 +6,7 @@ import syncRouter from "@lastmile/api/features/sync/routers";
 import ussdSessionRouter from "@lastmile/api/features/ussd/routers";
 import { auditLogMiddleware } from "@lastmile/api/middlewares/audit-log";
 import { errorHandler } from "@lastmile/api/middlewares/error-handler";
-import { auth } from "@lastmile/auth";
+import { auth } from "@lastmile/auth/options";
 import { toNodeHandler } from "better-auth/node";
 import cors from "cors";
 import express, { type Request, type Response } from "express";
