@@ -1,12 +1,15 @@
 import crypto from "node:crypto";
 import { relayerService } from "@lastmile/api/features/relayer/services";
+import {
+  dictionary,
+  type SupportedLanguage,
+} from "@lastmile/api/features/ussd/services/dictionary";
 import { db } from "@lastmile/db/client";
 import { identities } from "@lastmile/db/schemas/identity";
 import { disbursements } from "@lastmile/db/schemas/programmes";
 import { registrations } from "@lastmile/db/schemas/registration";
 import { and, eq, inArray } from "drizzle-orm";
 import { Router } from "express";
-import { dictionary, type SupportedLanguage } from "@lastmile/api/features/ussd/services/dictionary";
 
 const router = Router();
 

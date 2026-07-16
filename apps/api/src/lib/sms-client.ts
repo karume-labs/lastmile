@@ -1,4 +1,7 @@
-import { dictionary, type SupportedLanguage } from "@lastmile/api/features/ussd/services/dictionary";
+import {
+  dictionary,
+  type SupportedLanguage,
+} from "@lastmile/api/features/ussd/services/dictionary";
 
 // Example mock SMS dispatcher
 export const sendDisbursementSms = async (

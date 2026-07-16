@@ -1,8 +1,8 @@
 import { identities } from "@lastmile/db/schemas/identity";
 import { registrations } from "@lastmile/db/schemas/registration";
+import { currencySchema, phoneNumberSchema } from "@lastmile/validators/shared";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
-import { currencySchema, phoneNumberSchema } from "@lastmile/validators/shared";
 
 // ── Base Drizzle-derived schemas ──
 
