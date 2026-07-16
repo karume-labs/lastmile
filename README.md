@@ -160,6 +160,11 @@ bun run ios:mobile
 | `bun run typecheck` | Run typecheck across all packages |
 | `bun run ui:web` | Add shadcn/ui components to admin-web |
 | `bun run ui:mobile` | Add React Native Reusables to staff-mobile |
+| `bun run mobile:doctor` | Run Expo doctor for the mobile app |
+| `bun run mobile:install:check` | Check Expo dependencies |
+| `bun run mobile:install:fix` | Fix Expo dependencies |
+| `bun run mobile:upgrade` | Upgrade Expo version |
+| `bun run reinstall` | Clean node_modules and reinstall all dependencies |
 
 ### Per-app scripts
 
