@@ -4,6 +4,7 @@ import { smsMessages } from "@lastmile/db/schemas/sms";
 import { SmsCreateRequestSchema } from "@lastmile/validators/sms";
 import { desc } from "drizzle-orm";
 import { Router } from "express";
+import { dispatchAndTrackAlert } from "../services/notifications";
 
 export const smsRouter = Router();
 
@@ -27,17 +28,9 @@ smsRouter.post("/", async (req, res) => {
 
     const { recipient, content } = result.data;
 
-    const [newMessage] = await db
-      .insert(smsMessages)
-      .values({
-        id: crypto.randomUUID(),
-        recipient,
-        content,
-        status: "pending",
-      })
-      .returning();
+    const response = await dispatchAndTrackAlert(recipient, content);
 
-    res.json({ success: true, data: newMessage });
+    res.json({ success: true, data: response });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: "Failed to create SMS message" });

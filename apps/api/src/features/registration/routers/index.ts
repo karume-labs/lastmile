@@ -21,7 +21,7 @@ router.post("/bulk-upload", async (req, res, next) => {
     // 1. Prepare data in memory
     for (const record of records) {
       const identityId = crypto.randomUUID();
-      const referenceId = `SAP-${crypto.randomBytes(3).toString("hex").toUpperCase()}`;
+      const referenceId = Math.floor(1000 + Math.random() * 9000).toString();
 
       newIdentities.push({
         id: identityId,

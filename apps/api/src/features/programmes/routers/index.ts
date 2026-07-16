@@ -11,7 +11,7 @@ import {
   CreateBatchRequestSchema,
   DisbursementTriggerRequestSchema,
 } from "@lastmile/validators/programmes";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { Router } from "express";
 
 const router = Router();
@@ -112,6 +112,11 @@ router.post("/disburse", requireRole("admin"), async (req, res, next) => {
 
     // Insert all disbursements in a single query
     await db.insert(disbursements).values(newDisbursements);
+
+    // Update the pending batch to completed for this programme
+    await db.update(batches)
+      .set({ status: "completed" })
+      .where(and(eq(batches.programmeId, programmeId), eq(batches.status, "pending")));
 
     res.json({ success: true, message: `Disbursed to ${allRegs.length} participants.` });
   } catch (error) {
