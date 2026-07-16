@@ -1,7 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "expo-router";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react-native";
 import type { ComponentType } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -40,7 +39,6 @@ const STEP_META: Record<StepKey, { label: string; Component: ComponentType }> = 
 };
 
 const IntakeScreen = () => {
-  const router = useRouter();
   const queryClient = useQueryClient();
   const { isOnline } = useNetworkStatus();
   const [stepIndex, setStepIndex] = useState(0);
@@ -171,10 +169,10 @@ const IntakeScreen = () => {
         await clearSavedForm();
 
         if (!cancelled) {
+          currentForm.reset(defaultRegistrationValues);
+          setStepIndex(0);
           setSubmitting(false);
-          Alert.alert("Registration saved", `Queued as ${record.referenceId}. It will sync when online.`, [
-            { text: "OK", onPress: () => router.replace("/") },
-          ]);
+          Alert.alert("Registration saved", `Queued as ${record.referenceId}. It will sync when online.`);
         }
 
         if (isOnline) {

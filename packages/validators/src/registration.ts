@@ -152,7 +152,6 @@ export const sanitizeInput = (input: string): string => {
 
 export const sanitizeName = (name: string): string => {
   return name
-    .trim()
     .replace(/[^a-zA-Z\s\-']/g, "") // Only allow safe characters
     .substring(0, 100);
 };
