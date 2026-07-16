@@ -17,6 +17,21 @@ export const sendDisbursementSms = async (
   console.log(`\n💬 [SMS DISPATCH to ${phoneNumber} (${lang})]:`);
   console.log(`"${message}"\n`);
 
-  // Call the actual Africa's Talking service
+  // Call the Africa's Talking service directly
+  await dispatchAlert(phoneNumber, message);
+};
+
+export const sendConfirmationSms = async (
+  phoneNumber: string,
+  amount: number,
+  referenceId: string,
+  lang: SupportedLanguage = "en",
+) => {
+  // Use the dictionary's successClaim message
+  const message = `${dictionary[lang].successClaim} Ref: ${referenceId}. Amount: ${amount}`;
+
+  console.log(`\n💬 [SMS DISPATCH (CONFIRMATION) to ${phoneNumber} (${lang})]:`);
+  console.log(`"${message}"\n`);
+
   await dispatchAlert(phoneNumber, message);
 };

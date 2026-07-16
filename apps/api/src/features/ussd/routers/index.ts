@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { kotaniPaySimulation } from "@lastmile/api/features/offramp/services";
+import { sendConfirmationSms } from "@lastmile/api/lib/sms-client";
 import { relayerService } from "@lastmile/api/features/relayer/services";
 import {
   dictionary,
@@ -168,6 +169,9 @@ router.post("/session", async (req, res, next) => {
                   .set({ status: "claimed" })
                   .where(eq(disbursements.id, record.disbursementId));
                   
+                // Send confirmation SMS
+                await sendConfirmationSms(phoneNumber, record.amount, enteredRef, lang).catch(console.error);
+
                 response_msg = `END ${dictionary[lang].successClaim}`;
               } else {
                 response_msg = `END Failed to process payout: ${offrampRes.error}`;

@@ -1,4 +1,8 @@
+import crypto from "node:crypto";
 import AfricasTalking from "africastalking";
+import { db } from "@lastmile/db/client";
+import { smsMessages } from "@lastmile/db/schemas/sms";
+import { eq } from "drizzle-orm";
 
 interface AfricasTalkingSMSResponse {
   SMSMessageData: {
@@ -61,6 +65,33 @@ export async function dispatchAlert(
   }
 }
 
+/**
+ * Sends a raw SMS to a single phone number and tracks it in the database.
+ */
+export async function dispatchAndTrackAlert(
+  phoneNumber: string,
+  message: string,
+): Promise<AfricasTalkingSMSResponse | null> {
+  const messageId = crypto.randomUUID();
+  
+  // Create pending record
+  await db.insert(smsMessages).values({
+    id: messageId,
+    recipient: phoneNumber,
+    content: message,
+    status: "pending",
+  });
+
+  const response = await dispatchAlert(phoneNumber, message);
+  
+  // Update status based on response
+  await db.update(smsMessages)
+    .set({ status: response ? "sent" : "failed" })
+    .where(eq(smsMessages.id, messageId));
+    
+  return response;
+}
+
 // --- Domain-specific helper ---
 
 export interface OtpNotificationPayload {
@@ -94,5 +125,5 @@ export async function sendOtpAlert(
 
   const message = otpSmsDictionary[preferredLanguage](refId, otp);
 
-  return dispatchAlert(phoneNumber, message);
+  return dispatchAndTrackAlert(phoneNumber, message);
 }
