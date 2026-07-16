@@ -36,24 +36,22 @@ dashboardRouter.get("/metrics", async (_req: Request, res: Response, next) => {
       }));
 
     res.json({
-      data: {
-        totalDisbursed: totalDisbursed || 4500000,
-        activeDeliveries: activeDeliveries || 45,
-        stagnantFunds: stagnantFundsCount || 3,
-        activeProxies: activeProxiesCount || 12,
-        recentActivity: recentActivity.length
-          ? recentActivity
-          : [
-              { id: "act-1", description: "Disbursed 50 USDC to Wanjiku Kamau", time: "2 hours ago" },
-              { id: "act-2", description: "Disbursed 50 USDC to Otieno Juma", time: "5 hours ago" },
-            ],
-        pendingSyncs: pendingSyncs.length
-          ? pendingSyncs
-          : [
-              { id: "sync-1", participantName: "Fatuma Ali", status: "Pending Delivery" },
-              { id: "sync-2", participantName: "John Kimani", status: "Stagnant" },
-            ],
-      },
+      totalDisbursed: totalDisbursed || 4500000,
+      activeDeliveries: activeDeliveries || 45,
+      stagnantFunds: stagnantFundsCount || 3,
+      activeProxies: activeProxiesCount || 12,
+      recentActivity: recentActivity.length
+        ? recentActivity
+        : [
+            { id: "act-1", description: "Disbursed 50 USDC to Wanjiku Kamau", time: "2 hours ago" },
+            { id: "act-2", description: "Disbursed 50 USDC to Otieno Juma", time: "5 hours ago" },
+          ],
+      pendingSyncs: pendingSyncs.length
+        ? pendingSyncs
+        : [
+            { id: "sync-1", participantName: "Fatuma Ali", status: "Pending Delivery" },
+            { id: "sync-2", participantName: "John Kimani", status: "Stagnant" },
+          ],
     });
   } catch (error) {
     next(error);
