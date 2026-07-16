@@ -23,7 +23,6 @@ enum SyncStatus {
 
 enum DisbursementStatus {
   PENDING
-  COMPLETED
   CLAIMED
   EXPIRED
   CLAWED_BACK
