@@ -12,31 +12,40 @@ router.post("/bulk-upload", async (req, res, next) => {
   try {
     const records = BulkUploadRequestSchema.parse(req.body);
 
+    const newIdentities: (typeof identities.$inferInsert)[] = [];
+    const newRegistrations: (typeof registrations.$inferInsert)[] = [];
     const createdIds: string[] = [];
 
-    // Using transaction for safe bulk insert
-    await db.transaction(async (tx) => {
-      for (const record of records) {
-        const identityId = crypto.randomUUID();
-        const referenceId = `SAP-${crypto.randomBytes(3).toString("hex").toUpperCase()}`;
+    // 1. Prepare data in memory
+    for (const record of records) {
+      const identityId = crypto.randomUUID();
+      const referenceId = `SAP-${crypto.randomBytes(3).toString("hex").toUpperCase()}`;
 
-        await tx.insert(identities).values({
-          id: identityId,
-          fullName: record.fullName,
-        });
+      newIdentities.push({
+        id: identityId,
+        fullName: record.fullName,
+        phoneNumber: record.phoneNumber,
+      });
 
-        await tx.insert(registrations).values({
-          id: crypto.randomUUID(),
-          referenceId,
-          identityId,
-          phoneNumber: record.phoneNumber,
-          currency: record.currency,
-          isProxy: record.isProxy,
-        });
+      newRegistrations.push({
+        id: crypto.randomUUID(),
+        referenceId,
+        identityId,
+        currency: record.currency,
+        preferredLanguage: record.preferredLanguage,
+        isProxy: record.isProxy,
+      });
 
-        createdIds.push(referenceId);
-      }
-    });
+      createdIds.push(referenceId);
+    }
+
+    // 2. Execute exactly 2 queries inside the transaction
+    if (newIdentities.length > 0 && newRegistrations.length > 0) {
+      await db.transaction(async (tx) => {
+        await tx.insert(identities).values(newIdentities);
+        await tx.insert(registrations).values(newRegistrations);
+      });
+    }
 
     res.json({
       success: true,

@@ -1,4 +1,5 @@
 import { db } from "@lastmile/db/client";
+import { identities } from "@lastmile/db/schemas/identity";
 import { registrations } from "@lastmile/db/schemas/registration";
 import { eq } from "drizzle-orm";
 import { Router } from "express";
@@ -57,7 +58,8 @@ router.post("/session", async (req, res, next) => {
     const userReg = await db
       .select({ preferredLanguage: registrations.preferredLanguage })
       .from(registrations)
-      .where(eq(registrations.phoneNumber, phoneNumber))
+      .innerJoin(identities, eq(registrations.identityId, identities.id))
+      .where(eq(identities.phoneNumber, phoneNumber))
       .limit(1);
 
     if (userReg && userReg.length > 0) {

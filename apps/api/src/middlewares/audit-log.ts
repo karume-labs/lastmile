@@ -2,27 +2,32 @@ import { db } from "@lastmile/db/client";
 import { auditLogs } from "@lastmile/db/schemas/audit";
 import type { NextFunction, Request, Response } from "express";
 
+const sanitizeBody = (url: string, body: unknown) => {
+  if (url.includes("/bulk-upload") && Array.isArray(body)) {
+    return { note: `Bulk upload of ${body.length} records. PII redacted for security.` };
+  }
+  return body;
+};
+
 export const auditLogMiddleware = (req: Request, res: Response, next: NextFunction) => {
   // Only log modifying requests
   if (["POST", "PUT", "PATCH", "DELETE"].includes(req.method)) {
     // Intercept response finish to ensure it was successful before logging (or log regardless)
     res.on("finish", () => {
       if (res.statusCode >= 200 && res.statusCode < 300) {
-        const userId = req.user?.id || "anonymous";
+        const actor = req.user?.id || "anonymous";
         const action = `${req.method} ${req.originalUrl}`;
-        const entityType = req.originalUrl.split("/")[2] || "unknown"; // simplistic extraction from /api/:entity/...
-        const entityId = req.params.id || "unknown"; // if available
+        const target = req.originalUrl.split("/")[2] || "unknown"; // simplistic extraction from /api/:entity/...
 
         // Fire and forget audit log insertion
         db.insert(auditLogs)
           .values({
             id: crypto.randomUUID(),
-            userId,
+            actor,
             action,
-            entityType,
-            entityId,
+            target,
             metadata: JSON.stringify({
-              body: req.body,
+              body: sanitizeBody(req.originalUrl, req.body),
               query: req.query,
               ip: req.ip,
             }),

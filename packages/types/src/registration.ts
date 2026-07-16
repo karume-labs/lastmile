@@ -1,11 +1,9 @@
 import type {
+  BulkUploadRowSchema,
   IdentityInsertSchema,
   IdentitySelectSchema,
-  OfflineRegistrationFormSchema,
   RegistrationInsertSchema,
   RegistrationSelectSchema,
-  SyncPushRecordSchema,
-  SyncPushRequestSchema,
 } from "@lastmile/validators/registration";
 import type { z } from "zod";
 
@@ -19,15 +17,4 @@ export type InsertRegistration = z.infer<typeof RegistrationInsertSchema>;
 
 // ── Form Payloads ──
 
-export type OfflineRegistrationForm = z.infer<typeof OfflineRegistrationFormSchema>;
-
-// ── API Request / Response ──
-
-export type SyncPushRecord = z.infer<typeof SyncPushRecordSchema>;
-export type SyncPushRequest = z.infer<typeof SyncPushRequestSchema>;
-
-export type SyncPushResponse = {
-  success: boolean;
-  syncedCount: number;
-  failedRecords: string[];
-};
+export type BulkUploadRow = z.infer<typeof BulkUploadRowSchema>;
