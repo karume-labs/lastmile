@@ -3,10 +3,20 @@
 import type { Programme } from "@lastmile/types/programmes";
 import type { ColumnDef } from "@tanstack/react-table";
 import { parseAsString, useQueryState } from "nuqs";
+import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -29,6 +39,7 @@ const STATUS_STYLES: Record<string, string> = {
 };
 
 export const ProgrammeGrid = () => {
+  const [disburseConfirmTarget, setDisburseConfirmTarget] = useState<Programme | null>(null);
   const { search, setSearch, clearFilters } = useDataTablePagination();
 
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
@@ -110,10 +121,7 @@ export const ProgrammeGrid = () => {
               {
                 label: "Disburse Batch",
                 onClick: () => {
-                  if (confirm(`Are you sure you want to disburse to all participants in ${record.name}?`)) {
-                    // For demo purposes, we will default amountUsdc to 10
-                    disburseMutation.mutate({ programmeId: record.id, amountUsdc: 10 });
-                  }
+                  setDisburseConfirmTarget(record);
                 },
               },
               {
@@ -152,47 +160,88 @@ export const ProgrammeGrid = () => {
   });
 
   return (
-    <DataTable
-      columns={columns}
-      data={filteredData}
-      toolbar={
-        <DataToolbar
-          gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
-          searchKey="name"
-          searchValue={search}
-          onSearchChange={setSearch}
-          searchPlaceholder="Search programmes..."
-          onClear={handleClearFilters}
-          filters={
-            <>
-              <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="Active">Active</SelectItem>
-                  <SelectItem value="Draft">Draft</SelectItem>
-                  <SelectItem value="Completed">Completed</SelectItem>
-                </SelectContent>
-              </Select>
+    <>
+      <DataTable
+        columns={columns}
+        data={filteredData}
+        toolbar={
+          <DataToolbar
+            gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+            searchKey="name"
+            searchValue={search}
+            onSearchChange={setSearch}
+            searchPlaceholder="Search programmes..."
+            onClear={handleClearFilters}
+            filters={
+              <>
+                <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Draft">Draft</SelectItem>
+                    <SelectItem value="Completed">Completed</SelectItem>
+                  </SelectContent>
+                </Select>
 
-              <Select value={audienceFilter} onValueChange={(val) => setAudienceFilter(val)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Audience" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Audiences</SelectItem>
-                  <SelectItem value="Families">Families</SelectItem>
-                  <SelectItem value="Homeless">Homeless</SelectItem>
-                  <SelectItem value="Children">Children</SelectItem>
-                </SelectContent>
-              </Select>
-            </>
-          }
-        />
-      }
-      emptyMessage="No programmes found."
-    />
+                <Select value={audienceFilter} onValueChange={(val) => setAudienceFilter(val)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Audience" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Audiences</SelectItem>
+                    <SelectItem value="Families">Families</SelectItem>
+                    <SelectItem value="Homeless">Homeless</SelectItem>
+                    <SelectItem value="Children">Children</SelectItem>
+                  </SelectContent>
+                </Select>
+              </>
+            }
+          />
+        }
+        emptyMessage="No programmes found."
+      />
+
+      <Dialog
+        open={!!disburseConfirmTarget}
+        onOpenChange={(open) => !open && setDisburseConfirmTarget(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Disbursement Batch</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to disburse to all participants in{" "}
+              <strong className="text-foreground">{disburseConfirmTarget?.name}</strong>?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setDisburseConfirmTarget(null)}
+              disabled={disburseMutation.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                if (disburseConfirmTarget) {
+                  disburseMutation.mutate(
+                    { programmeId: disburseConfirmTarget.id, amountUsdc: 10 },
+                    {
+                      onSuccess: () => setDisburseConfirmTarget(null),
+                    },
+                  );
+                }
+              }}
+              disabled={disburseMutation.isPending}
+            >
+              {disburseMutation.isPending ? "Disbursing..." : "Confirm Disbursement"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };

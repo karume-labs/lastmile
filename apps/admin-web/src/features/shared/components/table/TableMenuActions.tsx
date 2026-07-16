@@ -14,6 +14,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -21,11 +29,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface TableMenuAction {
+export interface TableMenuAction {
   label: string;
   icon?: React.ReactNode;
   onClick: () => void;
   destructive?: boolean;
+  requiresConfirm?: boolean;
+  confirmTitle?: string;
+  confirmDescription?: string;
 }
 
 interface TableMenuActionsProps {
@@ -34,6 +45,7 @@ interface TableMenuActionsProps {
 
 export const TableMenuActions = ({ actions }: TableMenuActionsProps) => {
   const [alertAction, setAlertAction] = useState<TableMenuAction | null>(null);
+  const [confirmAction, setConfirmAction] = useState<TableMenuAction | null>(null);
 
   return (
     <>
@@ -51,6 +63,8 @@ export const TableMenuActions = ({ actions }: TableMenuActionsProps) => {
                   e.stopPropagation();
                   if (action.destructive) {
                     setAlertAction(action);
+                  } else if (action.requiresConfirm) {
+                    setConfirmAction(action);
                   } else {
                     action.onClick();
                   }
@@ -68,10 +82,14 @@ export const TableMenuActions = ({ actions }: TableMenuActionsProps) => {
       <AlertDialog open={!!alertAction} onOpenChange={(open) => !open && setAlertAction(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogTitle>{alertAction?.confirmTitle || "Are you absolutely sure?"}</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. You are about to perform a destructive action:{" "}
-              <strong>{alertAction?.label}</strong>.
+              {alertAction?.confirmDescription || (
+                <>
+                  This action cannot be undone. You are about to perform a destructive action:{" "}
+                  <strong>{alertAction?.label}</strong>.
+                </>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -88,6 +106,30 @@ export const TableMenuActions = ({ actions }: TableMenuActionsProps) => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={!!confirmAction} onOpenChange={(open) => !open && setConfirmAction(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{confirmAction?.confirmTitle || `Confirm ${confirmAction?.label}`}</DialogTitle>
+            <DialogDescription>
+              {confirmAction?.confirmDescription || `Are you sure you want to perform: ${confirmAction?.label}?`}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmAction(null)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                confirmAction?.onClick();
+                setConfirmAction(null);
+              }}
+            >
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
