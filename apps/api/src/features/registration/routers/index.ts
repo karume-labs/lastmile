@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { db } from "@lastmile/db/client";
 import { identities } from "@lastmile/db/schemas/identity";
+import { programmes } from "@lastmile/db/schemas/programmes";
 import { registrations } from "@lastmile/db/schemas/registration";
 import { BulkUploadRequestSchema } from "@lastmile/validators/registration";
 import { Router } from "express";
@@ -10,11 +11,12 @@ const router = Router();
 
 router.post("/bulk-upload", async (req, res, next) => {
   try {
-    const records = BulkUploadRequestSchema.parse(req.body);
+    const { programmeTitle, targetCurrency, baseAmount, records } = BulkUploadRequestSchema.parse(req.body);
 
     const newIdentities: (typeof identities.$inferInsert)[] = [];
     const newRegistrations: (typeof registrations.$inferInsert)[] = [];
     const createdIds: string[] = [];
+    const programmeId = crypto.randomUUID();
 
     // 1. Prepare data in memory
     for (const record of records) {
@@ -31,6 +33,7 @@ router.post("/bulk-upload", async (req, res, next) => {
         id: crypto.randomUUID(),
         referenceId,
         identityId,
+        programmeId,
         currency: record.currency,
         preferredLanguage: record.preferredLanguage,
         isProxy: record.isProxy,
@@ -39,13 +42,22 @@ router.post("/bulk-upload", async (req, res, next) => {
       createdIds.push(referenceId);
     }
 
-    // 2. Execute exactly 2 queries inside the transaction
-    if (newIdentities.length > 0 && newRegistrations.length > 0) {
-      await db.transaction(async (tx) => {
+    // 2. Execute queries inside the transaction
+    await db.transaction(async (tx) => {
+      // Insert the programme
+      await tx.insert(programmes).values({
+        id: programmeId,
+        name: programmeTitle,
+        targetCurrency: targetCurrency,
+        budget: baseAmount * records.length, // Rough budget based on baseAmount * participants
+        status: "Active",
+      });
+
+      if (newIdentities.length > 0 && newRegistrations.length > 0) {
         await tx.insert(identities).values(newIdentities);
         await tx.insert(registrations).values(newRegistrations);
-      });
-    }
+      }
+    });
 
     res.json({
       success: true,

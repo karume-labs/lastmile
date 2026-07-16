@@ -10,6 +10,8 @@ import * as XLSX from "xlsx";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dropzone } from "@/components/ui/dropzone";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Table,
   TableBody,
@@ -30,9 +32,17 @@ export interface BeneficiaryRow {
 
 export const BulkUploadZone = () => {
   const [data, setData] = useState<BeneficiaryRow[]>([]);
+  const [programmeTitle, setProgrammeTitle] = useState("");
+  const [targetCurrency, setTargetCurrency] = useState("USDC");
+  const [baseAmount, setBaseAmount] = useState(10);
 
   const mutation = useMutation({
-    mutationFn: async (payload: BeneficiaryRow[]) => {
+    mutationFn: async (payload: {
+      programmeTitle: string;
+      targetCurrency: string;
+      baseAmount: number;
+      records: BeneficiaryRow[];
+    }) => {
       const response = await axios.post("/api/registration/bulk-upload", payload);
       return response.data;
     },
@@ -116,6 +126,37 @@ export const BulkUploadZone = () => {
         <CardTitle>Bulk Upload Beneficiaries</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="programmeTitle">Programme Title</Label>
+            <Input
+              id="programmeTitle"
+              placeholder="e.g. Kenya Relief Q3"
+              value={programmeTitle}
+              onChange={(e) => setProgrammeTitle(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="targetCurrency">Target Currency</Label>
+            <Input
+              id="targetCurrency"
+              placeholder="e.g. USDC"
+              value={targetCurrency}
+              onChange={(e) => setTargetCurrency(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="baseAmount">Base Amount (USDC)</Label>
+            <Input
+              id="baseAmount"
+              type="number"
+              placeholder="10"
+              value={baseAmount}
+              onChange={(e) => setBaseAmount(Number(e.target.value))}
+            />
+          </div>
+        </div>
+
         <Dropzone
           options={{
             onDrop: handleDrop,
@@ -134,7 +175,10 @@ export const BulkUploadZone = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Preview ({data.length} rows)</h3>
-              <Button onClick={() => mutation.mutate(data)} disabled={mutation.isPending}>
+              <Button 
+                onClick={() => mutation.mutate({ programmeTitle, targetCurrency, baseAmount, records: data })} 
+                disabled={mutation.isPending || !programmeTitle}
+              >
                 {mutation.isPending ? "Submitting..." : "Submit Batch"}
               </Button>
             </div>

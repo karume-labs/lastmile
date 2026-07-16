@@ -57,43 +57,63 @@ router.post("/batches", async (req, res, next) => {
   }
 });
 
-// Trigger a single disbursement (Usually called in a loop for a batch)
+// Trigger a single batch disbursement for a programme
 router.post("/disburse", requireRole("admin"), async (req, res, next) => {
   try {
-    const { referenceId, amountUsdc } = DisbursementTriggerRequestSchema.parse(req.body);
+    const { programmeId, amountUsdc } = DisbursementTriggerRequestSchema.parse(req.body);
 
-    const otp = generateOtp();
-    // In production, hash this using argon2 or bcrypt before storing
-    const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+    const prog = await db.select().from(programmes).where(eq(programmes.id, programmeId)).limit(1);
+    if (!prog || prog.length === 0) {
+      res.status(404).json({ success: false, error: "Programme not found" });
+      return;
+    }
+    const programmeName = prog[0].name;
 
-    await db.insert(disbursements).values({
-      id: crypto.randomUUID(),
-      referenceId,
-      amount: amountUsdc,
-      status: "pending",
-      otpHash,
-    });
-
-    const userReg = await db
+    const allRegs = await db
       .select({
+        referenceId: registrations.referenceId,
         phoneNumber: identities.phoneNumber,
         preferredLanguage: registrations.preferredLanguage,
+        participantName: identities.fullName,
       })
       .from(registrations)
       .innerJoin(identities, eq(registrations.identityId, identities.id))
-      .where(eq(registrations.referenceId, referenceId))
-      .limit(1);
+      .where(eq(registrations.programmeId, programmeId));
 
-    if (userReg && userReg.length > 0) {
-      const { phoneNumber, preferredLanguage } = userReg[0];
-      const lang =
-        preferredLanguage === "en" || preferredLanguage === "sw" || preferredLanguage === "tu"
-          ? preferredLanguage
-          : "en";
-      await sendDisbursementSms(phoneNumber, referenceId, otp, lang);
+    if (allRegs.length === 0) {
+      res.status(400).json({ success: false, error: "No registrations found for this programme" });
+      return;
     }
 
-    res.json({ success: true, message: "Disbursement queued and OTP generated." });
+    const newDisbursements: (typeof disbursements.$inferInsert)[] = [];
+    
+    for (const reg of allRegs) {
+      const otp = generateOtp();
+      // In production, hash this using argon2 or bcrypt before storing
+      const otpHash = crypto.createHash("sha256").update(otp).digest("hex");
+
+      newDisbursements.push({
+        id: crypto.randomUUID(),
+        referenceId: reg.referenceId,
+        participantName: reg.participantName,
+        programmeName,
+        amount: amountUsdc,
+        status: "pending",
+        otpHash,
+      });
+
+      // Send SMS asynchronously (fire and forget to not block)
+      const lang =
+        reg.preferredLanguage === "en" || reg.preferredLanguage === "sw" || reg.preferredLanguage === "tu"
+          ? reg.preferredLanguage
+          : "en";
+      sendDisbursementSms(reg.phoneNumber, reg.referenceId, otp, lang).catch(console.error);
+    }
+
+    // Insert all disbursements in a single query
+    await db.insert(disbursements).values(newDisbursements);
+
+    res.json({ success: true, message: `Disbursed to ${allRegs.length} participants.` });
   } catch (error) {
     next(error);
   }

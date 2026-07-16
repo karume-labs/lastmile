@@ -10,6 +10,7 @@ export const registrations = sqliteTable(
     identityId: text("identity_id")
       .notNull()
       .references(() => identities.id),
+    programmeId: text("programme_id").notNull(),
     currency: text("currency").notNull(),
     preferredLanguage: text("preferred_language", { enum: ["en", "sw", "tu"] })
       .default("en")

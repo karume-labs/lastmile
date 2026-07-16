@@ -21,9 +21,14 @@ export const BulkUploadRowSchema = z.object({
   isProxy: z.boolean(),
 });
 
-export const BulkUploadRequestSchema = z
-  .array(BulkUploadRowSchema)
-  .min(1, "The uploaded file must contain at least one row.")
-  .max(5000, "You can only upload up to 5000 rows at once.");
+export const BulkUploadRequestSchema = z.object({
+  programmeTitle: z.string().min(1, "Programme Title is required"),
+  targetCurrency: z.string().min(1, "Target Currency is required"),
+  baseAmount: z.number().positive("Base amount must be positive"),
+  records: z
+    .array(BulkUploadRowSchema)
+    .min(1, "The uploaded file must contain at least one row.")
+    .max(5000, "You can only upload up to 5000 rows at once."),
+});
 
 export * from "@lastmile/validators/sync";

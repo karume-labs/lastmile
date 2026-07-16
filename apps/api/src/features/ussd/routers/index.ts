@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { kotaniPaySimulation } from "@lastmile/api/features/offramp/services";
 import { relayerService } from "@lastmile/api/features/relayer/services";
 import {
   dictionary,
@@ -156,9 +157,21 @@ router.post("/session", async (req, res, next) => {
               console.log(
                 `DEBUG PAYOUT: Authorized KES ${record.amount} for reference ${enteredRef} to ${phoneNumber}`,
               );
+              // Wait for Soroban
               await relayerService.unlockFunds(enteredRef);
 
-              response_msg = `END ${dictionary[lang].successClaim}`;
+              // Wait for Kotani Pay offramp
+              const offrampRes = await kotaniPaySimulation.processPayout(phoneNumber, record.amount, enteredRef);
+              if (offrampRes.success) {
+                // Update disbursement status to claimed
+                await db.update(disbursements)
+                  .set({ status: "claimed" })
+                  .where(eq(disbursements.id, record.disbursementId));
+                  
+                response_msg = `END ${dictionary[lang].successClaim}`;
+              } else {
+                response_msg = `END Failed to process payout: ${offrampRes.error}`;
+              }
             } else {
               response_msg = `END ${dictionary[lang].invalidOtp}`;
             }

@@ -18,7 +18,7 @@ export const BatchSelectSchema = createSelectSchema(batches);
 // for a given registration reference.
 
 export const DisbursementTriggerRequestSchema = z.object({
-  referenceId: z.string().min(1),
+  programmeId: z.string().min(1),
   amountUsdc: z.number().positive().max(10_000),
 });
 

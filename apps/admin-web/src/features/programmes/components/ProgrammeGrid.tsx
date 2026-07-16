@@ -3,6 +3,9 @@
 import type { Programme } from "@lastmile/types/programmes";
 import type { ColumnDef } from "@tanstack/react-table";
 import { parseAsString, useQueryState } from "nuqs";
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -41,6 +44,19 @@ export const ProgrammeGrid = () => {
     setStatusFilter("");
     setAudienceFilter("");
   };
+
+  const disburseMutation = useMutation({
+    mutationFn: async (payload: { programmeId: string; amountUsdc: number }) => {
+      const response = await axios.post("/api/programmes/disburse", payload);
+      return response.data;
+    },
+    onSuccess: (res) => {
+      toast.success(res.message || "Disbursement initiated");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.error || "Failed to disburse");
+    },
+  });
 
   const columns: ColumnDef<Programme, unknown>[] = [
     {
@@ -89,6 +105,15 @@ export const ProgrammeGrid = () => {
               {
                 label: "Edit Programme",
                 onClick: () => {},
+              },
+              {
+                label: "Disburse Batch",
+                onClick: () => {
+                  if (confirm(`Are you sure you want to disburse to all participants in ${record.name}?`)) {
+                    // For demo purposes, we will default amountUsdc to 10
+                    disburseMutation.mutate({ programmeId: record.id, amountUsdc: 10 });
+                  }
+                },
               },
               {
                 label: record.status === "Active" ? "Pause" : "Resume",
