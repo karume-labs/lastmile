@@ -52,7 +52,7 @@ router.get("/stagnant-funds", authenticate, async (_req, res, next) => {
  */
 router.post("/clawback/execute", authenticate, async (req, res, next) => {
   try {
-    const { paymentId } = req.body;
+    const { paymentId: _paymentId } = req.body;
 
     // TODO: 1. Look up the disbursement by paymentId
     // TODO: 2. Verify status is 'stagnant'

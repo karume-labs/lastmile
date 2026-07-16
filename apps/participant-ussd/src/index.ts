@@ -39,7 +39,8 @@ const STRINGS = {
     enter_otp: "CON Enter the active Transaction OTP sent to your phone:",
     select_user: "CON Multiple users found on this phone. Select your name:\n",
     confirm_payout: "CON Withdraw {amount} KES to phone {phone}?\n1. Confirm\n2. Cancel",
-    authorized: "END Payout of {amount} KES authorized! Funds are being sent to your mobile wallet.",
+    authorized:
+      "END Payout of {amount} KES authorized! Funds are being sent to your mobile wallet.",
     cancelled: "END Transaction cancelled.",
     err_ref: "END Error: Reference ID not found.",
     err_otp: "END Error: Invalid Verification OTP.",
@@ -51,7 +52,8 @@ const STRINGS = {
     enter_otp: "CON Weka nambari ya siri (OTP) uliyotumiwa kwa SMS:",
     select_user: "CON Chagua jina lako kwenye orodha:\n",
     confirm_payout: "CON Kubali kutoa KES {amount} kwenda nambari {phone}?\n1. Kubali\n2. Ghairi",
-    authorized: "END Malipo ya KES {amount} yamekubaliwa! Fedha zinatumwa kwenye simu yako hivi punde.",
+    authorized:
+      "END Malipo ya KES {amount} yamekubaliwa! Fedha zinatumwa kwenye simu yako hivi punde.",
     cancelled: "END Shughuli imenghairiwa.",
     err_ref: "END Makosa: Nambari ya Ushahidi haipatikani.",
     err_otp: "END Makosa: Nambari ya siri (OTP) sio sawa.",
@@ -84,9 +86,7 @@ export function handleUSSDRequest({ phoneNumber, text }: ussdParams): string {
 
   // Filter matching accounts (replaces dict comprehension)
   const matching_accounts = Object.fromEntries(
-    Object.entries(MOCK_BENEFICIARIES).filter(
-      ([_, v]) => v.phone === phoneNumber,
-    ),
+    Object.entries(MOCK_BENEFICIARIES).filter(([_, v]) => v.phone === phoneNumber),
   );
   const matching_keys = Object.keys(matching_accounts);
   const matching_len = matching_keys.length;
@@ -128,11 +128,7 @@ export function handleUSSDRequest({ phoneNumber, text }: ussdParams): string {
       }
     } else {
       const selectedIndex = parseInt(userInput, 10) - 1;
-      if (
-        !isNaN(selectedIndex) &&
-        selectedIndex >= 0 &&
-        selectedIndex < matching_len
-      ) {
+      if (!Number.isNaN(selectedIndex) && selectedIndex >= 0 && selectedIndex < matching_len) {
         response_msg = STRINGS[lang].enter_otp;
       } else {
         response_msg = STRINGS[lang].invalid_opt;
@@ -164,11 +160,7 @@ export function handleUSSDRequest({ phoneNumber, text }: ussdParams): string {
       }
     } else {
       const selectedIndex = parseInt(text_parts[1], 10) - 1;
-      if (
-        !isNaN(selectedIndex) &&
-        selectedIndex >= 0 &&
-        selectedIndex < matching_len
-      ) {
+      if (!Number.isNaN(selectedIndex) && selectedIndex >= 0 && selectedIndex < matching_len) {
         const refId = matching_keys[selectedIndex];
         const record = MOCK_BENEFICIARIES[refId];
         if (record.otp === userInput) {
@@ -191,20 +183,14 @@ export function handleUSSDRequest({ phoneNumber, text }: ussdParams): string {
       refId = text_parts[1].toUpperCase();
     } else {
       const selectedIndex = parseInt(text_parts[1], 10) - 1;
-      if (
-        !isNaN(selectedIndex) &&
-        selectedIndex >= 0 &&
-        selectedIndex < matching_len
-      ) {
+      if (!Number.isNaN(selectedIndex) && selectedIndex >= 0 && selectedIndex < matching_len) {
         refId = matching_keys[selectedIndex];
       }
     }
 
     const record = refId ? MOCK_BENEFICIARIES[refId] : null;
     if (userInput === "1" && record) {
-      console.log(
-        `DEBUG PAYOUT: Sending KES ${record.amount} to ${phoneNumber}...`,
-      );
+      console.log(`DEBUG PAYOUT: Sending KES ${record.amount} to ${phoneNumber}...`);
       response_msg = formatString(STRINGS[lang].authorized, {
         amount: record.amount,
       });

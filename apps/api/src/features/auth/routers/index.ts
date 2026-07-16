@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import { z } from 'zod';
-import { authenticate } from '../../../middlewares/authenticate';
-import { validate } from '../../../middlewares/validate';
-import { authService } from '../services';
+import { Router } from "express";
+import { z } from "zod";
+import { authenticate } from "../../../middlewares/authenticate";
+import { validate } from "../../../middlewares/validate";
+import { authService } from "../services";
 
 const router = Router();
 
@@ -10,21 +10,21 @@ const registerSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
   name: z.string().min(2),
-  role: z.enum(['ADMIN', 'REGISTRAR'])
+  role: z.enum(["ADMIN", "REGISTRAR"]),
 });
 
 const loginSchema = z.object({
   email: z.string().email(),
-  password: z.string()
+  password: z.string(),
 });
 
-router.post('/register', validate(registerSchema), async (req, res, next) => {
+router.post("/register", validate(registerSchema), async (req, res, next) => {
   try {
     const result = await authService.register(
       req.body.email,
       req.body.password,
       req.body.name,
-      req.body.role
+      req.body.role,
     );
     res.status(201).json(result);
   } catch (error) {
@@ -32,14 +32,14 @@ router.post('/register', validate(registerSchema), async (req, res, next) => {
   }
 });
 
-router.post('/sign-in', validate(loginSchema), async (req, res, next) => {
+router.post("/sign-in", validate(loginSchema), async (req, res, next) => {
   try {
     const result = await authService.login(req.body.email, req.body.password);
-    res.cookie('lm_auth_token', result.token, {
+    res.cookie("lm_auth_token", result.token, {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      path: '/',
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
     });
     res.json(result);
   } catch (error) {
@@ -47,19 +47,19 @@ router.post('/sign-in', validate(loginSchema), async (req, res, next) => {
   }
 });
 
-router.post('/sign-out', async (_req, res) => {
-  res.clearCookie('lm_auth_token', { path: '/' });
+router.post("/sign-out", async (_req, res) => {
+  res.clearCookie("lm_auth_token", { path: "/" });
   res.json({ success: true });
 });
 
-router.post('/login', validate(loginSchema), async (req, res, next) => {
+router.post("/login", validate(loginSchema), async (req, res, next) => {
   try {
     const result = await authService.login(req.body.email, req.body.password);
-    res.cookie('lm_auth_token', result.token, {
+    res.cookie("lm_auth_token", result.token, {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      path: '/',
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
     });
     res.json(result);
   } catch (error) {
@@ -67,7 +67,7 @@ router.post('/login', validate(loginSchema), async (req, res, next) => {
   }
 });
 
-router.get('/profile', authenticate, async (req, res, next) => {
+router.get("/profile", authenticate, async (req, res, next) => {
   try {
     const user = req.user as NonNullable<typeof req.user>;
     const result = await authService.getProfile(user.id);

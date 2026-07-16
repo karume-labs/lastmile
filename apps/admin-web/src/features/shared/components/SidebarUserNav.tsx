@@ -28,7 +28,10 @@ export const SidebarUserNav = () => {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <button type="submit" className="flex w-full cursor-pointer items-center gap-2 rounded-md p-2 transition-colors hover:bg-muted group-data-[collapsible=icon]:justify-center" />
+          <button
+            type="submit"
+            className="flex w-full cursor-pointer items-center gap-2 rounded-md p-2 transition-colors hover:bg-muted group-data-[collapsible=icon]:justify-center"
+          />
         }
       >
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted shrink-0 overflow-hidden">

@@ -9,7 +9,7 @@
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
     "baseUrl": ".",
-    "types": ["node"],                   
+    "types": ["node"],
     "paths": {
       "@lastmile/db/*": ["packages/db/src/*"],
       "@lastmile/db/schemas/auth": ["packages/db/src/auth/schema/index.ts"],

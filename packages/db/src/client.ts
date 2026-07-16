@@ -1,10 +1,10 @@
+import { env } from "./env";
+import * as auth from "./auth/schema/index";
+import * as identity from "./identity/schema/index";
+import * as programmes from "./programmes/schema/index";
+import * as registration from "./registration/schema/index";
 import { createClient } from "@libsql/client";
 import { drizzle } from "drizzle-orm/libsql";
-import { env } from "@lastmile/db/env";
-import * as auth from "@lastmile/db/auth/schema";
-import * as identity from "@lastmile/db/identity/schema";
-import * as registration from "@lastmile/db/registration/schema";
-import * as programmes from "@lastmile/db/programmes/schema";
 
 const schema = {
   ...auth,

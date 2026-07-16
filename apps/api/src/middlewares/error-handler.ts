@@ -1,11 +1,11 @@
 // src/middlewares/error-handler.ts
-import { Request, Response, NextFunction } from 'express';
+import type { NextFunction, Request, Response } from "express";
 
-export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+export const errorHandler = (err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   console.error(err);
 
-  const status = err.status || 500;
-  const message = err.message || 'Internal Server Error';
+  const status = (err as { status?: number }).status || 500;
+  const message = (err as { message?: string }).message || "Internal Server Error";
 
   res.status(status).json({
     success: false,

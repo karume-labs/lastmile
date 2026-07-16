@@ -25,7 +25,7 @@ const router = Router();
  * Response (200):
  * { "success": true, "syncedCount": 1, "failedRecords": [] }
  */
-router.post("/push", async (req, res, next) => {
+router.post("/push", async (_req, res, next) => {
   try {
     // TODO: 1. Validate req.body.records with Zod
     // TODO: 2. For each record, insert PII into identities table

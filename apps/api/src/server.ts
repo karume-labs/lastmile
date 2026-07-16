@@ -2,10 +2,10 @@ import cors from "cors";
 import express, { type Request, type Response } from "express";
 import helmet from "helmet";
 import authRouter from "./features/auth/routers";
-import syncRouter from "./features/sync/routers";
-import ussdSessionRouter from "./features/ussd/routers";
 import clawbackRouter from "./features/clawback/routers";
 import offrampRouter from "./features/offramp/routers";
+import syncRouter from "./features/sync/routers";
+import ussdSessionRouter from "./features/ussd/routers";
 import { errorHandler } from "./middlewares/error-handler";
 
 const PORT = Number(process.env.PORT || "8000");

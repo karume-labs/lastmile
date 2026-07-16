@@ -21,7 +21,7 @@ const router = Router();
  */
 router.post("/session", async (req, res, next) => {
   try {
-    const { sessionId, phoneNumber, text } = req.body;
+    const { sessionId: _sessionId, phoneNumber: _phoneNumber, text: _text } = req.body;
 
     // TODO: 1. Parse the USSD text string to extract referenceId and OTP
     // TODO: 2. Query registrations table by phoneNumber to verify the user is authorized

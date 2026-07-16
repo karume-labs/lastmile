@@ -1,13 +1,13 @@
-import type { z } from "zod";
 import type {
   IdentityInsertSchema,
   IdentitySelectSchema,
+  OfflineRegistrationFormSchema,
   RegistrationInsertSchema,
   RegistrationSelectSchema,
-  OfflineRegistrationFormSchema,
   SyncPushRecordSchema,
   SyncPushRequestSchema,
 } from "@lastmile/validators/registration";
+import type { z } from "zod";
 
 // ── Database Models ──
 

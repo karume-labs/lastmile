@@ -25,7 +25,7 @@ const router = Router();
  */
 router.post("/simulate", async (req, res, next) => {
   try {
-    const { referenceId, amountUsdc } = req.body;
+    const { referenceId: _referenceId, amountUsdc: _amountUsdc } = req.body;
 
     // TODO: 1. Look up the registration by referenceId
     // TODO: 2. Read the currency preference (e.g., 'KES')

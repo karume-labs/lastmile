@@ -1,5 +1,5 @@
-import type { z } from "zod";
 import type { UssdSessionRequestSchema } from "@lastmile/validators/ussd";
+import type { z } from "zod";
 
 // ── API Request / Response ──
 
