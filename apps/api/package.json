@@ -10,7 +10,6 @@
     "@lastmile/db": "workspace:*",
     "@lastmile/types": "workspace:*",
     "@lastmile/validators": "workspace:*",
-    "@lastmile/participant-channels": "workspace:*",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "better-auth": "^1.1.20",
@@ -18,7 +17,8 @@
     "express": "^4.21.1",
     "helmet": "^8.0.0",
     "dotenv": "^17.0.1",
-    "drizzle-orm": "^0.33.0"
+    "drizzle-orm": "^0.33.0",
+    "africastalking": "^0.6.2"
   },
   "devDependencies": {
     "@types/node": "^26.1.1"
