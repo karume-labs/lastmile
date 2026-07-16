@@ -1,17 +1,19 @@
 import { createInterface } from "node:readline";
 import { seedSuperAdmin } from "@lastmile/db/auth/seed";
+import { seedStaff } from "@lastmile/db/auth/seed/staff";
 import { db } from "@lastmile/db/client";
 import { env } from "@lastmile/db/seed/env";
 import { sql } from "drizzle-orm";
 
 // Entity flags that can be passed via CLI (e.g., --auth)
 // Future entities (e.g. "identities", "registrations", "programmes") will be added to this list
-const ENTITY_FLAGS = ["auth"] as const;
+const ENTITY_FLAGS = ["auth", "staff"] as const;
 
 type Entity = (typeof ENTITY_FLAGS)[number];
 
 function printUsage() {
-  console.log(`
+  console.log(
+    `
 Usage: bun run db:seed [options]
 
 Options:
@@ -23,13 +25,14 @@ If no entity flags are specified, all connected entities are seeded.
 Currently connected seeders:
   - auth (Super Admin)
 Future entities (` +
-	"`identities`" +
-	`, ` +
-	"`registrations`" +
-	`, ` +
-	"`programmes`" +
-	`) will be connected here as they are created.
-`);
+      "`identities`" +
+      `, ` +
+      "`registrations`" +
+      `, ` +
+      "`programmes`" +
+      `) will be connected here as they are created.
+`,
+  );
 }
 
 async function askForConfirmation(question: string): Promise<boolean> {
@@ -76,6 +79,7 @@ async function clearAllData() {
 // Future seed functions (e.g. seedIdentities, seedProgrammes) will be registered below in order.
 const SEED_ORDER: { flag: Entity; label: string; fn: () => Promise<void> }[] = [
   { flag: "auth", label: "Super Admin (Auth)", fn: seedSuperAdmin },
+  { flag: "staff", label: "Staff (Auth)", fn: seedStaff },
   // { flag: "identities", label: "Identities", fn: seedIdentities },
   // { flag: "registrations", label: "Registrations", fn: seedRegistrations },
   // { flag: "programmes", label: "Programmes & Disbursements", fn: seedProgrammes },

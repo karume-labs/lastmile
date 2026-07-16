@@ -54,15 +54,24 @@ export const BulkUploadZone = () => {
         header: true,
         skipEmptyLines: true,
         complete: (results) => {
-          const parsed = (results.data as Record<string, unknown>[]).map((row) => ({
-            fullName: String(row.FullName || row.fullName || ""),
-            phoneNumber: String(row.PhoneNumber || row.phoneNumber || ""),
-            currency: String(row.Currency || row.currency || ""),
-            preferredLanguage: String(
-              row.PreferredLanguage || row.Language || row.preferredLanguage || "en",
-            ).toLowerCase(),
-            isProxy: String(row.IsProxy || row.isProxy).toLowerCase() === "true",
-          }));
+          const parsed = (results.data as Record<string, unknown>[]).map((row) => {
+            // Create a normalized row object where keys are lowercase without spaces
+            const normalizedRow: Record<string, unknown> = {};
+            for (const key in row) {
+              const normalizedKey = key.toLowerCase().replace(/[\s_]/g, "");
+              normalizedRow[normalizedKey] = row[key];
+            }
+
+            return {
+              fullName: String(normalizedRow.fullname || normalizedRow.name || ""),
+              phoneNumber: String(normalizedRow.phonenumber || normalizedRow.phone || ""),
+              currency: String(normalizedRow.currency || "KES"), // Default to KES
+              preferredLanguage: String(
+                normalizedRow.preferredlanguage || normalizedRow.language || "en",
+              ).toLowerCase(),
+              isProxy: String(normalizedRow.isproxy).toLowerCase() === "true",
+            };
+          });
           setData(parsed);
         },
       });
@@ -74,15 +83,23 @@ export const BulkUploadZone = () => {
       const worksheet = workbook.Sheets[sheetName];
       const json = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet);
 
-      const parsed = json.map((row) => ({
-        fullName: String(row.FullName || row.fullName || ""),
-        phoneNumber: String(row.PhoneNumber || row.phoneNumber || ""),
-        currency: String(row.Currency || row.currency || ""),
-        preferredLanguage: String(
-          row.PreferredLanguage || row.Language || row.preferredLanguage || "en",
-        ).toLowerCase(),
-        isProxy: String(row.IsProxy || row.isProxy).toLowerCase() === "true",
-      }));
+      const parsed = json.map((row) => {
+        const normalizedRow: Record<string, unknown> = {};
+        for (const key in row) {
+          const normalizedKey = key.toLowerCase().replace(/[\s_]/g, "");
+          normalizedRow[normalizedKey] = row[key];
+        }
+
+        return {
+          fullName: String(normalizedRow.fullname || normalizedRow.name || ""),
+          phoneNumber: String(normalizedRow.phonenumber || normalizedRow.phone || ""),
+          currency: String(normalizedRow.currency || "KES"),
+          preferredLanguage: String(
+            normalizedRow.preferredlanguage || normalizedRow.language || "en",
+          ).toLowerCase(),
+          isProxy: String(normalizedRow.isproxy).toLowerCase() === "true",
+        };
+      });
       setData(parsed);
     }
   };

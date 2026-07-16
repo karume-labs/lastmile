@@ -1,8 +1,5 @@
 import { authClient } from "@lastmile/auth/client";
-import type {
-  AuthSignInRequest,
-  AuthSignUpRequest,
-} from "@lastmile/types/auth";
+import type { AuthSignInRequest, AuthSignUpRequest } from "@lastmile/types/auth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -28,7 +25,7 @@ export const useSignIn = () => {
     },
     onError: (error) => {
       toast.error(error.message);
-    }
+    },
   });
 };
 
@@ -49,7 +46,7 @@ export const useSignOut = () => {
     },
     onError: (error) => {
       toast.error(error.message);
-    }
+    },
   });
 };
 
@@ -75,6 +72,6 @@ export const useSignUp = () => {
     },
     onError: (error) => {
       toast.error(error.message);
-    }
+    },
   });
 };

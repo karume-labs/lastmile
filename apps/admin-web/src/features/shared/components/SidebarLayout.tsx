@@ -53,6 +53,7 @@ const NAV_ITEMS = [
   { title: "Proxies", url: "/admin/proxies", icon: Users, id: "tour-proxies" },
   { title: "Tours & Help", url: "/admin/tours", icon: HelpCircle, id: "tour-help" },
   { title: "SMS", url: "/admin/sms", icon: MessageSquare, id: "tour-sms" },
+  { title: "Staff & Team", url: "/admin/staff", icon: Users, id: "tour-staff" },
 ] as const;
 
 const AppSidebar = () => {

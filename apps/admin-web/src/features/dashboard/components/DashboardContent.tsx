@@ -41,7 +41,7 @@ export const DashboardContent = () => {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           title="Total Disbursed"
-          value={isLoading ? "..." : (metrics?.totalDisbursed ?? "$0")}
+          value={isLoading ? "..." : `KES ${metrics?.totalDisbursed?.toLocaleString() ?? "0"}`}
           change="+12.5%"
           icon={<DollarSign className="size-4 text-muted-foreground" />}
           description="Across all programmes"
