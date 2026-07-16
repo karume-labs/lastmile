@@ -17,7 +17,14 @@
     "./schemas/clawback": "./src/clawback/schema/index.ts",
     "./seed": "./src/seed/index.ts",
     "./seed/env": "./src/seed/env/index.ts",
-    "./auth/seed": "./src/auth/seed/index.ts"
+    "./auth/seed": "./src/auth/seed/index.ts",
+    "./auth/seed/staff": "./src/auth/seed/staff.ts",
+    "./identity/seed": "./src/identity/seed/index.ts",
+    "./registration/seed": "./src/registration/seed/index.ts",
+    "./programmes/seed": "./src/programmes/seed/index.ts",
+    "./sms/seed": "./src/sms/seed/index.ts",
+    "./audit/seed": "./src/audit/seed/index.ts",
+    "./clawback/seed": "./src/clawback/seed/index.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.14.0",

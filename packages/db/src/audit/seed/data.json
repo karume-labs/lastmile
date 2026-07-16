@@ -1,0 +1,66 @@
+{
+  "auditLogs": [
+    {
+      "id": "audit-001",
+      "actor": "john.smith@lastmile.com",
+      "action": "programme.create",
+      "target": "prog-001",
+      "severity": "info",
+      "metadata": {
+        "programmeName": "Kisumu County Flood Relief 2026",
+        "budget": 50000,
+        "currency": "USDC"
+      },
+      "timestamp": "2026-06-01T08:30:00Z"
+    },
+    {
+      "id": "audit-002",
+      "actor": "jane.doe@lastmile.com",
+      "action": "batch.process",
+      "target": "batch-001",
+      "severity": "info",
+      "metadata": {
+        "batchSize": 50,
+        "programmeId": "prog-001"
+      },
+      "timestamp": "2026-06-02T10:15:00Z"
+    },
+    {
+      "id": "audit-003",
+      "actor": "david.ochieng@lastmile.com",
+      "action": "proxy.disbursement.verify",
+      "target": "disb-003",
+      "severity": "info",
+      "metadata": {
+        "participant": "Fatuma Ali",
+        "proxyId": "proxy-002"
+      },
+      "timestamp": "2026-06-03T14:20:00Z"
+    },
+    {
+      "id": "audit-004",
+      "actor": "system",
+      "action": "disbursement.clawback.trigger",
+      "target": "disb-005",
+      "severity": "warning",
+      "metadata": {
+        "reason": "Stagnant funds over 90 days",
+        "amount": 10000,
+        "currency": "KES"
+      },
+      "timestamp": "2026-06-10T00:00:00Z"
+    },
+    {
+      "id": "audit-005",
+      "actor": "john.smith@lastmile.com",
+      "action": "auth.user.role_change",
+      "target": "staff-3",
+      "severity": "critical",
+      "metadata": {
+        "oldRole": "field_agent",
+        "newRole": "staff"
+      },
+      "timestamp": "2026-06-11T09:45:00Z"
+    }
+  ]
+}
