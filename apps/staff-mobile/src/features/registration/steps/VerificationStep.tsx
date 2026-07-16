@@ -3,29 +3,50 @@ import { Controller, useFormContext } from "react-hook-form";
 import { Text, View } from "react-native";
 import { Input } from "@/src/components/ui/Input";
 import { Select } from "@/src/components/ui/Select";
-import { type RegistrationFormValues, verificationTypes } from "@/src/features/registration/schema";
+import { type RegistrationFormValues, verificationTypes, sanitizeInput } from "@/src/features/registration/schema";
 
+/**
+ * Verification configuration with security-focused input handling
+ * - Type-specific keyboard and validation
+ * - Sanitization rules
+ * - Professional hints and placeholders
+ */
 const verificationInputConfig: Record<
   RegistrationFormValues["verificationType"],
-  { placeholder: string; keyboardType: "numeric" | "default"; hint: string }
+  {
+    placeholder: string;
+    inputType: "text" | "number";
+    maxLength: number;
+    hint: string;
+  }
 > = {
   DATE_OF_BIRTH: {
-    placeholder: "e.g. 1990-05-14",
-    keyboardType: "default",
-    hint: "Enter as YYYY-MM-DD, exactly how it will be checked at payout.",
+    placeholder: "1990-05-14",
+    inputType: "text",
+    maxLength: 10,
+    hint: "Enter as YYYY-MM-DD format (e.g., 1975-03-21). Must match beneficiary's records exactly.",
   },
   NATIONAL_ID_NUMBER: {
-    placeholder: "e.g. 12345678",
-    keyboardType: "numeric",
-    hint: "The beneficiary's national ID or passport number.",
+    placeholder: "12345678",
+    inputType: "number",
+    maxLength: 50,
+    hint: "National ID or passport number. Will be verified against payout file.",
   },
   PIN: {
-    placeholder: "e.g. 4821",
-    keyboardType: "numeric",
-    hint: "A personal PIN the beneficiary or proxy will remember at payout.",
+    placeholder: "4821",
+    inputType: "number",
+    maxLength: 10,
+    hint: "Personal PIN (4-10 digits) that beneficiary will provide at payout for verification.",
   },
 };
 
+/**
+ * Verification step with enterprise security practices:
+ * - Input sanitization
+ * - Type-specific validation
+ * - Clear verification workflow
+ * - Security context for field staff
+ */
 export const VerificationStep = () => {
   const {
     control,
@@ -37,60 +58,69 @@ export const VerificationStep = () => {
 
   return (
     <View className="gap-5">
-      <View className="flex-row items-start gap-2 rounded-lg bg-accent/10 p-3">
-        <ShieldCheck color="#2563eb" size={18} />
-        <Text className="flex-1 text-sm text-foreground">
-          This identity information is matched against the finance officer's payment file, so the payout can be
-          verified without exposing beneficiaries to blockchain or banking systems.
+      {/* Security Information Banner */}
+      <View className="flex-row items-start gap-3 rounded-lg bg-green-50 dark:bg-green-950/30 p-4 border border-green-200 dark:border-green-900">
+        <ShieldCheck color="#16a34a" size={22} />
+        <Text className="flex-1 text-sm text-foreground font-medium leading-5">
+          This verification information ensures secure and accurate fund disbursement. It will be matched against the official payment list to prevent fraud.
         </Text>
       </View>
 
+      {/* External Reference ID */}
       <Controller
         control={control}
         name="externalReferenceId"
         render={({ field: { onChange, onBlur, value } }) => (
           <Input
+            label="External Reference ID"
+            inputType="text"
             autoCapitalize="characters"
             error={errors.externalReferenceId?.message}
-            label="External reference ID"
             onBlur={onBlur}
-            onChangeText={onChange}
-            placeholder="e.g. programme enrollment number"
+            onChangeText={(text) => onChange(sanitizeInput(text))}
+            placeholder="e.g. ENROL-2024-0001"
             value={value}
+            maxLength={100}
+            hint="Beneficiary's enrollment or reference number from the programme database"
           />
         )}
       />
 
+      {/* Verification Method Selection */}
       <Controller
         control={control}
         name="verificationType"
         render={({ field: { onChange, value } }) => (
           <Select
             error={errors.verificationType?.message}
-            label="Verification method"
+            label="Verification Method"
             onChange={(next) => onChange(next as RegistrationFormValues["verificationType"])}
             options={[...verificationTypes]}
             value={value}
+            hint="Choose how this beneficiary will be verified at payout"
           />
         )}
       />
 
+      {/* Verification Value (Dynamic based on type) */}
       <Controller
         control={control}
         name="verificationValue"
         render={({ field: { onChange, onBlur, value } }) => (
           <Input
+            label="Verification Value"
+            inputType={config.inputType}
             error={errors.verificationValue?.message}
-            hint={config.hint}
-            keyboardType={config.keyboardType}
-            label="Verification value"
             onBlur={onBlur}
-            onChangeText={onChange}
+            onChangeText={(text) => onChange(sanitizeInput(text))}
             placeholder={config.placeholder}
             value={value}
+            maxLength={config.maxLength}
+            hint={config.hint}
           />
         )}
       />
     </View>
   );
 };
+
