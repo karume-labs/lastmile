@@ -83,7 +83,12 @@ const proxyRequest = async (request: NextRequest, proxy: string[]) => {
       }
     }
 
-    return new NextResponse(response.data, {
+    const bodyData =
+      response.status === 204 || response.status === 304 || response.status === 205
+        ? null
+        : response.data;
+
+    return new NextResponse(bodyData, {
       status: response.status,
       statusText: response.statusText,
       headers: responseHeaders,

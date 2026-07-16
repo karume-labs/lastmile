@@ -2,6 +2,7 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import { parseAsString, useQueryState } from "nuqs";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -11,6 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { EditStaffDialog } from "@/features/staff/components/EditStaffDialog";
+import { useToggleBan } from "@/features/staff/services/mutations";
 import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
 import { DataTable } from "@/features/shared/components/table/DataTable";
 import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
@@ -20,6 +23,8 @@ import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagi
 import { type StaffMember, useStaff } from "@/features/staff/services/queries";
 
 export const StaffContent = () => {
+  const [editingStaff, setEditingStaff] = useState<StaffMember | null>(null);
+  const toggleBanMutation = useToggleBan();
   const { search, setSearch, clearFilters } = useDataTablePagination();
 
   const [roleFilter, setRoleFilter] = useQueryState("role", parseAsString.withDefault(""));
@@ -73,12 +78,15 @@ export const StaffContent = () => {
             actions={[
               {
                 label: "Edit Staff",
-                onClick: () => {},
+                onClick: () => setEditingStaff(member),
               },
               {
                 label: member.banned ? "Unban User" : "Ban User",
                 destructive: !member.banned,
-                onClick: () => {},
+                requiresConfirm: member.banned, // Safe confirm for unbanning
+                confirmTitle: member.banned ? "Unban this user?" : "Ban this user?",
+                confirmDescription: `Are you sure you want to ${member.banned ? "unban" : "ban"} ${member.name}?`,
+                onClick: () => toggleBanMutation.mutate({ id: member.id, banned: !member.banned }),
               },
             ]}
           />
@@ -111,57 +119,65 @@ export const StaffContent = () => {
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Team Members</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <DataTable
-          columns={columns}
-          data={filteredData}
-          toolbar={
-            <DataToolbar
-              gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
-              searchKey="name"
-              searchValue={search}
-              onSearchChange={setSearch}
-              searchPlaceholder="Search name or email..."
-              onClear={() => {
-                clearFilters();
-                setRoleFilter("");
-                setStatusFilter("");
-              }}
-              filters={
-                <>
-                  <Select value={roleFilter} onValueChange={(val) => setRoleFilter(val)}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Roles</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="staff">Staff</SelectItem>
-                    </SelectContent>
-                  </Select>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Team Members</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <DataTable
+            columns={columns}
+            data={filteredData}
+            toolbar={
+              <DataToolbar
+                gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+                searchKey="name"
+                searchValue={search}
+                onSearchChange={setSearch}
+                searchPlaceholder="Search name or email..."
+                onClear={() => {
+                  clearFilters();
+                  setRoleFilter("");
+                  setStatusFilter("");
+                }}
+                filters={
+                  <>
+                    <Select value={roleFilter} onValueChange={(val) => setRoleFilter(val)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Roles</SelectItem>
+                        <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="staff">Staff</SelectItem>
+                      </SelectContent>
+                    </Select>
 
-                  <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Statuses</SelectItem>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="banned">Banned</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </>
-              }
-            />
-          }
-          emptyMessage="No staff members found."
-        />
-      </CardContent>
-    </Card>
+                    <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Statuses</SelectItem>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="banned">Banned</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </>
+                }
+              />
+            }
+            emptyMessage="No staff members found."
+          />
+        </CardContent>
+      </Card>
+
+      <EditStaffDialog
+        open={!!editingStaff}
+        onOpenChange={(open) => !open && setEditingStaff(null)}
+        staff={editingStaff}
+      />
+    </>
   );
 };
 
