@@ -122,6 +122,7 @@ export const AuditsContent = () => {
           data={filteredData}
           toolbar={
             <DataToolbar
+              gridClassName="grid grid-cols-1 sm:grid-cols-2 gap-4"
               searchKey="action"
               searchValue={search}
               onSearchChange={setSearch}
@@ -132,7 +133,7 @@ export const AuditsContent = () => {
               }}
               filters={
                 <Select value={severityFilter} onValueChange={(val) => setSeverityFilter(val)}>
-                  <SelectTrigger className="w-37.5">
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Severity" />
                   </SelectTrigger>
                   <SelectContent>

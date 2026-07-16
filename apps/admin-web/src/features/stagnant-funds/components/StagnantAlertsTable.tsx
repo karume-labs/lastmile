@@ -176,50 +176,49 @@ export const StagnantAlertsTable = ({ onClawbackSelect }: StagnantAlertsTablePro
       columns={columns}
       data={filteredData}
       toolbar={
-        <div className="flex items-center justify-between gap-4 w-full flex-wrap">
-          <div className="flex-1">
-            <DataToolbar
-              searchKey="participantName"
-              searchValue={search}
-              onSearchChange={setSearch}
-              searchPlaceholder="Search stagnant funds..."
-              onClear={() => {
-                clearFilters();
-                setStatusFilter("");
-              }}
-              filters={
-                <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
-                  <SelectTrigger className="w-37.5">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Statuses</SelectItem>
-                    <SelectItem value="stagnant">Stagnant</SelectItem>
-                    <SelectItem value="under-review">Under Review</SelectItem>
-                    <SelectItem value="clawed-back">Clawed Back</SelectItem>
-                  </SelectContent>
-                </Select>
-              }
-            />
-          </div>
-          {selectedRows.length > 0 && (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => {
-                const firstSelected = filteredData.find(
-                  (f: StagnantFundRecord) => f.id === selectedRows[0],
-                );
-                if (firstSelected) {
-                  onClawbackSelect?.(firstSelected);
-                }
-              }}
-            >
-              <AlertTriangle className="mr-2 size-4" />
-              Clawback Selected ({selectedRows.length})
-            </Button>
-          )}
-        </div>
+        <DataToolbar
+          gridClassName="grid grid-cols-1 sm:grid-cols-2 gap-4"
+          searchKey="participantName"
+          searchValue={search}
+          onSearchChange={setSearch}
+          searchPlaceholder="Search stagnant funds..."
+          onClear={() => {
+            clearFilters();
+            setStatusFilter("");
+          }}
+          actions={
+            selectedRows.length > 0 && (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => {
+                  const firstSelected = filteredData.find(
+                    (f: StagnantFundRecord) => f.id === selectedRows[0],
+                  );
+                  if (firstSelected) {
+                    onClawbackSelect?.(firstSelected);
+                  }
+                }}
+              >
+                <AlertTriangle className="mr-2 size-4" />
+                Clawback Selected ({selectedRows.length})
+              </Button>
+            )
+          }
+          filters={
+            <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Statuses</SelectItem>
+                <SelectItem value="stagnant">Stagnant</SelectItem>
+                <SelectItem value="under-review">Under Review</SelectItem>
+                <SelectItem value="clawed-back">Clawed Back</SelectItem>
+              </SelectContent>
+            </Select>
+          }
+        />
       }
       emptyMessage="No stagnant funds found."
     />

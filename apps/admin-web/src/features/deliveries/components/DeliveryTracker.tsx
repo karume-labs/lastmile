@@ -164,6 +164,7 @@ export const DeliveryTracker: React.FC = () => {
       data={filteredData}
       toolbar={
         <DataToolbar
+          gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
           searchKey="participantName"
           searchValue={search}
           onSearchChange={setSearch}
@@ -176,7 +177,7 @@ export const DeliveryTracker: React.FC = () => {
           filters={
             <>
               <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
-                <SelectTrigger className="w-37.5">
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -189,7 +190,7 @@ export const DeliveryTracker: React.FC = () => {
               </Select>
 
               <Select value={methodFilter} onValueChange={(val) => setMethodFilter(val)}>
-                <SelectTrigger className="w-37.5">
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Method" />
                 </SelectTrigger>
                 <SelectContent>

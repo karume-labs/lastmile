@@ -136,6 +136,7 @@ export const ProgrammeGrid = () => {
       data={filteredData}
       toolbar={
         <DataToolbar
+          gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
           searchKey="name"
           searchValue={search}
           onSearchChange={setSearch}
@@ -144,7 +145,7 @@ export const ProgrammeGrid = () => {
           filters={
             <>
               <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
-                <SelectTrigger className="w-37.5">
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
@@ -156,7 +157,7 @@ export const ProgrammeGrid = () => {
               </Select>
 
               <Select value={audienceFilter} onValueChange={(val) => setAudienceFilter(val)}>
-                <SelectTrigger className="w-37.5">
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Audience" />
                 </SelectTrigger>
                 <SelectContent>
