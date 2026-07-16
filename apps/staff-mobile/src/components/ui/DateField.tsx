@@ -6,6 +6,7 @@ import { Platform, Pressable, Text, View } from "react-native";
 interface DateFieldProps {
   label?: string;
   error?: string;
+  hint?: string;
   value: string;
   onChange: (isoDate: string) => void;
   maximumDate?: Date;
@@ -18,7 +19,7 @@ const formatDisplay = (isoDate: string) => {
   return date.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
 };
 
-export const DateField = ({ label, error, value, onChange, maximumDate = new Date() }: DateFieldProps) => {
+export const DateField = ({ label, error, hint, value, onChange, maximumDate = new Date() }: DateFieldProps) => {
   const [open, setOpen] = useState(false);
   const dateValue = value ? new Date(value) : maximumDate;
 
@@ -36,7 +37,11 @@ export const DateField = ({ label, error, value, onChange, maximumDate = new Dat
           {value ? formatDisplay(value) : "Select date of birth"}
         </Text>
       </Pressable>
-      {error ? <Text className="text-sm text-destructive">{error}</Text> : null}
+      {error ? (
+        <Text className="text-sm text-destructive">{error}</Text>
+      ) : hint ? (
+        <Text className="text-sm text-muted-foreground">{hint}</Text>
+      ) : null}
 
       {open ? (
         <DateTimePicker
