@@ -26,14 +26,7 @@ export const SidebarUserNav = () => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <button
-            type="submit"
-            className="flex w-full cursor-pointer items-center gap-2 rounded-md p-2 transition-colors hover:bg-muted group-data-[collapsible=icon]:justify-center"
-          />
-        }
-      >
+      <DropdownMenuTrigger className="flex w-full cursor-pointer items-center gap-2 rounded-md p-2 transition-colors hover:bg-muted group-data-[collapsible=icon]:justify-center h-auto outline-none border-none bg-transparent">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-muted shrink-0 overflow-hidden">
           <Avatar className="h-full w-full rounded-none">
             <AvatarImage src={session?.user?.image || ""} alt={session?.user?.name || ""} />

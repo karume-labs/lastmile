@@ -1,5 +1,6 @@
 "use client";
 
+import type { StagnantFundItem } from "@lastmile/types/programmes";
 import type { ColumnDef } from "@tanstack/react-table";
 import { AlertTriangle } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
@@ -21,18 +22,6 @@ import { TableMenuActions } from "@/features/shared/components/table/TableMenuAc
 import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
 import { useStagnantFunds } from "@/features/stagnant-funds/services/queries";
 
-interface StagnantFundRecord {
-  id: string;
-  participantName: string;
-  referenceId: string;
-  programmeName: string;
-  amount: string;
-  currency: string;
-  status: "stagnant" | "clawed-back" | "under-review";
-  lastActivityDate: string;
-  daysSinceActivity: number;
-}
-
 const STATUS_STYLES: Record<string, string> = {
   stagnant: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
   "clawed-back": "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
@@ -40,7 +29,7 @@ const STATUS_STYLES: Record<string, string> = {
 };
 
 interface StagnantAlertsTableProps {
-  onClawbackSelect?: (record: StagnantFundRecord) => void;
+  onClawbackSelect?: (record: StagnantFundItem) => void;
 }
 
 export const StagnantAlertsTable = ({ onClawbackSelect }: StagnantAlertsTableProps) => {
@@ -50,7 +39,7 @@ export const StagnantAlertsTable = ({ onClawbackSelect }: StagnantAlertsTablePro
 
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
 
-  const columns: ColumnDef<StagnantFundRecord, unknown>[] = [
+  const columns: ColumnDef<StagnantFundItem, unknown>[] = [
     {
       id: "select",
       header: ({ table }) => (
@@ -161,7 +150,7 @@ export const StagnantAlertsTable = ({ onClawbackSelect }: StagnantAlertsTablePro
 
   const rawData = stagnantFundsResponse?.data || [];
 
-  const filteredData = rawData.filter((f: StagnantFundRecord) => {
+  const filteredData = rawData.filter((f: StagnantFundItem) => {
     const matchesSearch =
       f.participantName.toLowerCase().includes(search.toLowerCase()) ||
       f.referenceId.toLowerCase().includes(search.toLowerCase());
@@ -193,7 +182,7 @@ export const StagnantAlertsTable = ({ onClawbackSelect }: StagnantAlertsTablePro
                 size="sm"
                 onClick={() => {
                   const firstSelected = filteredData.find(
-                    (f: StagnantFundRecord) => f.id === selectedRows[0],
+                    (f: StagnantFundItem) => f.id === selectedRows[0],
                   );
                   if (firstSelected) {
                     onClawbackSelect?.(firstSelected);

@@ -8,7 +8,10 @@
     "./registration": "./src/registration.ts",
     "./programmes": "./src/programmes.ts",
     "./channels": "./src/channels.ts",
-    "./offramp": "./src/offramp.ts"
+    "./offramp": "./src/offramp.ts",
+    "./identity": "./src/identity.ts",
+    "./audit": "./src/audit.ts",
+    "./sms": "./src/sms.ts"
   },
   "dependencies": {
     "@lastmile/validators": "workspace:*",

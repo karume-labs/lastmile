@@ -1,8 +1,12 @@
 import type {
+  BatchInsertSchema,
+  BatchSelectSchema,
   ClawbackRequestSchema,
   DisbursementInsertSchema,
   DisbursementSelectSchema,
   DisbursementTriggerRequestSchema,
+  ProgrammeInsertSchema,
+  ProgrammeSelectSchema,
   StagnantFundsQuerySchema,
 } from "@lastmile/validators/programmes";
 import type { z } from "zod";
@@ -11,6 +15,12 @@ import type { z } from "zod";
 
 export type Disbursement = z.infer<typeof DisbursementSelectSchema>;
 export type InsertDisbursement = z.infer<typeof DisbursementInsertSchema>;
+
+export type Programme = z.infer<typeof ProgrammeSelectSchema>;
+export type InsertProgramme = z.infer<typeof ProgrammeInsertSchema>;
+
+export type Batch = z.infer<typeof BatchSelectSchema>;
+export type InsertBatch = z.infer<typeof BatchInsertSchema>;
 
 // ── API Request / Response ──
 
@@ -25,8 +35,13 @@ export type ClawbackResponse = {
 };
 
 export type StagnantFundItem = {
-  paymentId: string;
+  id: string;
+  participantName: string;
   referenceId: string;
-  amount: number;
-  daysPending: number;
+  programmeName: string;
+  amount: string;
+  currency: string;
+  status: "stagnant" | "clawed-back" | "under-review";
+  lastActivityDate: string;
+  daysSinceActivity: number;
 };

@@ -1,5 +1,6 @@
 "use client";
 
+import type { StagnantFundItem } from "@lastmile/types/programmes";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -13,18 +14,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useInitiateClawback } from "@/features/stagnant-funds/services/mutations";
 
-interface ClawbackRecord {
-  id: string;
-  participantName: string;
-  referenceId: string;
-  amount: string;
-  currency: string;
-}
-
 interface ClawbackConfirmationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  record: ClawbackRecord | null;
+  record: StagnantFundItem | null;
 }
 
 export const ClawbackConfirmationDialog = ({

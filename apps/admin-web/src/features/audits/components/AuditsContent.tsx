@@ -1,5 +1,6 @@
 "use client";
 
+import type { AuditLog } from "@lastmile/types/audit";
 import type { ColumnDef } from "@tanstack/react-table";
 import { parseAsString, useQueryState } from "nuqs";
 import { Badge } from "@/components/ui/badge";
@@ -18,15 +19,6 @@ import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
 import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
 import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
 
-interface AuditRecord {
-  id: string;
-  action: string;
-  actor: string;
-  target: string;
-  timestamp: string;
-  severity: "info" | "warning" | "critical";
-}
-
 export const AuditsContent = () => {
   const { search, setSearch, clearFilters } = useDataTablePagination();
 
@@ -37,7 +29,7 @@ export const AuditsContent = () => {
 
   const { data: auditsResponse, isLoading } = useAudits();
 
-  const columns: ColumnDef<AuditRecord, unknown>[] = [
+  const columns: ColumnDef<AuditLog, unknown>[] = [
     {
       accessorKey: "action",
       header: "Action",
@@ -101,7 +93,7 @@ export const AuditsContent = () => {
 
   const rawData = auditsResponse?.data || [];
 
-  const filteredData = rawData.filter((a: AuditRecord) => {
+  const filteredData = rawData.filter((a: AuditLog) => {
     const matchesSearch =
       a.action.toLowerCase().includes(search.toLowerCase()) ||
       a.actor.toLowerCase().includes(search.toLowerCase()) ||

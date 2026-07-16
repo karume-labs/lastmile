@@ -1,5 +1,6 @@
 "use client";
 
+import type { Programme } from "@lastmile/types/programmes";
 import type { ColumnDef } from "@tanstack/react-table";
 import { parseAsString, useQueryState } from "nuqs";
 import { Badge } from "@/components/ui/badge";
@@ -16,16 +17,6 @@ import { DataTableSkeleton } from "@/features/shared/components/table/DataTableS
 import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
 import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
 import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
-
-interface ProgrammeRecord {
-  id: string;
-  name: string;
-  status: string;
-  targetAudience: string;
-  startDate: string;
-  endDate: string;
-  budget: number;
-}
 
 const STATUS_STYLES: Record<string, string> = {
   Active: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
@@ -51,7 +42,7 @@ export const ProgrammeGrid = () => {
     setAudienceFilter("");
   };
 
-  const columns: ColumnDef<ProgrammeRecord, unknown>[] = [
+  const columns: ColumnDef<Programme, unknown>[] = [
     {
       accessorKey: "name",
       header: "Programme",
@@ -121,7 +112,7 @@ export const ProgrammeGrid = () => {
 
   const rawData = programmesResponse?.data || [];
 
-  const filteredData = rawData.filter((p: ProgrammeRecord) => {
+  const filteredData = rawData.filter((p: Programme) => {
     const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase());
     const matchesStatus =
       statusFilter === "" || statusFilter === "all" || p.status === statusFilter;

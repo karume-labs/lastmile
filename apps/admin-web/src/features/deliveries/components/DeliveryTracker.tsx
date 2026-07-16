@@ -1,5 +1,6 @@
 "use client";
 
+import type { Disbursement } from "@lastmile/types/programmes";
 import type { ColumnDef } from "@tanstack/react-table";
 import { parseAsString, useQueryState } from "nuqs";
 import { Badge } from "@/components/ui/badge";
@@ -17,18 +18,6 @@ import { DataTableSkeleton } from "@/features/shared/components/table/DataTableS
 import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
 import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
 import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
-
-interface DeliveryRecord {
-  id: string;
-  participantName: string;
-  referenceId: string;
-  programmeName: string;
-  amount: string;
-  currency: string;
-  status: "pending" | "sent" | "delivered" | "failed";
-  deliveryMethod: "direct" | "proxy-led";
-  createdAt: string;
-}
 
 const STATUS_STYLES: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
@@ -51,7 +40,7 @@ export const DeliveryTracker: React.FC = () => {
 
   const { data: deliveriesResponse, isLoading } = useDeliveries();
 
-  const columns: ColumnDef<DeliveryRecord, unknown>[] = [
+  const columns: ColumnDef<Disbursement, unknown>[] = [
     {
       accessorKey: "referenceId",
       header: "Reference ID",
@@ -117,7 +106,7 @@ export const DeliveryTracker: React.FC = () => {
       accessorKey: "createdAt",
       header: "Date",
       cell: ({ row }) => {
-        return new Date(row.getValue("createdAt") as string).toLocaleDateString();
+        return new Date(row.original.createdAt).toLocaleDateString();
       },
     },
     {
@@ -147,7 +136,7 @@ export const DeliveryTracker: React.FC = () => {
 
   const rawData = deliveriesResponse?.data || [];
 
-  const filteredData = rawData.filter((d: DeliveryRecord) => {
+  const filteredData = rawData.filter((d: Disbursement) => {
     const matchesSearch =
       d.participantName.toLowerCase().includes(search.toLowerCase()) ||
       d.referenceId.toLowerCase().includes(search.toLowerCase());

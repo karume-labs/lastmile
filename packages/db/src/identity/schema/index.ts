@@ -8,3 +8,18 @@ export const identities = sqliteTable("identities", {
     .default(sql`(strftime('%s', 'now'))`)
     .notNull(),
 });
+
+export const proxies = sqliteTable("proxies", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  phone: text("phone").notNull(),
+  status: text("status", { enum: ["active", "suspended"] })
+    .notNull()
+    .default("active"),
+  participantCount: integer("participant_count").notNull().default(0),
+  location: text("location").notNull().default("Unknown"),
+  role: text("role").notNull().default("Field Agent"),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .default(sql`(strftime('%s', 'now'))`)
+    .notNull(),
+});

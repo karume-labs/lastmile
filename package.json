@@ -11,10 +11,6 @@
     "build": "bun run --filter './apps/*' --parallel build",
     "dev:web": "bun --cwd apps/admin-web dev",
     "build:web": "bun --cwd apps/admin-web build",
-    "dev:mobile": "bun --cwd apps/staff-mobile dev",
-    "build:mobile": "bun --cwd apps/staff-mobile build",
-    "android:mobile": "bun --cwd apps/staff-mobile android",
-    "ios:mobile": "bun --cwd apps/staff-mobile ios",
     "db:generate": "bun --cwd packages/db db:generate",
     "db:push": "bun --cwd packages/db db:push",
     "db:migrate": "bun --cwd packages/db db:migrate",
@@ -23,11 +19,6 @@
     "db:generate-auth": "bun --cwd packages/auth db:generate-auth",
     "typecheck": "bun run --filter '*' typecheck",
     "ui:web": "bunx shadcn@latest add --cwd apps/admin-web",
-    "ui:mobile": "cd apps/staff-mobile && bunx @react-native-reusables/cli@latest add",
-    "mobile:doctor": "cd apps/staff-mobile && bun run doctor",
-    "mobile:install:check": "cd apps/staff-mobile && bunx expo install --check",
-    "mobile:install:fix": "cd apps/staff-mobile && bunx expo install --fix",
-    "mobile:upgrade": "cd apps/staff-mobile && bunx expo upgrade",
     "reinstall": "find . -name 'node_modules' -type d -prune -exec rm -rf '{}' + || true; rm -f bun.lock; bun install"
   },
   "dependencies": {
@@ -46,22 +37,6 @@
     "@babel/runtime": "^7.26.0",
     "@biomejs/biome": "2.2.0",
     "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "react-native-css-interop": "~0.2.6",
-    "typescript": "^5"
-  },
-  "overrides": {
-    "expo": "~57.0.0",
-    "expo-constants": "~57.0.0",
-    "expo-font": "~57.0.0",
-    "expo-linking": "~57.0.0",
-    "@expo/dom-webview": "~57.0.0",
-    "@expo/log-box": "~57.0.0",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "react-native": "0.86.0",
-    "react-native-reanimated": "4.5.0",
-    "react-native-worklets": "0.10.0"
+    "@types/react": "^19"
   }
 }

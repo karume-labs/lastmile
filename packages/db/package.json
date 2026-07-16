@@ -12,7 +12,8 @@
     "./schemas/identity": "./src/identity/schema/index.ts",
     "./schemas/registration": "./src/registration/schema/index.ts",
     "./schemas/programmes": "./src/programmes/schema/index.ts",
-    "./schemas/audit": "./src/audit/schema/index.ts"
+    "./schemas/audit": "./src/audit/schema/index.ts",
+    "./schemas/sms": "./src/sms/schema/index.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.14.0",

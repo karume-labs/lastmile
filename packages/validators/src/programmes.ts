@@ -1,4 +1,4 @@
-import { disbursements } from "@lastmile/db/schemas/programmes";
+import { batches, disbursements, programmes } from "@lastmile/db/schemas/programmes";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -6,6 +6,12 @@ import { z } from "zod";
 
 export const DisbursementInsertSchema = createInsertSchema(disbursements);
 export const DisbursementSelectSchema = createSelectSchema(disbursements);
+
+export const ProgrammeInsertSchema = createInsertSchema(programmes);
+export const ProgrammeSelectSchema = createSelectSchema(programmes);
+
+export const BatchInsertSchema = createInsertSchema(batches);
+export const BatchSelectSchema = createSelectSchema(batches);
 
 // ── Disbursement Trigger ──
 // Validates POST /api/programmes/disburse — initiates a USDC payout

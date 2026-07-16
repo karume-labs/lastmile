@@ -1,5 +1,6 @@
 "use client";
 
+import type { Proxy as ProxyRecord } from "@lastmile/types/identity";
 import type { ColumnDef } from "@tanstack/react-table";
 import { UserCheck, UserMinus, UserX } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
@@ -18,16 +19,6 @@ import { DataTableSkeleton } from "@/features/shared/components/table/DataTableS
 import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
 import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
 import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
-
-interface ProxyRecord {
-  id: string;
-  name: string;
-  phone: string;
-  status: "active" | "suspended";
-  participantCount: number;
-  location: string;
-  role: string;
-}
 
 export const ProxiesContent = () => {
   const { search, setSearch, clearFilters } = useDataTablePagination();

@@ -7,6 +7,7 @@ import {
   FolderOpen,
   HelpCircle,
   LayoutDashboard,
+  MessageSquare,
   Send,
   Users,
 } from "lucide-react";
@@ -51,6 +52,7 @@ const NAV_ITEMS = [
   { title: "Audits", url: "/admin/audits", icon: ClipboardList, id: "tour-audits" },
   { title: "Proxies", url: "/admin/proxies", icon: Users, id: "tour-proxies" },
   { title: "Tours & Help", url: "/admin/tours", icon: HelpCircle, id: "tour-help" },
+  { title: "SMS", url: "/admin/sms", icon: MessageSquare, id: "tour-sms" },
 ] as const;
 
 const AppSidebar = () => {

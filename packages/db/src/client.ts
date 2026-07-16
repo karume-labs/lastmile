@@ -6,6 +6,7 @@ import * as identity from "./identity/schema/index";
 import * as programmes from "./programmes/schema/index";
 import * as registration from "./registration/schema/index";
 import * as auth from "./schema/auth";
+import * as sms from "./sms/schema/index";
 
 const schema = {
   ...auth,
@@ -13,6 +14,7 @@ const schema = {
   ...registration,
   ...programmes,
   ...audit,
+  ...sms,
 };
 
 const client = createClient({
