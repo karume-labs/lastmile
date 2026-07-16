@@ -14,8 +14,8 @@ export const auth = betterAuth({
   }),
   baseURL: env.NEXT_PUBLIC_APP_URL,
   session: {
-    expiresIn: 60 * 60 * 24 * 365 * 100, // 100 years (~never expire)
-    updateAge: 60 * 60 * 24 * 365 * 100, // Do not spam database with session expiry updates
+    expiresIn: 60 * 60 * 24 * 365, // 1 year
+    updateAge: 60 * 60 * 24 * 365, // Do not spam database with session expiry updates
   },
   emailAndPassword: {
     enabled: true,
@@ -28,7 +28,7 @@ export const auth = betterAuth({
     defaultCookieAttributes: {
       sameSite: env.NODE_ENV === "production" ? "none" : "lax",
       secure: env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24 * 365 * 100, // 100 years (~never expire)
+      maxAge: 60 * 60 * 24 * 365, // 1 year
     },
   },
   plugins: [admin()],

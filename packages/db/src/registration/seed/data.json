@@ -2,7 +2,7 @@
   "registrations": [
     {
       "id": "reg-001",
-      "referenceId": "REG-2026-001",
+      "referenceId": "1001",
       "identityId": "ident-001",
       "programmeId": "prog-001",
       "currency": "USDC",
@@ -11,7 +11,7 @@
     },
     {
       "id": "reg-002",
-      "referenceId": "REG-2026-002",
+      "referenceId": "1002",
       "identityId": "ident-002",
       "programmeId": "prog-001",
       "currency": "USDC",
@@ -20,7 +20,7 @@
     },
     {
       "id": "reg-003",
-      "referenceId": "REG-2026-003",
+      "referenceId": "1003",
       "identityId": "ident-003",
       "programmeId": "prog-002",
       "currency": "KES",
@@ -29,7 +29,7 @@
     },
     {
       "id": "reg-004",
-      "referenceId": "REG-2026-004",
+      "referenceId": "1004",
       "identityId": "ident-004",
       "programmeId": "prog-001",
       "currency": "USDC",
@@ -38,7 +38,7 @@
     },
     {
       "id": "reg-005",
-      "referenceId": "REG-2026-005",
+      "referenceId": "1005",
       "identityId": "ident-005",
       "programmeId": "prog-003",
       "currency": "USDC",

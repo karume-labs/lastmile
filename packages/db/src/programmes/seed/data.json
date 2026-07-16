@@ -54,7 +54,7 @@
   "disbursements": [
     {
       "id": "disb-001",
-      "referenceId": "REG-2026-001",
+      "referenceId": "1001",
       "participantName": "Wanjiku Kamau",
       "programmeName": "Kisumu County Flood Relief 2026",
       "amount": 50,
@@ -65,7 +65,7 @@
     },
     {
       "id": "disb-002",
-      "referenceId": "REG-2026-002",
+      "referenceId": "1002",
       "participantName": "Otieno Juma",
       "programmeName": "Kisumu County Flood Relief 2026",
       "amount": 50,
@@ -76,7 +76,7 @@
     },
     {
       "id": "disb-003",
-      "referenceId": "REG-2026-003",
+      "referenceId": "1003",
       "participantName": "Fatuma Ali",
       "programmeName": "Dadaab Clean Energy Subsidy",
       "amount": 30,
@@ -87,7 +87,7 @@
     },
     {
       "id": "disb-004",
-      "referenceId": "REG-2026-004",
+      "referenceId": "1004",
       "participantName": "John Kimani",
       "programmeName": "Kisumu County Flood Relief 2026",
       "amount": 50,
@@ -98,7 +98,7 @@
     },
     {
       "id": "disb-005",
-      "referenceId": "REG-2026-005",
+      "referenceId": "1005",
       "participantName": "Grace Achieng",
       "programmeName": "Marigat Pastoralist Resilience Grant",
       "amount": 10000,

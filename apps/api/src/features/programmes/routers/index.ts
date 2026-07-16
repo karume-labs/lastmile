@@ -10,6 +10,7 @@ import {
   ClawbackRequestSchema,
   CreateBatchRequestSchema,
   DisbursementTriggerRequestSchema,
+  ProgrammeNotifyRequestSchema,
 } from "@lastmile/validators/programmes";
 import { eq, and } from "drizzle-orm";
 import { Router } from "express";
@@ -107,7 +108,7 @@ router.post("/disburse", requireRole("admin"), async (req, res, next) => {
         reg.preferredLanguage === "en" || reg.preferredLanguage === "sw" || reg.preferredLanguage === "tu"
           ? reg.preferredLanguage
           : "en";
-      sendDisbursementSms(reg.phoneNumber, reg.referenceId, otp, lang).catch(console.error);
+      sendDisbursementSms(reg.phoneNumber, reg.referenceId, otp, amountUsdc, lang).catch(console.error);
     }
 
     // Insert all disbursements in a single query
@@ -149,6 +150,68 @@ router.post("/clawback/execute", requireRole("super_admin"), async (req, res, ne
       transactionHash,
       status: "clawed_back",
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Admin Bulk Notification
+const notifyTemplates: Record<string, Record<string, string>> = {
+  en: {
+    "3_days_before": "LastMile: Your funds will be available in 3 days. Prepare to claim.",
+    "1_day_before": "LastMile: Your funds will be available tomorrow. Prepare to claim.",
+    "today": "LastMile: Your funds will be available today. Prepare to claim.",
+  },
+  sw: {
+    "3_days_before": "LastMile: Pesa zako zitapatikana baada ya siku 3. Jitayarishe kuzipokea.",
+    "1_day_before": "LastMile: Pesa zako zitapatikana kesho. Jitayarishe kuzipokea.",
+    "today": "LastMile: Pesa zako zitapatikana leo. Jitayarishe kuzipokea.",
+  },
+  tu: {
+    "3_days_before": "LastMile: Pesa zako zitapatikana baada ya siku 3. Jitayarishe kuzipokea.",
+    "1_day_before": "LastMile: Pesa zako zitapatikana kesho. Jitayarishe kuzipokea.",
+    "today": "LastMile: Pesa zako zitapatikana leo. Jitayarishe kuzipokea.",
+  }
+};
+
+import { dispatchAndTrackAlert } from "@lastmile/api/features/sms/services/notifications";
+
+router.post("/:id/notify", requireRole("admin"), async (req, res, next) => {
+  try {
+    const programmeId = req.params.id;
+    const { template } = ProgrammeNotifyRequestSchema.parse(req.body);
+
+    const prog = await db.select().from(programmes).where(eq(programmes.id, programmeId)).limit(1);
+    if (!prog || prog.length === 0) {
+      res.status(404).json({ success: false, error: "Programme not found" });
+      return;
+    }
+
+    const allRegs = await db
+      .select({
+        phoneNumber: identities.phoneNumber,
+        preferredLanguage: registrations.preferredLanguage,
+      })
+      .from(registrations)
+      .innerJoin(identities, eq(registrations.identityId, identities.id))
+      .where(eq(registrations.programmeId, programmeId));
+
+    if (allRegs.length === 0) {
+      res.status(400).json({ success: false, error: "No registrations found for this programme" });
+      return;
+    }
+
+    let sentCount = 0;
+    for (const reg of allRegs) {
+      const lang = reg.preferredLanguage && notifyTemplates[reg.preferredLanguage] ? reg.preferredLanguage : "en";
+      const message = notifyTemplates[lang][template];
+      
+      // Fire and forget so we don't block
+      dispatchAndTrackAlert(reg.phoneNumber, message).catch(console.error);
+      sentCount++;
+    }
+
+    res.json({ success: true, message: `Notification triggered for ${sentCount} participants.` });
   } catch (error) {
     next(error);
   }

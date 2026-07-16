@@ -9,10 +9,11 @@ export const sendDisbursementSms = async (
   phoneNumber: string,
   referenceId: string,
   otp: string,
+  amount: number,
   lang: SupportedLanguage = "en",
 ) => {
   // Use the dictionary to format the message dynamically based on user's language
-  const message = `${dictionary[lang].successClaim} Ref: ${referenceId}. OTP: ${otp}. Dial *340# to claim.`;
+  const message = `${dictionary[lang].successClaim} Ref: ${referenceId}. Amount: ${amount}. OTP: ${otp}. Dial *340# to claim.`;
 
   console.log(`\n💬 [SMS DISPATCH to ${phoneNumber} (${lang})]:`);
   console.log(`"${message}"\n`);
