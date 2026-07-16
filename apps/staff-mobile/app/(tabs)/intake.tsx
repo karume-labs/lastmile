@@ -2,9 +2,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react-native";
 import type { ComponentType } from "react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, Text, View } from "react-native";
 import { FormProvider, useForm } from "react-hook-form";
-import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from "react-native";
 import { Button } from "@/src/components/ui/Button";
 import { ProgressBar } from "@/src/components/ui/ProgressBar";
 import { enqueueRegistration } from "@/src/features/registration/queue";
@@ -62,10 +62,11 @@ const IntakeScreen = () => {
   const form = useForm<RegistrationFormValues>({
     resolver: zodResolver(registrationFormSchema),
     defaultValues: defaultRegistrationValues,
-    mode: "onBlur",
+    mode: "onTouched",
   });
 
   const hasPhone = form.watch("hasPhone");
+  const scrollRef = useRef<ScrollView>(null);
 
   const steps = useMemo<StepKey[]>(() => {
     const order: StepKey[] = ["beneficiary", "verification", "location"];
@@ -81,11 +82,21 @@ const IntakeScreen = () => {
 
   const goNext = async () => {
     if (currentStepKey === "review") return;
-    const valid = await form.trigger(stepFields[currentStepKey]);
-    if (valid) setStepIndex((index) => Math.min(index + 1, steps.length - 1));
+    try {
+      const valid = await form.trigger(stepFields[currentStepKey]);
+      if (valid) {
+        scrollRef.current?.scrollTo({ y: 0, animated: false });
+        setStepIndex((index) => Math.min(index + 1, steps.length - 1));
+      }
+    } catch (error) {
+      Alert.alert("Validation Error", "An unexpected error occurred. Please try again.");
+    }
   };
 
-  const goBack = () => setStepIndex((index) => Math.max(index - 1, 0));
+  const goBack = () => {
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+    setStepIndex((index) => Math.max(index - 1, 0));
+  };
 
   const onSubmit = form.handleSubmit(async (values) => {
     const record = await enqueueRegistration(values);
@@ -120,7 +131,7 @@ const IntakeScreen = () => {
           <ProgressBar step={stepIndex + 1} stepLabel={stepLabel} totalSteps={steps.length} />
         </View>
 
-        <ScrollView className="flex-1 px-6 py-6" keyboardShouldPersistTaps="handled">
+        <ScrollView ref={scrollRef} className="flex-1 px-6 py-6" keyboardShouldPersistTaps="handled">
           <StepComponent />
         </ScrollView>
 
