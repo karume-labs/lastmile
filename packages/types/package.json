@@ -2,8 +2,18 @@
   "name": "@lastmile/types",
   "version": "0.1.0",
   "private": true,
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "exports": {
+    "./api": "./src/api.ts",
+    "./auth": "./src/auth.ts",
+    "./registration": "./src/registration.ts",
+    "./programmes": "./src/programmes.ts",
+    "./ussd": "./src/ussd.ts",
+    "./offramp": "./src/offramp.ts"
+  },
+  "dependencies": {
+    "@lastmile/validators": "workspace:*",
+    "zod": "^3.23.8"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit"
   }
