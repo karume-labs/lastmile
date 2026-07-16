@@ -1,8 +1,8 @@
+import { authService } from "@lastmile/api/features/auth/services";
+import { authenticate } from "@lastmile/api/middlewares/authenticate";
+import { validate } from "@lastmile/api/middlewares/validate";
 import { Router } from "express";
 import { z } from "zod";
-import { authenticate } from "../../../middlewares/authenticate";
-import { validate } from "../../../middlewares/validate";
-import { authService } from "../services";
 
 const router = Router();
 

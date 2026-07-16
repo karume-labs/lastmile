@@ -9,5 +9,8 @@
   },
   "dependencies": {
     "africastalking": "^0.8.0"
+  },
+  "devDependencies": {
+    "@types/africastalking": "^0.6.0"
   }
 }

@@ -74,18 +74,29 @@ export interface OtpNotificationPayload {
   refId: string;
   /** One-time pin to confirm the transaction/session */
   otp: string;
+  /** Language preference of the user */
+  preferredLanguage?: "en" | "sw" | "tu";
 }
+
+const otpSmsDictionary: Record<"en" | "sw" | "tu", (refId: string, otp: string) => string> = {
+  en: (refId, otp) =>
+    `SAPCONE LastMile: Your reference is ${refId}. Your OTP is ${otp}. Do not share this code.`,
+  sw: (refId, otp) =>
+    `SAPCONE LastMile: Namba yako ya kumbukumbu ni ${refId}. OTP yako ni ${otp}. Usishiriki namba hii.`,
+  tu: (refId, otp) =>
+    `SAPCONE LastMile: Reference ID kon nge ${refId}. OTP kon nge ${otp}. Nyikinyak ng'itunga.`,
+};
 
 export async function sendOtpAlert(
   payload: OtpNotificationPayload,
 ): Promise<AfricasTalkingSMSResponse | null> {
-  const { phoneNumber, refId, otp } = payload;
+  const { phoneNumber, refId, otp, preferredLanguage = "en" } = payload;
 
   if (!phoneNumber || !refId || !otp) {
     throw new Error("sendOtpAlert requires phoneNumber, refId, and otp to all be set");
   }
 
-  const message = `SAPCONE LastMile: Your reference is ${refId}. Your OTP is ${otp}. Do not share this code.`;
+  const message = otpSmsDictionary[preferredLanguage](refId, otp);
 
   return dispatchAlert(phoneNumber, message);
 }

@@ -1,5 +1,5 @@
+import { authenticate } from "@lastmile/api/middlewares/authenticate";
 import { Router } from "express";
-import { authenticate } from "../../../middlewares/authenticate";
 
 const router = Router();
 
