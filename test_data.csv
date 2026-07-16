@@ -1,0 +1,7 @@
+fullName,phoneNumber,currency,preferredLanguage,isProxy
+Alice Smith,+254712345678,KES,en,false
+Bob Johnson,+254723456789,USDC,sw,false
+Charlie Proxy,+254734567890,KES,en,true
+Diana Prince,+254745678901,USDC,tu,false
+Edward Elric,+254756789012,KES,sw,true
+Fiona Gallagher,+254767890123,USDC,en,false
