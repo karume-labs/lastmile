@@ -1,5 +1,5 @@
-import { Router } from "express";
 import { handleUSSDRequest } from "@lastmile/participant-channels";
+import { Router } from "express";
 
 const router = Router();
 

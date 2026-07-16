@@ -1,6 +1,5 @@
 import AfricasTalking from "africastalking";
 
-
 interface AfricasTalkingSMSResponse {
   SMSMessageData: {
     Message: string;
@@ -36,9 +35,7 @@ if (!apiKey) {
 
 console.log("\n🔍 --- DIAGNOSTIC CHECK ---");
 console.log(`Loaded Username: '${username}'`);
-console.log(
-  `Loaded API Key: '${apiKey.slice(0, 12)}...[HIDDEN]... (Length: ${apiKey.length})'`,
-);
+console.log(`Loaded API Key: '${apiKey.slice(0, 12)}...[HIDDEN]... (Length: ${apiKey.length})'`);
 console.log("---------------------------\n");
 
 const africasTalking = AfricasTalking({
@@ -85,9 +82,7 @@ export async function sendOtpAlert(
   const { phoneNumber, refId, otp } = payload;
 
   if (!phoneNumber || !refId || !otp) {
-    throw new Error(
-      "sendOtpAlert requires phoneNumber, refId, and otp to all be set",
-    );
+    throw new Error("sendOtpAlert requires phoneNumber, refId, and otp to all be set");
   }
 
   const message = `SAPCONE LastMile: Your reference is ${refId}. Your OTP is ${otp}. Do not share this code.`;

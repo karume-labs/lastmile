@@ -1,11 +1,13 @@
+import { auth } from "@lastmile/auth";
+import { toNodeHandler } from "better-auth/node";
 import cors from "cors";
 import express, { type Request, type Response } from "express";
 import helmet from "helmet";
-import authRouter from "./features/auth/routers";
 import clawbackRouter from "./features/clawback/routers";
 import offrampRouter from "./features/offramp/routers";
 import syncRouter from "./features/sync/routers";
 import ussdSessionRouter from "./features/ussd/routers";
+import { auditLogMiddleware } from "./middlewares/audit-log";
 import { errorHandler } from "./middlewares/error-handler";
 
 const PORT = Number(process.env.PORT || "8000");
@@ -24,13 +26,18 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Better Auth
+app.all("/api/auth/*", toNodeHandler(auth));
+
+// Audit Logging (after basic middlewares, before feature routers)
+app.use(auditLogMiddleware);
+
 // Health Check
 app.get("/api/health", (_req: Request, res: Response) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
 // Feature Routers
-app.use("/api/auth", authRouter);
 app.use("/api/sync", syncRouter);
 app.use("/api/ussd", ussdSessionRouter);
 app.use("/api/admin", clawbackRouter);

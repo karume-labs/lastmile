@@ -1,6 +1,6 @@
-import { identities } from "../../identity/schema/index";
 import { relations, sql } from "drizzle-orm";
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { identities } from "../../identity/schema/index";
 
 export const registrations = sqliteTable(
   "registrations",
@@ -12,6 +12,9 @@ export const registrations = sqliteTable(
       .references(() => identities.id),
     phoneNumber: text("phone_number").notNull(),
     currency: text("currency").notNull(),
+    preferredLanguage: text("preferred_language", { enum: ["en", "sw", "tu"] })
+      .default("en")
+      .notNull(),
     isProxy: integer("is_proxy", { mode: "boolean" }).notNull(),
     createdAt: integer("created_at", { mode: "timestamp" })
       .default(sql`(strftime('%s', 'now'))`)
