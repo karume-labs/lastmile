@@ -138,10 +138,8 @@ export const SmsContent = () => {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold tracking-tight">SMS Messages</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" /> Send SMS
-            </Button>
+          <DialogTrigger render={<Button />}>
+            <Plus className="mr-2 h-4 w-4" /> Send SMS
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
