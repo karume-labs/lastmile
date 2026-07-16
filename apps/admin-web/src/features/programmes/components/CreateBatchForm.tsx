@@ -12,8 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { Form, FormField } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -56,18 +55,16 @@ export const CreateBatchForm = ({ onSuccess }: CreateBatchFormProps = {}) => {
               control={form.control}
               name="programmeName"
               render={({ field }) => (
-                <Field data-invalid={!!form.formState.errors.programmeName}>
-                  <FieldLabel htmlFor={field.name}>Programme Name</FieldLabel>
-                  <Input
-                    id={field.name}
-                    placeholder="e.g., Emergency Relief Q4"
-                    {...field}
-                    aria-invalid={!!form.formState.errors.programmeName}
-                  />
-                  {form.formState.errors.programmeName && (
-                    <FieldError>{form.formState.errors.programmeName.message}</FieldError>
-                  )}
-                </Field>
+                <FormItem>
+                  <FormLabel>Programme Name</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="e.g., Emergency Relief Q4"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
             />
 
@@ -75,17 +72,19 @@ export const CreateBatchForm = ({ onSuccess }: CreateBatchFormProps = {}) => {
               control={form.control}
               name="targetCurrency"
               render={({ field }) => (
-                <Field data-invalid={!!form.formState.errors.targetCurrency}>
-                  <FieldLabel htmlFor={field.name}>Target Currency</FieldLabel>
+                <FormItem>
+                  <FormLabel>Target Currency</FormLabel>
                   <Select
                     value={field.value}
                     onValueChange={(value) => {
                       if (value) field.onChange(value);
                     }}
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select currency" />
-                    </SelectTrigger>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select currency" />
+                      </SelectTrigger>
+                    </FormControl>
                     <SelectContent>
                       <SelectItem value="USD">USD - US Dollar</SelectItem>
                       <SelectItem value="NGN">NGN - Nigerian Naira</SelectItem>
@@ -93,10 +92,8 @@ export const CreateBatchForm = ({ onSuccess }: CreateBatchFormProps = {}) => {
                       <SelectItem value="GHS">GHS - Ghanaian Cedi</SelectItem>
                     </SelectContent>
                   </Select>
-                  {form.formState.errors.targetCurrency && (
-                    <FieldError>{form.formState.errors.targetCurrency.message}</FieldError>
-                  )}
-                </Field>
+                  <FormMessage />
+                </FormItem>
               )}
             />
 
@@ -104,20 +101,18 @@ export const CreateBatchForm = ({ onSuccess }: CreateBatchFormProps = {}) => {
               control={form.control}
               name="batchSize"
               render={({ field }) => (
-                <Field data-invalid={!!form.formState.errors.batchSize}>
-                  <FieldLabel htmlFor={field.name}>Batch Size</FieldLabel>
-                  <Input
-                    id={field.name}
-                    type="number"
-                    placeholder="Number of participants"
-                    {...field}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                    aria-invalid={!!form.formState.errors.batchSize}
-                  />
-                  {form.formState.errors.batchSize && (
-                    <FieldError>{form.formState.errors.batchSize.message}</FieldError>
-                  )}
-                </Field>
+                <FormItem>
+                  <FormLabel>Batch Size</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Number of participants"
+                      {...field}
+                      onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
             />
           </div>

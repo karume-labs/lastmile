@@ -17,9 +17,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { Form, FormField } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { DataTable } from "@/features/shared/components/table/DataTable";
 import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
 import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
@@ -147,25 +147,19 @@ export const SmsContent = () => {
                     control={form.control}
                     name="recipient"
                     render={({ field }) => (
-                      <Field data-invalid={!!form.formState.errors.recipient}>
-                        <FieldLabel
-                          htmlFor={field.name}
-                          className="text-xs font-bold text-foreground"
-                        >
+                      <FormItem>
+                        <FormLabel className="text-xs font-bold text-foreground">
                           Recipient Phone Number
-                        </FieldLabel>
-                        <Input
-                          id={field.name}
-                          type="text"
-                          placeholder="+1234567890"
-                          className="bg-muted/50 rounded-xl"
-                          {...field}
-                          aria-invalid={!!form.formState.errors.recipient}
-                        />
-                        {form.formState.errors.recipient && (
-                          <FieldError>{form.formState.errors.recipient.message}</FieldError>
-                        )}
-                      </Field>
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="+1234567890"
+                            className="bg-muted/50 rounded-xl"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
                     )}
                   />
 
@@ -173,24 +167,19 @@ export const SmsContent = () => {
                     control={form.control}
                     name="content"
                     render={({ field }) => (
-                      <Field data-invalid={!!form.formState.errors.content}>
-                        <FieldLabel
-                          htmlFor={field.name}
-                          className="text-xs font-bold text-foreground"
-                        >
+                      <FormItem>
+                        <FormLabel className="text-xs font-bold text-foreground">
                           Message Content
-                        </FieldLabel>
-                        <textarea
-                          id={field.name}
-                          className="flex min-h-20 w-full bg-muted/50 rounded-xl border border-input px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                          placeholder="Type your message here..."
-                          aria-invalid={!!form.formState.errors.content}
-                          {...field}
-                        />
-                        {form.formState.errors.content && (
-                          <FieldError>{form.formState.errors.content.message}</FieldError>
-                        )}
-                      </Field>
+                        </FormLabel>
+                        <FormControl>
+                          <Textarea
+                            className="bg-muted/50 rounded-xl min-h-20"
+                            placeholder="Type your message here..."
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
                     )}
                   />
 

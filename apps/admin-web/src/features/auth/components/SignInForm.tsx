@@ -6,10 +6,9 @@ import { AuthSignInSchema } from "@lastmile/validators/auth";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { Form, FormField } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useSignIn } from "../services/mutations";
+import { useSignIn } from "@/features/auth/services/mutations";
 
 export const SignInForm = () => {
   const signInMutation = useSignIn();
@@ -50,22 +49,20 @@ export const SignInForm = () => {
               control={form.control}
               name="email"
               render={({ field }) => (
-                <Field data-invalid={!!form.formState.errors.email}>
-                  <FieldLabel htmlFor={field.name} className="text-xs font-bold text-foreground">
+                <FormItem>
+                  <FormLabel className="text-xs font-bold text-foreground">
                     Email Address
-                  </FieldLabel>
-                  <Input
-                    id={field.name}
-                    type="email"
-                    placeholder="m@example.com"
-                    className="bg-muted/50 rounded-xl"
-                    {...field}
-                    aria-invalid={!!form.formState.errors.email}
-                  />
-                  {form.formState.errors.email && (
-                    <FieldError>{form.formState.errors.email.message}</FieldError>
-                  )}
-                </Field>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      placeholder="m@example.com"
+                      className="bg-muted/50 rounded-xl"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
             />
 
@@ -73,11 +70,11 @@ export const SignInForm = () => {
               control={form.control}
               name="password"
               render={({ field }) => (
-                <Field data-invalid={!!form.formState.errors.password}>
+                <FormItem>
                   <div className="flex items-center justify-between w-full">
-                    <FieldLabel htmlFor={field.name} className="text-xs font-bold text-foreground">
+                    <FormLabel className="text-xs font-bold text-foreground">
                       Password
-                    </FieldLabel>
+                    </FormLabel>
                     <Link
                       href="/forgot-password"
                       className="text-sm font-medium text-primary hover:underline"
@@ -85,18 +82,16 @@ export const SignInForm = () => {
                       Forgot password?
                     </Link>
                   </div>
-                  <Input
-                    id={field.name}
-                    type="password"
-                    placeholder="**********"
-                    className="bg-muted/50 rounded-xl"
-                    {...field}
-                    aria-invalid={!!form.formState.errors.password}
-                  />
-                  {form.formState.errors.password && (
-                    <FieldError>{form.formState.errors.password.message}</FieldError>
-                  )}
-                </Field>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="**********"
+                      className="bg-muted/50 rounded-xl"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
             />
 

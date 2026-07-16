@@ -6,10 +6,9 @@ import { AuthSignUpSchema } from "@lastmile/validators/auth";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { Form, FormField } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useSignUp } from "../services/mutations";
+import { useSignUp } from "@/features/auth/services/mutations";
 
 export const SignUpForm = () => {
   const signUpMutation = useSignUp();
@@ -53,42 +52,38 @@ export const SignUpForm = () => {
                 control={form.control}
                 name="firstName"
                 render={({ field }) => (
-                  <Field data-invalid={!!form.formState.errors.firstName}>
-                    <FieldLabel htmlFor={field.name} className="text-xs font-bold text-foreground">
+                  <FormItem>
+                    <FormLabel className="text-xs font-bold text-foreground">
                       First Name
-                    </FieldLabel>
-                    <Input
-                      id={field.name}
-                      placeholder="John"
-                      className="bg-muted/50 rounded-xl"
-                      {...field}
-                      aria-invalid={!!form.formState.errors.firstName}
-                    />
-                    {form.formState.errors.firstName && (
-                      <FieldError>{form.formState.errors.firstName.message}</FieldError>
-                    )}
-                  </Field>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="John"
+                        className="bg-muted/50 rounded-xl"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
                 name="lastName"
                 render={({ field }) => (
-                  <Field data-invalid={!!form.formState.errors.lastName}>
-                    <FieldLabel htmlFor={field.name} className="text-xs font-bold text-foreground">
+                  <FormItem>
+                    <FormLabel className="text-xs font-bold text-foreground">
                       Last Name
-                    </FieldLabel>
-                    <Input
-                      id={field.name}
-                      placeholder="Doe"
-                      className="bg-muted/50 rounded-xl"
-                      {...field}
-                      aria-invalid={!!form.formState.errors.lastName}
-                    />
-                    {form.formState.errors.lastName && (
-                      <FieldError>{form.formState.errors.lastName.message}</FieldError>
-                    )}
-                  </Field>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Doe"
+                        className="bg-muted/50 rounded-xl"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
               />
             </div>
@@ -97,22 +92,20 @@ export const SignUpForm = () => {
               control={form.control}
               name="email"
               render={({ field }) => (
-                <Field data-invalid={!!form.formState.errors.email}>
-                  <FieldLabel htmlFor={field.name} className="text-xs font-bold text-foreground">
+                <FormItem>
+                  <FormLabel className="text-xs font-bold text-foreground">
                     Email Address
-                  </FieldLabel>
-                  <Input
-                    id={field.name}
-                    type="email"
-                    placeholder="m@example.com"
-                    className="bg-muted/50 rounded-xl"
-                    {...field}
-                    aria-invalid={!!form.formState.errors.email}
-                  />
-                  {form.formState.errors.email && (
-                    <FieldError>{form.formState.errors.email.message}</FieldError>
-                  )}
-                </Field>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      placeholder="m@example.com"
+                      className="bg-muted/50 rounded-xl"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
             />
 
@@ -120,22 +113,20 @@ export const SignUpForm = () => {
               control={form.control}
               name="password"
               render={({ field }) => (
-                <Field data-invalid={!!form.formState.errors.password}>
-                  <FieldLabel htmlFor={field.name} className="text-xs font-bold text-foreground">
+                <FormItem>
+                  <FormLabel className="text-xs font-bold text-foreground">
                     Password
-                  </FieldLabel>
-                  <Input
-                    id={field.name}
-                    type="password"
-                    placeholder="Enter password"
-                    className="bg-muted/50 rounded-xl"
-                    {...field}
-                    aria-invalid={!!form.formState.errors.password}
-                  />
-                  {form.formState.errors.password && (
-                    <FieldError>{form.formState.errors.password.message}</FieldError>
-                  )}
-                </Field>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Enter password"
+                      className="bg-muted/50 rounded-xl"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
               )}
             />
 
