@@ -6,58 +6,16 @@ interface InputProps extends TextInputProps {
   error?: string;
   hint?: string;
   icon?: LucideIcon;
-  inputType?: "text" | "name" | "phone" | "number";
-  maxLength?: number;
 }
 
 /**
- * Enhanced generic input component with:
- * - Professional styling
- * - Input-type-specific handling
- * - Max length enforcement
- * - Clear error messaging
- * - Accessibility support
+ * Professional input component with:
+ * - Clear label, error, and hint messaging
+ * - Icon support for field context
+ * - Proper spacing and styling
+ * - Error state styling
  */
-export const Input = ({
-  label,
-  error,
-  hint,
-  icon: Icon,
-  inputType = "text",
-  maxLength = 500,
-  onChangeText,
-  ...inputProps
-}: InputProps) => {
-  // Handle input-type-specific transformations
-  const handleChangeText = (text: string) => {
-    let processed = text;
-
-    // Input type-specific processing
-    switch (inputType) {
-      case "name":
-        // Name: trim, prevent multiple spaces
-        processed = text.replace(/\s+/g, " ").trim();
-        break;
-      case "phone":
-        // Phone: remove non-digits and + symbol
-        processed = text.replace(/[^\d+]/g, "");
-        break;
-      case "number":
-        // Number: only digits
-        processed = text.replace(/[^\d]/g, "");
-        break;
-      case "text":
-      default:
-        // Text: just trim spaces
-        processed = text.trim();
-    }
-
-    // Enforce max length
-    processed = processed.substring(0, maxLength);
-
-    onChangeText?.(processed);
-  };
-
+export const Input = ({ label, error, hint, icon: Icon, ...inputProps }: InputProps) => {
   return (
     <View className="gap-1.5">
       {label ? <Text className="text-sm font-semibold text-foreground">{label}</Text> : null}
@@ -70,8 +28,6 @@ export const Input = ({
         <TextInput
           className="flex-1 py-3 text-base text-foreground"
           placeholderTextColor="#a1a1aa"
-          maxLength={maxLength}
-          onChangeText={handleChangeText}
           {...inputProps}
         />
       </View>

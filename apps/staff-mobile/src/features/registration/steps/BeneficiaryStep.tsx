@@ -7,10 +7,9 @@ import { SegmentedControl } from "@/src/components/ui/SegmentedControl";
 import { genders, type RegistrationFormValues, sanitizeName, sanitizePhoneNumber } from "@/src/features/registration/schema";
 
 /**
- * Beneficiary information step with enterprise-grade input handling:
- * - Professional input components with proper keyboards
+ * Beneficiary information step with professional input handling:
+ * - Name, date, gender, and phone fields
  * - Input sanitization and validation
- * - Clear error messaging
  * - Conditional rendering for phone vs proxy
  */
 export const BeneficiaryStep = () => {
@@ -30,7 +29,6 @@ export const BeneficiaryStep = () => {
         render={({ field: { onChange, onBlur, value } }) => (
           <Input
             label="Full Name"
-            inputType="name"
             autoCapitalize="words"
             error={errors.fullName?.message}
             onBlur={onBlur}
