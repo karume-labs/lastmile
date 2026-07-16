@@ -4,6 +4,7 @@
       "id": "reg-001",
       "referenceId": "REG-2026-001",
       "identityId": "ident-001",
+      "programmeId": "prog-001",
       "currency": "USDC",
       "preferredLanguage": "sw",
       "isProxy": false
@@ -12,6 +13,7 @@
       "id": "reg-002",
       "referenceId": "REG-2026-002",
       "identityId": "ident-002",
+      "programmeId": "prog-001",
       "currency": "USDC",
       "preferredLanguage": "en",
       "isProxy": false
@@ -20,6 +22,7 @@
       "id": "reg-003",
       "referenceId": "REG-2026-003",
       "identityId": "ident-003",
+      "programmeId": "prog-002",
       "currency": "KES",
       "preferredLanguage": "sw",
       "isProxy": true
@@ -28,6 +31,7 @@
       "id": "reg-004",
       "referenceId": "REG-2026-004",
       "identityId": "ident-004",
+      "programmeId": "prog-001",
       "currency": "USDC",
       "preferredLanguage": "en",
       "isProxy": false
@@ -36,6 +40,7 @@
       "id": "reg-005",
       "referenceId": "REG-2026-005",
       "identityId": "ident-005",
+      "programmeId": "prog-003",
       "currency": "USDC",
       "preferredLanguage": "sw",
       "isProxy": false

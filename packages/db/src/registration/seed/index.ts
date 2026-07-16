@@ -22,6 +22,7 @@ export async function seedRegistrations() {
         id: item.id,
         referenceId: item.referenceId,
         identityId: item.identityId,
+        programmeId: item.programmeId,
         currency: item.currency,
         preferredLanguage: item.preferredLanguage as "en" | "sw" | "tu",
         isProxy: item.isProxy,
