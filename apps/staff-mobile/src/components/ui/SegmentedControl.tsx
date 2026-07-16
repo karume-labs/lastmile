@@ -12,7 +12,7 @@ interface SegmentedControlProps<T extends string> {
   onChange: (value: T) => void;
 }
 
-export const SegmentedControl = <T extends string>({ label, value, options, onChange }: SegmentedControlProps<T>) => {
+export const SegmentedControl = <T extends string,>({ label, value, options, onChange }: SegmentedControlProps<T>) => {
   return (
     <View className="gap-1.5">
       {label ? <Text className="text-sm font-medium text-foreground">{label}</Text> : null}

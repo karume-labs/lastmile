@@ -43,8 +43,9 @@ export const PasswordInput = ({
         }`}
       >
         <TextInput
-          className="flex-1 py-3 text-base text-foreground"
+          className="flex-1 py-3 text-base"
           placeholderTextColor="#a1a1aa"
+          style={{ color: "#09090b" }}
           secureTextEntry={!showPassword}
           value={value}
           onChangeText={onChangeText}

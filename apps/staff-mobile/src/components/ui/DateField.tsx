@@ -25,7 +25,7 @@ export const DateField = ({ label, error, hint, value, onChange, maximumDate = n
 
   return (
     <View className="gap-1.5">
-      {label ? <Text className="text-sm font-medium text-foreground">{label}</Text> : null}
+      {label ? <Text className="text-sm font-semibold text-foreground">{label}</Text> : null}
       <Pressable
         className={`flex-row items-center gap-2 rounded-lg border bg-background px-3 py-3 ${
           error ? "border-destructive" : "border-border"

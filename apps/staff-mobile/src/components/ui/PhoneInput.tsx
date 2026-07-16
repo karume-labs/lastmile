@@ -65,8 +65,9 @@ export const PhoneInput = ({
       >
         <Phone size={20} color={error ? "#ef4444" : "#71717a"} />
         <TextInput
-          className="flex-1 py-3 text-base text-foreground"
+          className="flex-1 py-3 text-base"
           placeholderTextColor="#a1a1aa"
+          style={{ color: "#09090b" }}
           keyboardType="phone-pad"
           autoCapitalize="none"
           autoCorrect={false}
