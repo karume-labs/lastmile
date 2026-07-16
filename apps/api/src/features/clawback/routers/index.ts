@@ -14,7 +14,7 @@ const router = Router();
  * Queries disbursements where status = 'stagnant' (or pending > 7 days),
  * returns Reference ID, amount, and daysPending.
  */
-router.get("/stagnant-funds", requireRole("admin"), async (_req, res, next) => {
+const getStagnantFunds = async (_req: any, res: any, next: any) => {
   try {
     const list = await db
       .select({
@@ -46,7 +46,10 @@ router.get("/stagnant-funds", requireRole("admin"), async (_req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
+
+router.get("/", requireRole("admin"), getStagnantFunds);
+router.get("/stagnant-funds", requireRole("admin"), getStagnantFunds);
 
 /**
  * POST /api/admin/clawback/execute
