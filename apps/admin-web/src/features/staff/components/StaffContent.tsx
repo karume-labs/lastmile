@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
 import { DataTable } from "@/features/shared/components/table/DataTable";
 import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
 import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
@@ -24,7 +25,7 @@ export const StaffContent = () => {
   const [roleFilter, setRoleFilter] = useQueryState("role", parseAsString.withDefault(""));
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
 
-  const { data: staffResponse, isLoading } = useStaff();
+  const { data: staffResponse, isLoading, isError, error } = useStaff();
 
   const columns: ColumnDef<StaffMember, unknown>[] = [
     {
@@ -85,6 +86,10 @@ export const StaffContent = () => {
       },
     },
   ];
+
+  if (isError && ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)) {
+    return <PermissionDenied />;
+  }
 
   if (isLoading) {
     return <DataTableSkeleton columnCount={5} />;

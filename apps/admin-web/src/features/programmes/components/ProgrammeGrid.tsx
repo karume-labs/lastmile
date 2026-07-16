@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useProgrammes } from "@/features/programmes/services/queries";
+import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
 import { DataTable } from "@/features/shared/components/table/DataTable";
 import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
 import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
@@ -37,7 +38,7 @@ export const ProgrammeGrid = () => {
     parseAsString.withDefault(""),
   );
 
-  const { data: programmesResponse, isLoading } = useProgrammes();
+  const { data: programmesResponse, isLoading, isError, error } = useProgrammes();
 
   const handleClearFilters = () => {
     clearFilters();
@@ -130,6 +131,10 @@ export const ProgrammeGrid = () => {
       },
     },
   ];
+
+  if (isError && ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)) {
+    return <PermissionDenied />;
+  }
 
   if (isLoading) {
     return <DataTableSkeleton columnCount={6} />;

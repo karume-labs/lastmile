@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useDeliveries } from "@/features/deliveries/services/queries";
+import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
 import { DataTable } from "@/features/shared/components/table/DataTable";
 import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
 import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
@@ -42,7 +43,7 @@ export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => 
 
   const [methodFilter, setMethodFilter] = useQueryState("method", parseAsString.withDefault(""));
 
-  const { data: deliveriesResponse, isLoading } = useDeliveries();
+  const { data: deliveriesResponse, isLoading, isError, error } = useDeliveries();
 
   const columns: ColumnDef<Disbursement, unknown>[] = [
     {
@@ -133,6 +134,10 @@ export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => 
       },
     },
   ];
+
+  if (isError && ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)) {
+    return <PermissionDenied />;
+  }
 
   if (isLoading) {
     return <DataTableSkeleton columnCount={8} />;

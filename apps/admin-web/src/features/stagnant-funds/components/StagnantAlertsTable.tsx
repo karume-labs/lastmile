@@ -17,6 +17,7 @@ import { DataTableSkeleton } from "@/features/shared/components/table/DataTableS
 import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
 import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
 import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
+import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
 import { useStagnantFunds } from "@/features/stagnant-funds/services/queries";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -31,7 +32,7 @@ interface StagnantAlertsTableProps {
 
 export const StagnantAlertsTable = ({ onClawbackSelect }: StagnantAlertsTableProps) => {
   const { search, setSearch, clearFilters } = useDataTablePagination();
-  const { data: stagnantFundsResponse, isLoading } = useStagnantFunds();
+  const { data: stagnantFundsResponse, isLoading, isError, error } = useStagnantFunds();
 
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
 
@@ -112,6 +113,10 @@ export const StagnantAlertsTable = ({ onClawbackSelect }: StagnantAlertsTablePro
       },
     },
   ];
+
+  if (isError && ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)) {
+    return <PermissionDenied />;
+  }
 
   if (isLoading) {
     return <DataTableSkeleton columnCount={8} />;
