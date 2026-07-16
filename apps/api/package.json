@@ -6,16 +6,19 @@
     "dev": "bun --watch src/server.ts"
   },
   "dependencies": {
-    "express": "^4.21.1",
-    "@types/express": "^5.0.0",
-    "cors": "^2.8.5",
-    "@types/cors": "^2.8.17",
-    "helmet": "^8.0.0",
-    "better-auth": "^1.1.20",
     "@lastmile/auth": "workspace:*",
     "@lastmile/db": "workspace:*",
-    "@lastmile/validators": "workspace:*",
     "@lastmile/types": "workspace:*",
-    "@lastmile/participant-ussd": "workspace:*"
+    "@lastmile/validators": "workspace:*",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "better-auth": "^1.1.20",
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "helmet": "^8.0.0",
+    "dotenv": "^17.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1"
   }
 }
