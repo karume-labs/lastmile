@@ -13,7 +13,8 @@
     "./audit": "./src/audit.ts",
     "./sms": "./src/sms.ts",
     "./sync": "./src/sync.ts",
-    "./ussd": "./src/ussd.ts"
+    "./ussd": "./src/ussd.ts",
+    "./staff": "./src/staff.ts"
   },
   "dependencies": {
     "@lastmile/db": "workspace:*",

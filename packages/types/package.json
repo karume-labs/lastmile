@@ -12,7 +12,8 @@
     "./identity": "./src/identity.ts",
     "./audit": "./src/audit.ts",
     "./sms": "./src/sms.ts",
-    "./ussd": "./src/ussd.ts"
+    "./ussd": "./src/ussd.ts",
+    "./staff": "./src/staff.ts"
   },
   "dependencies": {
     "@lastmile/validators": "workspace:*",

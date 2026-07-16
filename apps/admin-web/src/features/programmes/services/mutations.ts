@@ -40,3 +40,17 @@ export const useToggleProgrammeStatus = () => {
     },
   });
 };
+
+export const useDisburseProgramme = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: { programmeId: string; amountUsdc: number }) => {
+      const response = await apiClient.post("/programmes/disburse", payload);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["programmes"] });
+    },
+  });
+};

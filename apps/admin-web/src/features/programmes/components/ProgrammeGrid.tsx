@@ -4,19 +4,7 @@ import type { Programme } from "@lastmile/types/programmes";
 import type { ColumnDef } from "@tanstack/react-table";
 import { parseAsString, useQueryState } from "nuqs";
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
-import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -24,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DisburseDialog } from "@/features/programmes/components/DisburseDialog";
 import { useProgrammes } from "@/features/programmes/services/queries";
 import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
 import { DataTable } from "@/features/shared/components/table/DataTable";
@@ -56,19 +45,6 @@ export const ProgrammeGrid = () => {
     setStatusFilter("");
     setAudienceFilter("");
   };
-
-  const disburseMutation = useMutation({
-    mutationFn: async (payload: { programmeId: string; amountUsdc: number }) => {
-      const response = await axios.post("/api/programmes/disburse", payload);
-      return response.data;
-    },
-    onSuccess: (res) => {
-      toast.success(res.message || "Disbursement initiated");
-    },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.error || "Failed to disburse");
-    },
-  });
 
   const columns: ColumnDef<Programme, unknown>[] = [
     {
@@ -204,44 +180,11 @@ export const ProgrammeGrid = () => {
         emptyMessage="No programmes found."
       />
 
-      <Dialog
+      <DisburseDialog
         open={!!disburseConfirmTarget}
         onOpenChange={(open) => !open && setDisburseConfirmTarget(null)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirm Disbursement Batch</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to disburse to all participants in{" "}
-              <strong className="text-foreground">{disburseConfirmTarget?.name}</strong>?
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDisburseConfirmTarget(null)}
-              disabled={disburseMutation.isPending}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                if (disburseConfirmTarget) {
-                  disburseMutation.mutate(
-                    { programmeId: disburseConfirmTarget.id, amountUsdc: 10 },
-                    {
-                      onSuccess: () => setDisburseConfirmTarget(null),
-                    },
-                  );
-                }
-              }}
-              disabled={disburseMutation.isPending}
-            >
-              {disburseMutation.isPending ? "Disbursing..." : "Confirm Disbursement"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        programme={disburseConfirmTarget}
+      />
     </>
   );
 };
