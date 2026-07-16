@@ -38,15 +38,6 @@ export const SignInForm = () => {
           Welcome back to <span className="text-primary">Last</span>
           <span className="text-foreground">Mile</span>
         </h1>
-        <p className="text-sm text-muted-foreground px-4">
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/sign-up"
-            className="text-muted-foreground underline decoration-border underline-offset-4 hover:text-foreground"
-          >
-            Sign up
-          </Link>
-        </p>
       </div>
 
       <Form {...form}>

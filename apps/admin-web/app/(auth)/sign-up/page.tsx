@@ -1,5 +1,5 @@
-import { SignUpForm } from "@/features/auth/components/SignUpForm";
+import { notFound } from "next/navigation";
 
 export default function SignUpPage() {
-  return <SignUpForm />;
+  notFound();
 }

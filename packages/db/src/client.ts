@@ -1,6 +1,7 @@
 import { env } from "@lastmile/db/env";
 import * as audit from "@lastmile/db/schemas/audit";
 import * as auth from "@lastmile/db/schemas/auth";
+import * as clawback from "@lastmile/db/schemas/clawback";
 import * as identity from "@lastmile/db/schemas/identity";
 import * as programmes from "@lastmile/db/schemas/programmes";
 import * as registration from "@lastmile/db/schemas/registration";
@@ -15,6 +16,7 @@ const schema = {
   ...programmes,
   ...audit,
   ...sms,
+  ...clawback,
 };
 
 const client = createClient({

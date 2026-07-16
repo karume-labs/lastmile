@@ -8,16 +8,22 @@
   "exports": {
     "./client": "./src/client.ts",
     "./env": "./src/env.ts",
-    "./schemas/auth": "./src/schema/auth.ts",
+    "./schemas/auth": "./src/auth/schema/index.ts",
     "./schemas/identity": "./src/identity/schema/index.ts",
     "./schemas/registration": "./src/registration/schema/index.ts",
     "./schemas/programmes": "./src/programmes/schema/index.ts",
     "./schemas/audit": "./src/audit/schema/index.ts",
-    "./schemas/sms": "./src/sms/schema/index.ts"
+    "./schemas/sms": "./src/sms/schema/index.ts",
+    "./schemas/clawback": "./src/clawback/schema/index.ts",
+    "./seed": "./src/seed/index.ts",
+    "./seed/env": "./src/seed/env/index.ts",
+    "./auth/seed": "./src/auth/seed/index.ts"
   },
   "dependencies": {
     "@libsql/client": "^0.14.0",
-    "drizzle-orm": "^0.38.0"
+    "better-auth": "workspace:*",
+    "drizzle-orm": "^0.38.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "drizzle-kit": "^0.30.0"
@@ -27,7 +33,9 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:migrate": "drizzle-kit migrate",
-    "db:seed": "bun src/seed.ts",
+    "db:seed": "bun run src/seed/index.ts",
+    "db:seed:fresh": "bun run db:migrate && bun run src/seed/index.ts -f",
+    "db:seed:admin": "bun run src/auth/seed/index.ts",
     "typecheck": "tsc --noEmit"
   }
 }
