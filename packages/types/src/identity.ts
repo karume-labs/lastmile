@@ -4,7 +4,7 @@ import type {
   ProxyInsertSchema,
   ProxySelectSchema,
 } from "@lastmile/validators/identity";
-import type { z } from "zod";
+import type { z } from "zod/v4";
 
 export type Identity = z.infer<typeof IdentitySelectSchema>;
 export type InsertIdentity = z.infer<typeof IdentityInsertSchema>;

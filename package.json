@@ -39,5 +39,8 @@
     "@types/africastalking": "^0.8.0",
     "@types/node": "^20",
     "@types/react": "^19"
+  },
+  "overrides": {
+    "zod": "^3.23.8"
   }
 }
