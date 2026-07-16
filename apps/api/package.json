@@ -10,7 +10,7 @@
     "@lastmile/db": "workspace:*",
     "@lastmile/types": "workspace:*",
     "@lastmile/validators": "workspace:*",
-    "@lastmile/participant-channel": "workspace:*",
+    "@lastmile/participant-channels": "workspace:*",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "better-auth": "^1.1.20",
