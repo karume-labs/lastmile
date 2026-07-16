@@ -1,4 +1,5 @@
-import { db, schema } from "@lastmile/db";
+import { db } from "@lastmile/db/client";
+import * as schema from "@lastmile/db/schemas/auth";
 import { env } from "@lastmile/auth/env";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
