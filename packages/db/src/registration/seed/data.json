@@ -1,0 +1,44 @@
+{
+  "registrations": [
+    {
+      "id": "reg-001",
+      "referenceId": "REG-2026-001",
+      "identityId": "ident-001",
+      "currency": "USDC",
+      "preferredLanguage": "sw",
+      "isProxy": false
+    },
+    {
+      "id": "reg-002",
+      "referenceId": "REG-2026-002",
+      "identityId": "ident-002",
+      "currency": "USDC",
+      "preferredLanguage": "en",
+      "isProxy": false
+    },
+    {
+      "id": "reg-003",
+      "referenceId": "REG-2026-003",
+      "identityId": "ident-003",
+      "currency": "KES",
+      "preferredLanguage": "sw",
+      "isProxy": true
+    },
+    {
+      "id": "reg-004",
+      "referenceId": "REG-2026-004",
+      "identityId": "ident-004",
+      "currency": "USDC",
+      "preferredLanguage": "en",
+      "isProxy": false
+    },
+    {
+      "id": "reg-005",
+      "referenceId": "REG-2026-005",
+      "identityId": "ident-005",
+      "currency": "USDC",
+      "preferredLanguage": "sw",
+      "isProxy": false
+    }
+  ]
+}

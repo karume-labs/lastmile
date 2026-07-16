@@ -1,32 +1,38 @@
+import data from "@lastmile/db/auth/seed/data.json";
 import { db } from "@lastmile/db/client";
 import { user } from "@lastmile/db/schemas/auth";
+import { eq } from "drizzle-orm";
 
 export async function seedStaff() {
-  console.log("Seeding staff members...");
+  console.log("  Seeding staff & field agent accounts...");
+  let insertedCount = 0;
 
-  const staffData = [
-    {
-      id: "staff-1",
-      name: "Jane Doe (Staff)",
-      email: "jane.doe@lastmile.com",
-      role: "staff" as const,
-      emailVerified: true,
-    },
-    {
-      id: "staff-2",
-      name: "John Smith (Admin)",
-      email: "john.smith@lastmile.com",
-      role: "admin" as const,
-      emailVerified: true,
-    },
-  ];
+  for (const u of data.users) {
+    const existing = await db.query.user.findFirst({
+      where: (users, { eq }) => eq(users.email, u.email),
+    });
 
-  for (const staff of staffData) {
-    try {
-      await db.insert(user).values(staff).onConflictDoNothing();
-      console.log(`Inserted ${staff.email} as ${staff.role}`);
-    } catch (e) {
-      console.error(`Failed to insert ${staff.email}`, e);
+    if (existing) {
+      console.log(`    User "${u.email}" already exists, skipping.`);
+      continue;
     }
+
+    try {
+      await db.insert(user).values({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        role: u.role,
+        emailVerified: u.emailVerified,
+      });
+      console.log(`    Inserted "${u.email}" (${u.role}).`);
+      insertedCount++;
+    } catch (e) {
+      console.error(`    Failed to insert "${u.email}"`, e);
+    }
+  }
+
+  if (insertedCount > 0) {
+    console.log(`  Seeded ${insertedCount} account(s).`);
   }
 }

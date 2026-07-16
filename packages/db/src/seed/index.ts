@@ -1,13 +1,26 @@
 import { createInterface } from "node:readline";
+import { seedAuditLogs } from "@lastmile/db/audit/seed";
 import { seedSuperAdmin } from "@lastmile/db/auth/seed";
 import { seedStaff } from "@lastmile/db/auth/seed/staff";
+import { seedClawbackLogs } from "@lastmile/db/clawback/seed";
 import { db } from "@lastmile/db/client";
+import { seedIdentities } from "@lastmile/db/identity/seed";
+import { seedProgrammes } from "@lastmile/db/programmes/seed";
+import { seedRegistrations } from "@lastmile/db/registration/seed";
 import { env } from "@lastmile/db/seed/env";
+import { seedSmsMessages } from "@lastmile/db/sms/seed";
 import { sql } from "drizzle-orm";
 
-// Entity flags that can be passed via CLI (e.g., --auth)
-// Future entities (e.g. "identities", "registrations", "programmes") will be added to this list
-const ENTITY_FLAGS = ["auth", "staff"] as const;
+const ENTITY_FLAGS = [
+  "auth",
+  "staff",
+  "identity",
+  "registration",
+  "programmes",
+  "sms",
+  "audit",
+  "clawback",
+] as const;
 
 type Entity = (typeof ENTITY_FLAGS)[number];
 
@@ -18,19 +31,17 @@ Usage: bun run db:seed [options]
 
 Options:
   --auth           Seed super admin user from ADMIN_EMAIL and ADMIN_PASSWORD
+  --staff          Seed staff, admin, and field agent users
+  --identity       Seed identities and proxies
+  --registration   Seed registrations
+  --programmes     Seed programmes, batches, and disbursements
+  --sms            Seed SMS notifications
+  --audit          Seed audit logs
+  --clawback       Seed clawback logs
   --force, -f      Clear all data before seeding
   --help, -h       Show this help message
 
 If no entity flags are specified, all connected entities are seeded.
-Currently connected seeders:
-  - auth (Super Admin)
-Future entities (` +
-      "`identities`" +
-      `, ` +
-      "`registrations`" +
-      `, ` +
-      "`programmes`" +
-      `) will be connected here as they are created.
 `,
   );
 }
@@ -52,17 +63,18 @@ async function askForConfirmation(question: string): Promise<boolean> {
 
 async function clearAllData() {
   const tables = [
+    "clawback_logs",
     "audit_logs",
     "sms_messages",
-    "batches",
     "disbursements",
+    "batches",
     "programmes",
     "registrations",
     "proxies",
     "identities",
-    "account",
-    "session",
     "verification",
+    "session",
+    "account",
     "user",
   ];
   for (const table of tables) {
@@ -75,14 +87,15 @@ async function clearAllData() {
 }
 
 // Orchestrates seeding across all domain entities.
-// Currently connected: auth (Super Admin seeding)
-// Future seed functions (e.g. seedIdentities, seedProgrammes) will be registered below in order.
 const SEED_ORDER: { flag: Entity; label: string; fn: () => Promise<void> }[] = [
   { flag: "auth", label: "Super Admin (Auth)", fn: seedSuperAdmin },
-  { flag: "staff", label: "Staff (Auth)", fn: seedStaff },
-  // { flag: "identities", label: "Identities", fn: seedIdentities },
-  // { flag: "registrations", label: "Registrations", fn: seedRegistrations },
-  // { flag: "programmes", label: "Programmes & Disbursements", fn: seedProgrammes },
+  { flag: "staff", label: "Staff & Field Agents (Auth)", fn: seedStaff },
+  { flag: "identity", label: "Identities & Proxies", fn: seedIdentities },
+  { flag: "registration", label: "Registrations", fn: seedRegistrations },
+  { flag: "programmes", label: "Programmes & Disbursements", fn: seedProgrammes },
+  { flag: "sms", label: "SMS Messages", fn: seedSmsMessages },
+  { flag: "audit", label: "Audit Logs", fn: seedAuditLogs },
+  { flag: "clawback", label: "Clawback Logs", fn: seedClawbackLogs },
 ];
 
 async function main() {

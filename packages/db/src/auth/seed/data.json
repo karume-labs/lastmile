@@ -1,0 +1,39 @@
+{
+  "users": [
+    {
+      "id": "staff-1",
+      "name": "Jane Doe (Staff)",
+      "email": "jane.doe@lastmile.com",
+      "role": "staff",
+      "emailVerified": true
+    },
+    {
+      "id": "staff-2",
+      "name": "John Smith (Admin)",
+      "email": "john.smith@lastmile.com",
+      "role": "admin",
+      "emailVerified": true
+    },
+    {
+      "id": "staff-3",
+      "name": "Amina Mwangi (Operations Lead)",
+      "email": "amina.mwangi@lastmile.com",
+      "role": "staff",
+      "emailVerified": true
+    },
+    {
+      "id": "field-agent-1",
+      "name": "David Ochieng (Field Agent)",
+      "email": "david.ochieng@lastmile.com",
+      "role": "field_agent",
+      "emailVerified": true
+    },
+    {
+      "id": "field-agent-2",
+      "name": "Zahra Hassan (Field Agent)",
+      "email": "zahra.hassan@lastmile.com",
+      "role": "field_agent",
+      "emailVerified": true
+    }
+  ]
+}
