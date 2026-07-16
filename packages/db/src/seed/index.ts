@@ -4,20 +4,31 @@ import { db } from "@lastmile/db/client";
 import { env } from "@lastmile/db/seed/env";
 import { sql } from "drizzle-orm";
 
+// Entity flags that can be passed via CLI (e.g., --auth)
+// Future entities (e.g. "identities", "registrations", "programmes") will be added to this list
 const ENTITY_FLAGS = ["auth"] as const;
 
 type Entity = (typeof ENTITY_FLAGS)[number];
 
 function printUsage() {
   console.log(`
-Usage: bun run src/seed/index.ts [options]
+Usage: bun run db:seed [options]
 
 Options:
   --auth           Seed super admin user from ADMIN_EMAIL and ADMIN_PASSWORD
   --force, -f      Clear all data before seeding
   --help, -h       Show this help message
 
-If no entity flags are specified, all entities are seeded.
+If no entity flags are specified, all connected entities are seeded.
+Currently connected seeders:
+  - auth (Super Admin)
+Future entities (` +
+	"`identities`" +
+	`, ` +
+	"`registrations`" +
+	`, ` +
+	"`programmes`" +
+	`) will be connected here as they are created.
 `);
 }
 
@@ -60,8 +71,14 @@ async function clearAllData() {
   }
 }
 
+// Orchestrates seeding across all domain entities.
+// Currently connected: auth (Super Admin seeding)
+// Future seed functions (e.g. seedIdentities, seedProgrammes) will be registered below in order.
 const SEED_ORDER: { flag: Entity; label: string; fn: () => Promise<void> }[] = [
-  { flag: "auth", label: "auth", fn: seedSuperAdmin },
+  { flag: "auth", label: "Super Admin (Auth)", fn: seedSuperAdmin },
+  // { flag: "identities", label: "Identities", fn: seedIdentities },
+  // { flag: "registrations", label: "Registrations", fn: seedRegistrations },
+  // { flag: "programmes", label: "Programmes & Disbursements", fn: seedProgrammes },
 ];
 
 async function main() {
