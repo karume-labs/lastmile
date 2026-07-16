@@ -1,6 +1,6 @@
 import { relations, sql } from "drizzle-orm";
 import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
-import { identities } from "../../identity/schema/index";
+import { identities } from "@lastmile/db/schemas/identity";
 
 export const registrations = sqliteTable(
   "registrations",

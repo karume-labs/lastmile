@@ -6,7 +6,7 @@ import { disbursements } from "@lastmile/db/schemas/programmes";
 import { registrations } from "@lastmile/db/schemas/registration";
 import { and, eq, inArray } from "drizzle-orm";
 import { Router } from "express";
-import { dictionary, type SupportedLanguage } from "../services/dictionary";
+import { dictionary, type SupportedLanguage } from "@lastmile/api/features/ussd/services/dictionary";
 
 const router = Router();
 
@@ -25,11 +25,16 @@ router.post("/session", async (req, res, next) => {
       .where(eq(identities.phoneNumber, phoneNumber))
       .limit(1);
 
-    if (userReg && userReg.length > 0) {
-      const preferred = userReg[0].preferredLanguage;
-      if (preferred === "en" || preferred === "sw" || preferred === "tu") {
-        lang = preferred;
-      }
+    if (!userReg || userReg.length === 0) {
+      // Unregistered users get instantly dropped. No menu.
+      res.setHeader("Content-Type", "text/plain");
+      res.status(200).send(`END ${dictionary.en.unregistered}`);
+      return;
+    }
+
+    const preferred = userReg[0].preferredLanguage;
+    if (preferred === "en" || preferred === "sw" || preferred === "tu") {
+      lang = preferred;
     }
 
     const cleanText = String(text || "").trim();

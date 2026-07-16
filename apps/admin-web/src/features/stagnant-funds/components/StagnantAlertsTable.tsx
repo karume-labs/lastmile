@@ -4,10 +4,7 @@ import type { StagnantFundItem } from "@lastmile/types/programmes";
 import type { ColumnDef } from "@tanstack/react-table";
 import { AlertTriangle } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
-import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Select,
   SelectContent,
@@ -33,40 +30,12 @@ interface StagnantAlertsTableProps {
 }
 
 export const StagnantAlertsTable = ({ onClawbackSelect }: StagnantAlertsTableProps) => {
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const { search, setSearch, clearFilters } = useDataTablePagination();
   const { data: stagnantFundsResponse, isLoading } = useStagnantFunds();
 
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
 
   const columns: ColumnDef<StagnantFundItem, unknown>[] = [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={table.getIsAllPageRowsSelected()}
-          indeterminate={table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()}
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => {
-            row.toggleSelected(!!value);
-            if (value) {
-              setSelectedRows((prev) => [...prev, row.original.id]);
-            } else {
-              setSelectedRows((prev) => prev.filter((id) => id !== row.original.id));
-            }
-          }}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
     {
       accessorKey: "referenceId",
       header: "Reference ID",
@@ -175,25 +144,6 @@ export const StagnantAlertsTable = ({ onClawbackSelect }: StagnantAlertsTablePro
             clearFilters();
             setStatusFilter("");
           }}
-          actions={
-            selectedRows.length > 0 && (
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => {
-                  const firstSelected = filteredData.find(
-                    (f: StagnantFundItem) => f.id === selectedRows[0],
-                  );
-                  if (firstSelected) {
-                    onClawbackSelect?.(firstSelected);
-                  }
-                }}
-              >
-                <AlertTriangle className="mr-2 size-4" />
-                Clawback Selected ({selectedRows.length})
-              </Button>
-            )
-          }
           filters={
             <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
               <SelectTrigger className="w-full">

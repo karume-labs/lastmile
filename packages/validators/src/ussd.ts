@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { phoneNumberSchema } from "./shared";
+import { phoneNumberSchema } from "@lastmile/validators/shared";
 
 // ── USSD Session Request ──
 // Validates the incoming Africa's Talking webhook payload.

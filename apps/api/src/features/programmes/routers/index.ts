@@ -1,7 +1,10 @@
 import crypto from "node:crypto";
+import { sendDisbursementSms } from "@lastmile/api/lib/sms-client";
 import { requireRole } from "@lastmile/api/middlewares/authorize";
 import { db } from "@lastmile/db/client";
+import { identities } from "@lastmile/db/schemas/identity";
 import { batches, disbursements, programmes } from "@lastmile/db/schemas/programmes";
+import { registrations } from "@lastmile/db/schemas/registration";
 import {
   ClawbackRequestSchema,
   CreateBatchRequestSchema,
@@ -70,7 +73,24 @@ router.post("/disburse", requireRole("admin"), async (req, res, next) => {
       otpHash,
     });
 
-    // TODO: Trigger the SMS Gateway service here to send the plain text `otp` to the user
+    const userReg = await db
+      .select({
+        phoneNumber: identities.phoneNumber,
+        preferredLanguage: registrations.preferredLanguage,
+      })
+      .from(registrations)
+      .innerJoin(identities, eq(registrations.identityId, identities.id))
+      .where(eq(registrations.referenceId, referenceId))
+      .limit(1);
+
+    if (userReg && userReg.length > 0) {
+      const { phoneNumber, preferredLanguage } = userReg[0];
+      const lang =
+        preferredLanguage === "en" || preferredLanguage === "sw" || preferredLanguage === "tu"
+          ? preferredLanguage
+          : "en";
+      await sendDisbursementSms(phoneNumber, referenceId, otp, lang);
+    }
 
     res.json({ success: true, message: "Disbursement queued and OTP generated." });
   } catch (error) {

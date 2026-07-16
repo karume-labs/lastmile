@@ -17,11 +17,14 @@ router.get("/stagnant-funds", requireRole("admin"), async (_req, res, next) => {
   try {
     const list = await db
       .select({
+        id: disbursements.id,
         paymentId: disbursements.id,
         referenceId: disbursements.referenceId,
         amount: disbursements.amount,
+        currency: disbursements.currency,
         createdAt: disbursements.createdAt,
         participantName: disbursements.participantName,
+        programmeName: disbursements.programmeName,
         status: disbursements.status,
       })
       .from(disbursements)
@@ -34,6 +37,7 @@ router.get("/stagnant-funds", requireRole("admin"), async (_req, res, next) => {
       return {
         ...item,
         daysPending,
+        daysSinceActivity: daysPending,
       };
     });
 
