@@ -1,4 +1,4 @@
-import type { UssdSessionRequestSchema } from "@lastmile/validators/ussd";
+import type { UssdSessionRequestSchema } from "@lastmile/validators/channels";
 import type { z } from "zod";
 
 // ── API Request / Response ──
@@ -10,7 +10,7 @@ export type UssdSessionResponse = {
   response: string;
 };
 
-export type ussdParams = {
+export type channelParams = {
   phoneNumber: string;
   text: string;
 };

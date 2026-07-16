@@ -1,5 +1,5 @@
 {
-  "name": "@lastmile/participant-ussd",
+  "name": "@lastmile/participant-channel",
   "version": "0.1.0",
   "private": true,
   "main": "src/index.ts",

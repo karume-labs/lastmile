@@ -7,7 +7,7 @@
     "./auth": "./src/auth.ts",
     "./registration": "./src/registration.ts",
     "./programmes": "./src/programmes.ts",
-    "./ussd": "./src/ussd.ts",
+    "./channels": "./src/channels.ts",
     "./offramp": "./src/offramp.ts"
   },
   "dependencies": {

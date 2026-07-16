@@ -1,4 +1,4 @@
-import type { ussdParams } from "@lastmile/types";
+import type { channelParams } from "@lastmile/types/channels";
 
 interface Beneficiary {
   name: string;
@@ -70,7 +70,7 @@ function formatString(template: string, values: Record<string, string | number>)
   });
 }
 
-export function handleUSSDRequest({ phoneNumber, text }: ussdParams): string {
+export function handleUSSDRequest({ phoneNumber, text }: channelParams): string {
   const cleanText = String(text || "").trim();
   const text_parts = cleanText ? cleanText.split("*") : [];
   const step = text_parts.length;

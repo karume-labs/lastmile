@@ -36,7 +36,7 @@ lastmile/
 │   ├── staff-mobile/     # Expo React Native mobile app
 │   ├── contract/         # Soroban smart contract (placeholder)
 │   ├── contracts/        # Additional contracts (placeholder)
-│   └── participant-ussd/ # USSD interface (placeholder)
+│   └── participant-channel/ # Participant channel interface
 ├── packages/
 │   ├── auth/             # Better Auth config, handler, and React client
 │   ├── db/               # Drizzle schemas and LibSQL client
