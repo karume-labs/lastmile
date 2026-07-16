@@ -1,27 +1,20 @@
-import { BarChart3, Inbox, QrCode, Settings } from "lucide-react-native";
+import { BarChart3, ClipboardList, Inbox, Settings } from "lucide-react-native";
 import { Tabs } from "expo-router";
 
-/**
- * Professional bottom navigation with:
- * - Modern, meaningful icons
- * - Color-coded for visual hierarchy
- * - Accessibility labels
- * - Responsive design
- */
 const TabsLayout = () => {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "#3b82f6",
-        tabBarInactiveTintColor: "#9ca3af",
+        tabBarActiveTintColor: "hsl(var(--accent))",
+        tabBarInactiveTintColor: "hsl(var(--muted-foreground))",
         tabBarStyle: {
-          borderTopColor: "#e5e7eb",
+          borderTopColor: "hsl(var(--border))",
           borderTopWidth: 1,
           paddingBottom: 8,
           paddingTop: 8,
           height: 70,
-          backgroundColor: "#ffffff",
+          backgroundColor: "hsl(var(--background))",
         },
         tabBarLabelStyle: {
           fontSize: 11,
@@ -30,7 +23,6 @@ const TabsLayout = () => {
         },
       }}
     >
-      {/* Dashboard - Analytics Overview */}
       <Tabs.Screen
         name="index"
         options={{
@@ -40,17 +32,15 @@ const TabsLayout = () => {
         }}
       />
 
-      {/* Intake - Registration */}
       <Tabs.Screen
         name="intake"
         options={{
           title: "Register",
-          tabBarIcon: ({ color, size }) => <QrCode size={size} color={color} strokeWidth={2} />,
+          tabBarIcon: ({ color, size }) => <ClipboardList size={size} color={color} strokeWidth={2} />,
           tabBarLabel: "Register",
         }}
       />
 
-      {/* Queue - Pending Registrations */}
       <Tabs.Screen
         name="queue"
         options={{
@@ -60,7 +50,6 @@ const TabsLayout = () => {
         }}
       />
 
-      {/* Settings - App Configuration */}
       <Tabs.Screen
         name="settings"
         options={{

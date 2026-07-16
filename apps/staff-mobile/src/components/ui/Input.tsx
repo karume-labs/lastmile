@@ -8,13 +8,6 @@ interface InputProps extends TextInputProps {
   icon?: LucideIcon;
 }
 
-/**
- * Professional input component with:
- * - Clear label, error, and hint messaging
- * - Icon support for field context
- * - Proper spacing and styling
- * - Error state styling
- */
 export const Input = ({ label, error, hint, icon: Icon, ...inputProps }: InputProps) => {
   return (
     <View className="gap-1.5">
@@ -26,8 +19,9 @@ export const Input = ({ label, error, hint, icon: Icon, ...inputProps }: InputPr
       >
         {Icon ? <Icon color={error ? "#ef4444" : "#71717a"} size={20} /> : null}
         <TextInput
-          className="flex-1 py-3 text-base text-foreground"
+          className="flex-1 py-3 text-base"
           placeholderTextColor="#a1a1aa"
+          style={{ color: "#09090b" }}
           {...inputProps}
         />
       </View>
