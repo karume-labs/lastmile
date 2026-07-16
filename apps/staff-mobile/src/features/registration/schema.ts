@@ -1,10 +1,14 @@
 import { z } from "zod";
+import {
+  nameSchema,
+  dateSchema,
+  phoneSchema,
+  idNumberSchema,
+  boundedTextSchema,
+} from "@lastmile/validators/registration";
 
-// Mirrors the fields the finance officer's disbursement CSV keys off of later
-// (phone number, external reference ID, verification value) so a registration
-// captured here can be matched straight to a disbursement without re-entry.
-// TODO: once packages/validators/src/registration.ts is filled in by the
-// backend/db owner, swap this for the shared schema instead of duplicating it.
+// Re-export for app usage
+export { sanitizeInput, sanitizeName, sanitizePhoneNumber } from "@lastmile/validators/registration";
 
 export const verificationTypes = [
   { value: "DATE_OF_BIRTH", label: "Date of Birth" },
@@ -28,65 +32,96 @@ export const proxyRelationships = [
   { value: "other", label: "Other" },
 ] as const;
 
-const phoneRegex = /^\+?[0-9]{9,15}$/;
-
+/**
+ * Professional registration form schema with:
+ * - Enterprise-grade input validation
+ * - Input sanitization
+ * - Proper type bounds for all fields
+ * - Security checks for injection prevention
+ * - Logical constraints validation
+ */
 export const registrationFormSchema = z
   .object({
-    // Beneficiary
-    fullName: z.string().trim().min(2, "Enter the beneficiary's full name"),
-    dateOfBirth: z.string().min(1, "Enter a date of birth"),
-    gender: z.enum(["female", "male", "other"], { message: "Select a gender" }),
-    hasPhone: z.boolean(),
-    phoneNumber: z.string().trim().optional(),
+    // Beneficiary information
+    fullName: nameSchema.describe("Full legal name of the beneficiary"),
+    dateOfBirth: dateSchema.describe("Date of birth (ISO 8601 format)"),
+    gender: z.enum(["female", "male", "other"], { message: "Select a valid gender" }),
+    hasPhone: z.boolean().describe("Whether beneficiary owns a mobile phone"),
+    phoneNumber: phoneSchema.optional().describe("Beneficiary's phone number"),
 
-    // Verification (matches the SDP disbursement CSV contract)
-    externalReferenceId: z.string().trim().min(2, "Enter an external reference ID"),
+    // Verification information (matches SDP disbursement CSV contract)
+    externalReferenceId: idNumberSchema.describe("External reference ID from primary system"),
     verificationType: z.enum(["DATE_OF_BIRTH", "NATIONAL_ID_NUMBER", "PIN"], {
       message: "Select a verification type",
     }),
-    verificationValue: z.string().trim().min(2, "Enter the verification value"),
+    verificationValue: boundedTextSchema(5, 100).describe("Value for verification"),
 
-    // Location & programme
-    locationLabel: z.string().trim().min(2, "Enter the registration location"),
-    programmeId: z.string().min(1, "Select a programme"),
-    programmeName: z.string().min(1),
-    coordinates: z.object({ latitude: z.number(), longitude: z.number() }).nullable(),
+    // Location and programme
+    locationLabel: boundedTextSchema(2, 200).describe("Registration location name"),
+    programmeId: z.string().min(1, "Select a programme").max(100),
+    programmeName: z.string().min(1).max(200),
+    coordinates: z
+      .object({ latitude: z.number().min(-90).max(90), longitude: z.number().min(-180).max(180) })
+      .nullable()
+      .optional(),
 
-    // Proxy (required only when the beneficiary has no phone)
-    proxyFullName: z.string().trim().optional(),
-    proxyPhoneNumber: z.string().trim().optional(),
-    proxyRelationship: z.string().optional(),
-    proxyNationalId: z.string().trim().optional(),
+    // Proxy information (required only when hasPhone is false)
+    proxyFullName: nameSchema.optional().describe("Full name of the proxy/representative"),
+    proxyPhoneNumber: phoneSchema.optional().describe("Proxy's phone number"),
+    proxyRelationship: z
+      .enum(["spouse", "child", "sibling", "parent", "neighbor", "community_elder", "other"])
+      .optional(),
+    proxyNationalId: idNumberSchema.optional().describe("Proxy's national ID number"),
 
-    // Photo & consent
-    photoUri: z.string().nullable(),
-    consentGiven: z.boolean(),
+    // Photo and consent
+    photoUri: z.string().max(500).nullable().optional(),
+    consentGiven: z.boolean().refine((v) => v === true, {
+      message: "You must give consent to register the participant",
+    }),
   })
+  .strict()
   .superRefine((data, ctx) => {
+    // If beneficiary has phone, phone number is required
     if (data.hasPhone) {
-      if (!data.phoneNumber || !phoneRegex.test(data.phoneNumber)) {
-        ctx.addIssue({ code: "custom", path: ["phoneNumber"], message: "Enter a valid phone number" });
+      if (!data.phoneNumber) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["phoneNumber"],
+          message: "Phone number is required when beneficiary has a phone",
+        });
       }
-    } else {
-      if (!data.proxyFullName || data.proxyFullName.trim().length < 2) {
-        ctx.addIssue({ code: "custom", path: ["proxyFullName"], message: "Enter the proxy's full name" });
+    }
+    // If beneficiary doesn't have phone, proxy info is required
+    else {
+      if (!data.proxyFullName || data.proxyFullName.trim().length === 0) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["proxyFullName"],
+          message: "Proxy's full name is required",
+        });
       }
-      if (!data.proxyPhoneNumber || !phoneRegex.test(data.proxyPhoneNumber)) {
-        ctx.addIssue({ code: "custom", path: ["proxyPhoneNumber"], message: "Enter a valid proxy phone number" });
+      if (!data.proxyPhoneNumber || data.proxyPhoneNumber.trim().length === 0) {
+        ctx.addIssue({
+          code: "custom",
+          path: ["proxyPhoneNumber"],
+          message: "Proxy's phone number is required",
+        });
       }
       if (!data.proxyRelationship) {
         ctx.addIssue({
           code: "custom",
           path: ["proxyRelationship"],
-          message: "Select how the proxy is related to the beneficiary",
+          message: "Proxy relationship is required",
         });
       }
     }
+
+    // Consent must be given
     if (!data.consentGiven) {
       ctx.addIssue({
         code: "custom",
         path: ["consentGiven"],
-        message: "Consent is required to register a participant",
+        message: "Participant consent is mandatory to proceed",
       });
     }
   });
@@ -121,3 +156,4 @@ export const defaultRegistrationValues: RegistrationFormValues = {
   photoUri: null,
   consentGiven: false,
 };
+
