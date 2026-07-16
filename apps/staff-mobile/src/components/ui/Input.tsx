@@ -8,7 +8,7 @@ interface InputProps extends TextInputProps {
   icon?: LucideIcon;
 }
 
-export const Input = ({ label, error, hint, icon: Icon, ...inputProps }: InputProps) => {
+export const Input = ({ label, error, hint, icon: Icon, style, ...inputProps }: InputProps) => {
   return (
     <View className="gap-1.5">
       {label ? <Text className="text-sm font-semibold text-foreground">{label}</Text> : null}
@@ -21,7 +21,7 @@ export const Input = ({ label, error, hint, icon: Icon, ...inputProps }: InputPr
         <TextInput
           className="flex-1 py-3 text-base"
           placeholderTextColor="#a1a1aa"
-          style={{ color: "#09090b" }}
+          style={[{ color: "#09090b" }, style]}
           {...inputProps}
         />
       </View>
