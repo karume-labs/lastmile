@@ -11,7 +11,7 @@ declare global {
         name: string;
         role?: string | null;
       };
-      session?: Record<string, unknown>;
+      session?: unknown;
     }
   }
 }

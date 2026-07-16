@@ -39,3 +39,8 @@ export const SyncPushRecordSchema = z.object({
 export const SyncPushRequestSchema = z.object({
   records: z.array(SyncPushRecordSchema).min(1).max(500),
 });
+
+export const BulkUploadRequestSchema = z
+  .array(OfflineRegistrationFormSchema)
+  .min(1, "The uploaded file must contain at least one row.")
+  .max(5000, "You can only upload up to 5000 rows at once.");
