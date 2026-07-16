@@ -1,20 +1,29 @@
 import { BarChart3, ClipboardList, Inbox, Settings } from "lucide-react-native";
+import { useColorScheme } from "nativewind";
 import { Tabs } from "expo-router";
 
 const TabsLayout = () => {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === "dark";
+
+  const activeColor = isDark ? "#60a5fa" : "#3b82f6";
+  const inactiveColor = isDark ? "#71717a" : "#9ca3af";
+  const borderColor = isDark ? "#27272a" : "#e5e7eb";
+  const bgColor = isDark ? "#09090b" : "#ffffff";
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: "hsl(var(--accent))",
-        tabBarInactiveTintColor: "hsl(var(--muted-foreground))",
+        tabBarActiveTintColor: activeColor,
+        tabBarInactiveTintColor: inactiveColor,
         tabBarStyle: {
-          borderTopColor: "hsl(var(--border))",
+          borderTopColor: borderColor,
           borderTopWidth: 1,
           paddingBottom: 8,
           paddingTop: 8,
           height: 70,
-          backgroundColor: "hsl(var(--background))",
+          backgroundColor: bgColor,
         },
         tabBarLabelStyle: {
           fontSize: 11,
