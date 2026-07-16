@@ -52,7 +52,7 @@ export default function StaffPage() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="text-green-600 border-green-600">
+                    <Badge variant="outline" className="text-accent border-accent">
                       {staff.status}
                     </Badge>
                   </TableCell>

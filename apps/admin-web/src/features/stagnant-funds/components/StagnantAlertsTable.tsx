@@ -20,9 +20,9 @@ import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagi
 import { useStagnantFunds } from "@/features/stagnant-funds/services/queries";
 
 const STATUS_STYLES: Record<string, string> = {
-  stagnant: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
-  "clawed-back": "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
-  "under-review": "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+  stagnant: "bg-secondary text-secondary-foreground",
+  "clawed-back": "bg-destructive text-destructive-foreground",
+  "under-review": "bg-primary text-primary-foreground",
 };
 
 interface StagnantAlertsTableProps {

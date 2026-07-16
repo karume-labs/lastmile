@@ -19,9 +19,9 @@ import { TableMenuActions } from "@/features/shared/components/table/TableMenuAc
 import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
 
 const STATUS_STYLES: Record<string, string> = {
-  Active: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-  Draft: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
-  Completed: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+  Active: "bg-accent text-accent-foreground",
+  Draft: "bg-secondary text-secondary-foreground",
+  Completed: "bg-primary text-primary-foreground",
 };
 
 export const ProgrammeGrid = () => {

@@ -23,10 +23,7 @@ export async function seedStaff() {
 
   for (const staff of staffData) {
     try {
-      await db
-        .insert(user)
-        .values(staff)
-        .onConflictDoNothing();
+      await db.insert(user).values(staff).onConflictDoNothing();
       console.log(`Inserted ${staff.email} as ${staff.role}`);
     } catch (e) {
       console.error(`Failed to insert ${staff.email}`, e);

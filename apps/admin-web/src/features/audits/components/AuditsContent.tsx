@@ -54,10 +54,10 @@ export const AuditsContent = () => {
             variant="secondary"
             className={
               severity === "critical"
-                ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
+                ? "bg-destructive text-destructive-foreground"
                 : severity === "warning"
-                  ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300"
-                  : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
+                  ? "bg-secondary text-secondary-foreground"
+                  : "bg-primary text-primary-foreground"
             }
           >
             {severity.charAt(0).toUpperCase() + severity.slice(1)}

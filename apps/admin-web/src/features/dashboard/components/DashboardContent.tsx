@@ -24,7 +24,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, icon, des
         <div className="text-2xl font-bold">{value}</div>
         {change && (
           <p className="text-xs text-muted-foreground">
-            <span className="text-green-600">{change}</span> from last period
+            <span className="text-primary">{change}</span> from last period
           </p>
         )}
         {description && <p className="text-xs text-muted-foreground">{description}</p>}

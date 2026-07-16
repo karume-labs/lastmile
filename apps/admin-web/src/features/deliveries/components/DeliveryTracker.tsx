@@ -20,15 +20,15 @@ import { TableMenuActions } from "@/features/shared/components/table/TableMenuAc
 import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
 
 const STATUS_STYLES: Record<string, string> = {
-  pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
-  sent: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
-  delivered: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-  failed: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+  pending: "bg-secondary text-secondary-foreground",
+  sent: "bg-primary text-primary-foreground",
+  delivered: "bg-accent text-accent-foreground",
+  failed: "bg-destructive text-destructive-foreground",
 };
 
 const METHOD_STYLES: Record<string, string> = {
   direct: "bg-primary/10 text-primary",
-  "proxy-led": "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
+  "proxy-led": "bg-muted text-muted-foreground",
 };
 
 interface DeliveryTrackerProps {

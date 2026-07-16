@@ -3,8 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { AuthSignInRequest } from "@lastmile/types/auth";
 import { AuthSignInSchema } from "@lastmile/validators/auth";
-import { Loader2 } from "lucide-react";
-import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -68,15 +66,7 @@ export const SignInForm = () => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex items-center justify-between w-full">
-                    <FormLabel className="text-xs font-bold text-foreground">Password</FormLabel>
-                    <Link
-                      href="/forgot-password"
-                      className="text-sm font-medium text-primary hover:underline"
-                    >
-                      Forgot password?
-                    </Link>
-                  </div>
+                  <FormLabel className="text-xs font-bold text-foreground">Password</FormLabel>
                   <FormControl>
                     <Input
                       type="password"
@@ -94,16 +84,9 @@ export const SignInForm = () => {
               <Button
                 type="submit"
                 className="w-full rounded-xl font-medium py-6"
-                disabled={signInMutation.isPending}
+                isLoading={signInMutation.isPending}
               >
-                {signInMutation.isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
-                  </>
-                ) : (
-                  "Sign in"
-                )}
+                Sign in
               </Button>
             </div>
           </fieldset>
