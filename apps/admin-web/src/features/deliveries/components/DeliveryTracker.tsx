@@ -31,7 +31,11 @@ const METHOD_STYLES: Record<string, string> = {
   "proxy-led": "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
 };
 
-export const DeliveryTracker: React.FC = () => {
+interface DeliveryTrackerProps {
+  actions?: React.ReactNode;
+}
+
+export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => {
   const { search, setSearch, clearFilters } = useDataTablePagination();
 
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
@@ -153,6 +157,7 @@ export const DeliveryTracker: React.FC = () => {
       data={filteredData}
       toolbar={
         <DataToolbar
+          actions={actions}
           gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
           searchKey="participantName"
           searchValue={search}

@@ -14,11 +14,9 @@ export const ProgrammesContent: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-end">
         <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
-          <DialogTrigger asChild>
-            <Button size="sm">
-              <Plus className="mr-2 size-4" />
-              New Batch
-            </Button>
+          <DialogTrigger render={<Button size="sm" />}>
+            <Plus className="mr-2 size-4" />
+            New Batch
           </DialogTrigger>
           <CreateBatchForm onSuccess={() => setShowCreateForm(false)} />
         </Dialog>
