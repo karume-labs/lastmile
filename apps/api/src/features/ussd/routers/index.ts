@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { relayerService } from "@lastmile/api/features/relayer/services";
 import { db } from "@lastmile/db/client";
 import { identities } from "@lastmile/db/schemas/identity";
 import { disbursements } from "@lastmile/db/schemas/programmes";
@@ -71,8 +72,8 @@ router.post("/session", async (req, res, next) => {
               and(
                 eq(identities.phoneNumber, phoneNumber),
                 eq(registrations.referenceId, enteredRef),
-                eq(disbursements.status, "pending")
-              )
+                eq(disbursements.status, "pending"),
+              ),
             )
             .limit(1);
 
@@ -94,7 +95,10 @@ router.post("/session", async (req, res, next) => {
               ? eq(registrations.identityId, userReg[0].identityId)
               : inArray(
                   registrations.identityId,
-                  db.select({ id: identities.id }).from(identities).where(eq(identities.phoneNumber, phoneNumber))
+                  db
+                    .select({ id: identities.id })
+                    .from(identities)
+                    .where(eq(identities.phoneNumber, phoneNumber)),
                 );
 
           db.update(registrations)
@@ -132,8 +136,8 @@ router.post("/session", async (req, res, next) => {
               and(
                 eq(identities.phoneNumber, phoneNumber),
                 eq(registrations.referenceId, enteredRef),
-                eq(disbursements.status, "pending")
-              )
+                eq(disbursements.status, "pending"),
+              ),
             )
             .limit(1);
 
@@ -142,14 +146,9 @@ router.post("/session", async (req, res, next) => {
             const hashedOtp = crypto.createHash("sha256").update(enteredOtp).digest("hex");
             if (record.otpHash === enteredOtp || record.otpHash === hashedOtp) {
               console.log(
-                `DEBUG PAYOUT: Authorized KES ${record.amount} for reference ${enteredRef} to ${phoneNumber}`
+                `DEBUG PAYOUT: Authorized KES ${record.amount} for reference ${enteredRef} to ${phoneNumber}`,
               );
-              await db
-                .update(disbursements)
-                .set({ status: "claimed" })
-                .where(eq(disbursements.id, record.disbursementId))
-                .execute()
-                .catch(console.error);
+              await relayerService.unlockFunds(enteredRef);
 
               response_msg = `END ${dictionary[lang].successClaim}`;
             } else {

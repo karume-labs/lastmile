@@ -6,7 +6,14 @@ import { AuthSignInSchema } from "@lastmile/validators/auth";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useSignIn } from "@/features/auth/services/mutations";
 
@@ -50,9 +57,7 @@ export const SignInForm = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold text-foreground">
-                    Email Address
-                  </FormLabel>
+                  <FormLabel className="text-xs font-bold text-foreground">Email Address</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
@@ -72,9 +77,7 @@ export const SignInForm = () => {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center justify-between w-full">
-                    <FormLabel className="text-xs font-bold text-foreground">
-                      Password
-                    </FormLabel>
+                    <FormLabel className="text-xs font-bold text-foreground">Password</FormLabel>
                     <Link
                       href="/forgot-password"
                       className="text-sm font-medium text-primary hover:underline"

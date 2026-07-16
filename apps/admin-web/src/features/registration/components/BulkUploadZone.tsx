@@ -58,7 +58,9 @@ export const BulkUploadZone = () => {
             fullName: String(row.FullName || row.fullName || ""),
             phoneNumber: String(row.PhoneNumber || row.phoneNumber || ""),
             currency: String(row.Currency || row.currency || ""),
-            preferredLanguage: String(row.PreferredLanguage || row.Language || row.preferredLanguage || "en").toLowerCase(),
+            preferredLanguage: String(
+              row.PreferredLanguage || row.Language || row.preferredLanguage || "en",
+            ).toLowerCase(),
             isProxy: String(row.IsProxy || row.isProxy).toLowerCase() === "true",
           }));
           setData(parsed);
@@ -76,7 +78,9 @@ export const BulkUploadZone = () => {
         fullName: String(row.FullName || row.fullName || ""),
         phoneNumber: String(row.PhoneNumber || row.phoneNumber || ""),
         currency: String(row.Currency || row.currency || ""),
-        preferredLanguage: String(row.PreferredLanguage || row.Language || row.preferredLanguage || "en").toLowerCase(),
+        preferredLanguage: String(
+          row.PreferredLanguage || row.Language || row.preferredLanguage || "en",
+        ).toLowerCase(),
         isProxy: String(row.IsProxy || row.isProxy).toLowerCase() === "true",
       }));
       setData(parsed);

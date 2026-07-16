@@ -1,43 +1,49 @@
+import { db } from "@lastmile/db/client";
+import { registrations } from "@lastmile/db/schemas/registration";
+import { OfframpSimulateRequestSchema } from "@lastmile/validators/offramp";
+import { eq } from "drizzle-orm";
 import { Router } from "express";
 
 const router = Router();
 
-/**
- * POST /api/offramp/simulate
- *
- * Triggered internally after USSD parser validates the OTP.
- * Reads the user's currency preference, calculates the exchange rate,
- * and simulates the M-Pesa API deposit.
- *
- * Request Body:
- * {
- *   "referenceId": "SAP-9942",
- *   "amountUsdc": 50.00
- * }
- *
- * Response (200):
- * {
- *   "success": true,
- *   "fiatAmount": 6500.00,
- *   "currency": "KES",
- *   "providerReference": "MPESA-XYZ789"
- * }
- */
+// Mock exchange rates (USDC to local fiat)
+const EXCHANGE_RATES: Record<string, number> = {
+  KES: 130.5,
+  NGN: 1500.0,
+  GHS: 14.2,
+  USD: 1.0,
+};
+
 router.post("/simulate", async (req, res, next) => {
   try {
-    const { referenceId: _referenceId, amountUsdc: _amountUsdc } = req.body;
+    const { referenceId, amountUsdc } = OfframpSimulateRequestSchema.parse(req.body);
 
-    // TODO: 1. Look up the registration by referenceId
-    // TODO: 2. Read the currency preference (e.g., 'KES')
-    // TODO: 3. Fetch current USDC/fiat exchange rate
-    // TODO: 4. Calculate fiatAmount = amountUsdc * exchangeRate
-    // TODO: 5. Simulate M-Pesa STK push / deposit API call
-    // TODO: 6. Return the provider reference and fiat details
+    // 1. Look up the registration to get the currency
+    const userReg = await db
+      .select({ currency: registrations.currency })
+      .from(registrations)
+      .where(eq(registrations.referenceId, referenceId))
+      .limit(1);
+
+    if (!userReg.length) {
+      res.status(404).json({ success: false, error: "Registration not found." });
+      return;
+    }
+
+    const currency = userReg[0].currency;
+    const rate = EXCHANGE_RATES[currency] || 1;
+
+    // 2. Calculate the fiat amount
+    const fiatAmount = parseFloat((amountUsdc * rate).toFixed(2));
+
+    // 3. Simulate the Kotani Pay / M-Pesa B2C response
     res.json({
       success: true,
-      fiatAmount: 0,
-      currency: "KES",
-      providerReference: "",
+      fiatAmount,
+      currency,
+      exchangeRateApplied: rate,
+      providerReference: `KOTANI-${Math.random().toString(36).substring(7).toUpperCase()}`,
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     next(error);

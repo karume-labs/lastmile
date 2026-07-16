@@ -1,7 +1,7 @@
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 
-export async function parseSpreadsheet<T = any>(file: File): Promise<T[]> {
+export async function parseSpreadsheet<T = Record<string, unknown>>(file: File): Promise<T[]> {
   const extension = file.name.split(".").pop()?.toLowerCase();
 
   if (extension === "csv") {

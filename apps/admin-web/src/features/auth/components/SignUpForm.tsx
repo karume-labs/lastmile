@@ -6,7 +6,14 @@ import { AuthSignUpSchema } from "@lastmile/validators/auth";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useSignUp } from "@/features/auth/services/mutations";
 
@@ -53,15 +60,9 @@ export const SignUpForm = () => {
                 name="firstName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-bold text-foreground">
-                      First Name
-                    </FormLabel>
+                    <FormLabel className="text-xs font-bold text-foreground">First Name</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="John"
-                        className="bg-muted/50 rounded-xl"
-                        {...field}
-                      />
+                      <Input placeholder="John" className="bg-muted/50 rounded-xl" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -72,15 +73,9 @@ export const SignUpForm = () => {
                 name="lastName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs font-bold text-foreground">
-                      Last Name
-                    </FormLabel>
+                    <FormLabel className="text-xs font-bold text-foreground">Last Name</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Doe"
-                        className="bg-muted/50 rounded-xl"
-                        {...field}
-                      />
+                      <Input placeholder="Doe" className="bg-muted/50 rounded-xl" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -93,9 +88,7 @@ export const SignUpForm = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold text-foreground">
-                    Email Address
-                  </FormLabel>
+                  <FormLabel className="text-xs font-bold text-foreground">Email Address</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
@@ -114,9 +107,7 @@ export const SignUpForm = () => {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs font-bold text-foreground">
-                    Password
-                  </FormLabel>
+                  <FormLabel className="text-xs font-bold text-foreground">Password</FormLabel>
                   <FormControl>
                     <Input
                       type="password"

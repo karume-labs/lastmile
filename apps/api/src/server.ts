@@ -1,5 +1,6 @@
 import clawbackRouter from "@lastmile/api/features/clawback/routers";
 import offrampRouter from "@lastmile/api/features/offramp/routers";
+import programmesRouter from "@lastmile/api/features/programmes/routers";
 import registrationRouter from "@lastmile/api/features/registration/routers";
 import { smsRouter } from "@lastmile/api/features/sms/routers";
 import syncRouter from "@lastmile/api/features/sync/routers";
@@ -43,6 +44,7 @@ app.get("/api/health", (_req: Request, res: Response) => {
 app.use("/api/sync", syncRouter);
 app.use("/api/ussd", ussdSessionRouter);
 app.use("/api/admin", clawbackRouter);
+app.use("/api/programmes", programmesRouter);
 app.use("/api/offramp", offrampRouter);
 app.use("/api/registration", registrationRouter);
 app.use("/api/sms", smsRouter);

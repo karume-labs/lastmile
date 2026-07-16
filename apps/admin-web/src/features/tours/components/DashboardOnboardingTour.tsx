@@ -22,4 +22,3 @@ export const DashboardOnboardingTour = () => {
 
   return null;
 };
-

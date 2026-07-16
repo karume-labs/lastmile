@@ -12,7 +12,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -58,10 +65,7 @@ export const CreateBatchForm = ({ onSuccess }: CreateBatchFormProps = {}) => {
                 <FormItem>
                   <FormLabel>Programme Name</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="e.g., Emergency Relief Q4"
-                      {...field}
-                    />
+                    <Input placeholder="e.g., Emergency Relief Q4" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
