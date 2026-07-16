@@ -1,4 +1,4 @@
-import { crypto } from "node:crypto";
+import crypto from "node:crypto";
 import { db } from "@lastmile/db/client";
 import { smsMessages } from "@lastmile/db/schemas/sms";
 import { SmsCreateRequestSchema } from "@lastmile/validators/sms";
@@ -21,7 +21,7 @@ smsRouter.post("/", async (req, res) => {
   try {
     const result = SmsCreateRequestSchema.safeParse(req.body);
     if (!result.success) {
-      res.status(400).json({ success: false, error: result.error.errors });
+      res.status(400).json({ success: false, error: result.error.issues });
       return;
     }
 

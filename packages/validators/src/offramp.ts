@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 
 // ── Off-Ramp Simulate Request ──
 // Validates POST /api/offramp/simulate — converts USDC to fiat

@@ -1,5 +1,5 @@
 import type { OfframpSimulateRequestSchema } from "@lastmile/validators/offramp";
-import type { z } from "zod";
+import type { z } from "zod/v4";
 
 // ── API Request / Response ──
 

@@ -1,7 +1,7 @@
 import { createInterface } from "node:readline";
 import { seedSuperAdmin } from "@lastmile/db/auth/seed";
-import { env } from "@lastmile/db/seed/env";
 import { db } from "@lastmile/db/client";
+import { env } from "@lastmile/db/seed/env";
 import { sql } from "drizzle-orm";
 
 const ENTITY_FLAGS = ["auth"] as const;

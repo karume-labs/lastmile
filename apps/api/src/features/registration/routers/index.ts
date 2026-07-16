@@ -4,7 +4,7 @@ import { identities } from "@lastmile/db/schemas/identity";
 import { registrations } from "@lastmile/db/schemas/registration";
 import { BulkUploadRequestSchema } from "@lastmile/validators/registration";
 import { Router } from "express";
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const router = Router();
 
@@ -53,7 +53,7 @@ router.post("/bulk-upload", async (req, res, next) => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      res.status(400).json({ success: false, errors: error.errors });
+      res.status(400).json({ success: false, errors: error.issues });
       return;
     }
     next(error);

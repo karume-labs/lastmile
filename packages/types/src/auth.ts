@@ -1,5 +1,5 @@
 import type { AuthSignInSchema, AuthSignUpSchema } from "@lastmile/validators/auth";
-import type { z } from "zod";
+import type { z } from "zod/v4";
 
 // ── API Request / Response ──
 

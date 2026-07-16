@@ -1,6 +1,6 @@
-import { env } from "@lastmile/db/seed/env";
 import { db } from "@lastmile/db/client";
 import { account, session, user, verification } from "@lastmile/db/schemas/auth";
+import { env } from "@lastmile/db/seed/env";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin } from "better-auth/plugins";
@@ -33,10 +33,7 @@ export async function seedSuperAdmin() {
 
   if (existingAdmins.length > 0) {
     console.log("    Admin account already exists. Updating role to super_admin...");
-    await db
-      .update(user)
-      .set({ role: "super_admin" })
-      .where(eq(user.id, existingAdmins[0].id));
+    await db.update(user).set({ role: "super_admin" }).where(eq(user.id, existingAdmins[0].id));
     console.log("    Super admin account updated successfully!");
     return;
   }
@@ -51,10 +48,7 @@ export async function seedSuperAdmin() {
   });
 
   if (response?.user) {
-    await db
-      .update(user)
-      .set({ role: "super_admin" })
-      .where(eq(user.id, response.user.id));
+    await db.update(user).set({ role: "super_admin" }).where(eq(user.id, response.user.id));
     console.log("    Super administrator account successfully seeded with role 'super_admin'.");
   } else {
     console.error("    Failed to create super administrator account.");
