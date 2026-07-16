@@ -40,13 +40,13 @@ const TabsLayout = () => {
         }}
       />
 
-      {/* Intake - QR Scanning and Registration */}
+      {/* Intake - Registration */}
       <Tabs.Screen
         name="intake"
         options={{
-          title: "Intake",
+          title: "Register",
           tabBarIcon: ({ color, size }) => <QrCode size={size} color={color} strokeWidth={2} />,
-          tabBarLabel: "Scan",
+          tabBarLabel: "Register",
         }}
       />
 

@@ -15,33 +15,33 @@ const verificationInputConfig: Record<
   RegistrationFormValues["verificationType"],
   {
     placeholder: string;
-    inputType: "text" | "number";
+    keyboardType: "numeric" | "default";
     maxLength: number;
     hint: string;
   }
 > = {
   DATE_OF_BIRTH: {
     placeholder: "1990-05-14",
-    inputType: "text",
+    keyboardType: "default",
     maxLength: 10,
     hint: "Enter as YYYY-MM-DD format (e.g., 1975-03-21). Must match beneficiary's records exactly.",
   },
   NATIONAL_ID_NUMBER: {
     placeholder: "12345678",
-    inputType: "number",
+    keyboardType: "numeric",
     maxLength: 50,
     hint: "National ID or passport number. Will be verified against payout file.",
   },
   PIN: {
     placeholder: "4821",
-    inputType: "number",
+    keyboardType: "numeric",
     maxLength: 10,
     hint: "Personal PIN (4-10 digits) that beneficiary will provide at payout for verification.",
   },
 };
 
 /**
- * Verification step with enterprise security practices:
+ * Verification step with security practices:
  * - Input sanitization
  * - Type-specific validation
  * - Clear verification workflow
@@ -73,14 +73,12 @@ export const VerificationStep = () => {
         render={({ field: { onChange, onBlur, value } }) => (
           <Input
             label="External Reference ID"
-            inputType="text"
             autoCapitalize="characters"
             error={errors.externalReferenceId?.message}
             onBlur={onBlur}
             onChangeText={(text) => onChange(sanitizeInput(text))}
             placeholder="e.g. ENROL-2024-0001"
             value={value}
-            maxLength={100}
             hint="Beneficiary's enrollment or reference number from the programme database"
           />
         )}
@@ -109,13 +107,12 @@ export const VerificationStep = () => {
         render={({ field: { onChange, onBlur, value } }) => (
           <Input
             label="Verification Value"
-            inputType={config.inputType}
+            keyboardType={config.keyboardType}
             error={errors.verificationValue?.message}
             onBlur={onBlur}
             onChangeText={(text) => onChange(sanitizeInput(text))}
             placeholder={config.placeholder}
             value={value}
-            maxLength={config.maxLength}
             hint={config.hint}
           />
         )}

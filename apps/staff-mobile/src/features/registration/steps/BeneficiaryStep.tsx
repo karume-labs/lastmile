@@ -36,7 +36,6 @@ export const BeneficiaryStep = () => {
             placeholder="e.g. Amina Ekiru"
             value={value}
             hint="Enter the beneficiary's full legal name"
-            maxLength={100}
           />
         )}
       />

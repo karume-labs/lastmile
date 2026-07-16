@@ -7,11 +7,10 @@ import { Select } from "@/src/components/ui/Select";
 import { type RegistrationFormValues, proxyRelationships, sanitizeName, sanitizePhoneNumber } from "@/src/features/registration/schema";
 
 /**
- * Proxy information step with enterprise-grade input handling:
- * - Professional input components
+ * Proxy information step with professional input handling:
+ * - Proxy name, phone, relationship, and ID fields
  * - Input sanitization and validation
- * - Informational context for field staff
- * - Conditional ID field
+ * - Clear context messaging
  */
 export const ProxyStep = () => {
   const {
@@ -36,14 +35,12 @@ export const ProxyStep = () => {
         render={({ field: { onChange, onBlur, value } }) => (
           <Input
             label="Proxy Full Name"
-            inputType="name"
             autoCapitalize="words"
             error={errors.proxyFullName?.message}
             onBlur={onBlur}
             onChangeText={(text) => onChange(sanitizeName(text))}
             placeholder="e.g. Joseph Ekai"
             value={value}
-            maxLength={100}
             hint="Legal name of the proxy/representative"
           />
         )}
@@ -88,14 +85,12 @@ export const ProxyStep = () => {
         render={({ field: { onChange, onBlur, value } }) => (
           <Input
             label="Proxy National ID (Optional)"
-            inputType="text"
             autoCapitalize="characters"
             error={errors.proxyNationalId?.message}
             onBlur={onBlur}
             onChangeText={onChange}
             placeholder="e.g. 12345-67890-1"
             value={value}
-            maxLength={50}
             hint="Recommended for verification purposes"
           />
         )}
