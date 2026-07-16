@@ -2,6 +2,7 @@ import cors from 'cors';
 import express, { type Request, type Response } from 'express';
 import helmet from 'helmet';
 import authRouter from './features/auth/routers';
+import programmesRouter from './features/programmes/routers';
 import registrationRouter from './features/registration/routers';
 import syncRouter from './features/sync/routers';
 import { errorHandler } from './middlewares/error-handler';
@@ -26,6 +27,7 @@ app.get('/api/health', (_req: Request, res: Response) => {
 });
 
 app.use('/api/auth', authRouter);
+app.use('/api/programmes', programmesRouter);
 app.use('/api/registration', registrationRouter);
 app.use('/api/sync', syncRouter);
 

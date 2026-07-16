@@ -10,6 +10,7 @@
     "@lastmile/db": "workspace:*",
     "@lastmile/types": "workspace:*",
     "@lastmile/validators": "workspace:*",
+    "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
