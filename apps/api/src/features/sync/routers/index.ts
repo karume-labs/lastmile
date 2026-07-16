@@ -1,3 +1,8 @@
+import crypto from "node:crypto";
+import { db } from "@lastmile/db/client";
+import { identities } from "@lastmile/db/schemas/identity";
+import { registrations } from "@lastmile/db/schemas/registration";
+import { SyncRequestSchema } from "@lastmile/validators/sync";
 import { Router } from "express";
 
 const router = Router();
@@ -7,34 +12,49 @@ const router = Router();
  *
  * Receives a batch of queued offline registrations from the tablet,
  * splits PII from operational data, and writes them to SQLite.
- *
- * Request Body:
- * {
- *   "records": [
- *     {
- *       "localId": "uuid-123",
- *       "fullName": "John Doe",
- *       "referenceId": "SAP-9942",
- *       "phoneNumber": "+254700000000",
- *       "currency": "KES",
- *       "isProxy": true
- *     }
- *   ]
- * }
- *
- * Response (200):
- * { "success": true, "syncedCount": 1, "failedRecords": [] }
  */
-router.post("/push", async (_req, res, next) => {
+router.post("/push", async (req, res, next) => {
   try {
-    // TODO: 1. Validate req.body.records with Zod
-    // TODO: 2. For each record, insert PII into identities table
-    // TODO: 3. Insert operational data into registrations table
-    // TODO: 4. Collect any failures and return them
+    const { records } = SyncRequestSchema.parse(req.body);
+
+    let syncedCount = 0;
+    const failedRecords: Array<{ localId?: string; error: string }> = [];
+
+    for (const record of records) {
+      try {
+        const identityId = crypto.randomUUID();
+        const registrationId = crypto.randomUUID();
+
+        // 1. Insert PII into identities table
+        await db.insert(identities).values({
+          id: identityId,
+          fullName: record.fullName,
+          phoneNumber: record.phoneNumber,
+        });
+
+        // 2. Insert operational data into registrations table
+        await db.insert(registrations).values({
+          id: registrationId,
+          referenceId: record.referenceId,
+          identityId: identityId,
+          currency: record.currency,
+          preferredLanguage: record.preferredLanguage || "en",
+          isProxy: record.isProxy || false,
+        });
+
+        syncedCount++;
+      } catch (err) {
+        failedRecords.push({
+          localId: record.localId || record.referenceId,
+          error: err instanceof Error ? err.message : "Unknown error during sync",
+        });
+      }
+    }
+
     res.json({
       success: true,
-      syncedCount: 0,
-      failedRecords: [],
+      syncedCount,
+      failedRecords,
     });
   } catch (error) {
     next(error);

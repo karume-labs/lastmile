@@ -11,7 +11,8 @@
     "./offramp": "./src/offramp.ts",
     "./identity": "./src/identity.ts",
     "./audit": "./src/audit.ts",
-    "./sms": "./src/sms.ts"
+    "./sms": "./src/sms.ts",
+    "./sync": "./src/sync.ts"
   },
   "dependencies": {
     "@lastmile/db": "workspace:*",

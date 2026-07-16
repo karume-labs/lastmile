@@ -1,3 +1,4 @@
+import { stellarRelayer } from "@lastmile/api/lib/stellar";
 import { requireRole } from "@lastmile/api/middlewares/authorize";
 import { db } from "@lastmile/db/client";
 import { disbursements } from "@lastmile/db/schemas/programmes";
@@ -69,10 +70,12 @@ router.post("/clawback/execute", requireRole("super_admin"), async (req, res, ne
       return;
     }
 
+    const { transactionHash } = await stellarRelayer.executeClawback(paymentId);
+
     res.json({
       success: true,
       message: "Funds successfully clawed back to Treasury.",
-      transactionHash: `0x${Math.random().toString(16).substring(2, 42)}`,
+      transactionHash,
       status: "clawed_back",
     });
   } catch (error) {

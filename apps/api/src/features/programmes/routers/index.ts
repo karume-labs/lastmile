@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { sendDisbursementSms } from "@lastmile/api/lib/sms-client";
+import { stellarRelayer } from "@lastmile/api/lib/stellar";
 import { requireRole } from "@lastmile/api/middlewares/authorize";
 import { db } from "@lastmile/db/client";
 import { identities } from "@lastmile/db/schemas/identity";
@@ -115,9 +116,14 @@ router.post("/clawback/execute", requireRole("super_admin"), async (req, res, ne
       return;
     }
 
-    // TODO: Trigger Soroban Relayer to execute the actual on-chain clawback here
+    const { transactionHash } = await stellarRelayer.executeClawback(paymentId);
 
-    res.json({ success: true, message: "Funds successfully clawed back to Treasury." });
+    res.json({
+      success: true,
+      message: "Funds successfully clawed back to Treasury.",
+      transactionHash,
+      status: "clawed_back",
+    });
   } catch (error) {
     next(error);
   }
