@@ -13,12 +13,21 @@ interface SelectProps {
   label?: string;
   placeholder?: string;
   error?: string;
+  hint?: string;
   value: string | undefined;
   options: SelectOption[];
   onChange: (value: string) => void;
 }
 
-export const Select = ({ label, placeholder = "Select an option", error, value, options, onChange }: SelectProps) => {
+export const Select = ({
+  label,
+  placeholder = "Select an option",
+  error,
+  hint,
+  value,
+  options,
+  onChange,
+}: SelectProps) => {
   const [open, setOpen] = useState(false);
   const selected = options.find((option) => option.value === value);
 
@@ -36,7 +45,11 @@ export const Select = ({ label, placeholder = "Select an option", error, value, 
         </Text>
         <ChevronDown color="#71717a" size={18} />
       </Pressable>
-      {error ? <Text className="text-sm text-destructive">{error}</Text> : null}
+      {error ? (
+        <Text className="text-sm text-destructive">{error}</Text>
+      ) : hint ? (
+        <Text className="text-sm text-muted-foreground">{hint}</Text>
+      ) : null}
 
       <Modal animationType="slide" onRequestClose={() => setOpen(false)} transparent visible={open}>
         <Pressable className="flex-1 justify-end bg-black/40" onPress={() => setOpen(false)}>
