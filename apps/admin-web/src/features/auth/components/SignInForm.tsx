@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { AuthSignInRequest } from "@lastmile/types/auth";
 import { AuthSignInSchema } from "@lastmile/validators/auth";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -95,7 +96,14 @@ export const SignInForm = () => {
                 className="w-full rounded-xl font-medium py-6"
                 disabled={signInMutation.isPending}
               >
-                Sign in
+                {signInMutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  "Sign in"
+                )}
               </Button>
             </div>
           </fieldset>
