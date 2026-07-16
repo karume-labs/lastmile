@@ -2,6 +2,9 @@ import cors from 'cors';
 import express, { type Request, type Response } from 'express';
 import helmet from 'helmet';
 import authRouter from './features/auth/routers';
+import registrationRouter from './features/registration/routers';
+import syncRouter from './features/sync/routers';
+import { errorHandler } from './middlewares/error-handler';
 
 const PORT = Number(process.env.PORT || '8000');
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
@@ -23,6 +26,10 @@ app.get('/api/health', (_req: Request, res: Response) => {
 });
 
 app.use('/api/auth', authRouter);
+app.use('/api/registration', registrationRouter);
+app.use('/api/sync', syncRouter);
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Express API running on http://localhost:${PORT}`);

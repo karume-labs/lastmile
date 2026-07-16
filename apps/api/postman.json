@@ -1,0 +1,239 @@
+{
+  "info": {
+    "name": "LastMile API",
+    "_postman_id": "5e0d2c6f-5db8-4f89-9d2d-6f6cfb1b8f20",
+    "description": "Registration, sync, and auth endpoints for the LastMile API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000/api"
+    },
+    {
+      "key": "authToken",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Sign In",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@lastmile.org\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/sign-in",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "sign-in"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "if (body.token) {",
+                  "  pm.environment.set('authToken', body.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Registration",
+      "item": [
+        {
+          "name": "List Registrations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/registration",
+              "host": ["{{baseUrl}}"],
+              "path": ["registration"]
+            }
+          }
+        },
+        {
+          "name": "Create Registration",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"referenceId\": \"REG-TEST-001\",\n  \"programmeId\": \"programme-id-here\",\n  \"payload\": {\n    \"name\": \"Jane Doe\",\n    \"nationalId\": \"12345678\",\n    \"phone\": \"+254700000000\",\n    \"hasProxy\": false\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/registration",
+              "host": ["{{baseUrl}}"],
+              "path": ["registration"]
+            }
+          }
+        },
+        {
+          "name": "Get Registration",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/registration/registration-id-here",
+              "host": ["{{baseUrl}}"],
+              "path": ["registration", "registration-id-here"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sync",
+      "item": [
+        {
+          "name": "Pending Registrations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sync/pending-registrations",
+              "host": ["{{baseUrl}}"],
+              "path": ["sync", "pending-registrations"]
+            }
+          }
+        },
+        {
+          "name": "List Sync Jobs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sync/jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["sync", "jobs"]
+            }
+          }
+        },
+        {
+          "name": "Get Sync Job",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sync/jobs/sync-job-id-here",
+              "host": ["{{baseUrl}}"],
+              "path": ["sync", "jobs", "sync-job-id-here"]
+            }
+          }
+        },
+        {
+          "name": "Retry Registration Sync",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sync/registrations/registration-id-here/retry",
+              "host": ["{{baseUrl}}"],
+              "path": ["sync", "registrations", "registration-id-here", "retry"]
+            }
+          }
+        },
+        {
+          "name": "Update Sync Job",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"SUCCESS\",\n  \"attempts\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/sync/jobs/sync-job-id-here",
+              "host": ["{{baseUrl}}"],
+              "path": ["sync", "jobs", "sync-job-id-here"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
