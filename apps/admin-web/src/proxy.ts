@@ -25,7 +25,8 @@ export async function proxy(request: NextRequest) {
     }
 
     try {
-      const apiRes = await apiClient.get(`${env.NEXT_PUBLIC_API_URL}/api/auth/get-session`, {
+      const apiUrl = env.NEXT_PUBLIC_API_URL.replace("://localhost:", "://127.0.0.1:");
+      const apiRes = await apiClient.get(`${apiUrl}/api/auth/get-session`, {
         headers: {
           Cookie: `${tokenName}=${sessionToken}`,
           "User-Agent": request.headers.get("user-agent") || "NextJs-Proxy",

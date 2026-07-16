@@ -4,6 +4,7 @@ import { AlertTriangle, Clock, DollarSign, Send, TrendingUp, Users } from "lucid
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useDashboardMetrics } from "@/features/dashboard/services/queries";
+import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
 
 interface MetricCardProps {
   title: string;
@@ -34,7 +35,11 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, icon, des
 };
 
 export const DashboardContent = () => {
-  const { data: metrics, isLoading } = useDashboardMetrics();
+  const { data: metrics, isLoading, isError, error } = useDashboardMetrics();
+
+  if (isError && ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)) {
+    return <PermissionDenied />;
+  }
 
   return (
     <div className="space-y-6">

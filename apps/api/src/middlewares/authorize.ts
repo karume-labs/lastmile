@@ -1,3 +1,4 @@
+import { authenticate } from "@lastmile/api/middlewares/authenticate";
 import type { NextFunction, Request, Response } from "express";
 
 export type Role = "super_admin" | "admin" | "registrar";
@@ -19,25 +20,37 @@ const normalizeRole = (role?: string | null): Role => {
 
 // Example usage: router.post("/disburse", requireRole("admin"), handler...)
 export const requireRole = (minimumRole: Role) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    // Assuming authenticate middleware populates req.user via better-auth
-    const user = req.user;
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const checkPermissions = () => {
+      const user = req.user;
+      if (!user) {
+        res.status(401).json({ error: "Unauthorized" });
+        return;
+      }
 
-    if (!user) {
-      res.status(401).json({ error: "Unauthorized" });
-      return;
+      const userRole = normalizeRole(user.role);
+
+      // Check if the user's role weight is >= the required role weight
+      if (ROLE_HIERARCHY[userRole] >= ROLE_HIERARCHY[minimumRole]) {
+        next();
+        return;
+      }
+
+      res.status(403).json({
+        error: `Forbidden. Requires ${minimumRole} privileges.`,
+      });
+    };
+
+    if (!req.user) {
+      await authenticate(req, res, (err) => {
+        if (err) return next(err);
+        if (!req.user) {
+          return; // authenticate already sent 401
+        }
+        checkPermissions();
+      });
+    } else {
+      checkPermissions();
     }
-
-    const userRole = normalizeRole(user.role);
-
-    // Check if the user's role weight is >= the required role weight
-    if (ROLE_HIERARCHY[userRole] >= ROLE_HIERARCHY[minimumRole]) {
-      next();
-      return;
-    }
-
-    res.status(403).json({
-      error: `Forbidden. Requires ${minimumRole} privileges.`,
-    });
   };
 };

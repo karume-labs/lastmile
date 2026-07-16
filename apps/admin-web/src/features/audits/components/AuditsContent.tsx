@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAudits } from "@/features/audits/services/queries";
+import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
 import { DataTable } from "@/features/shared/components/table/DataTable";
 import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
 import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
@@ -27,7 +28,7 @@ export const AuditsContent = () => {
     parseAsString.withDefault(""),
   );
 
-  const { data: auditsResponse, isLoading } = useAudits();
+  const { data: auditsResponse, isLoading, isError, error } = useAudits();
 
   const columns: ColumnDef<AuditLog, unknown>[] = [
     {
@@ -48,19 +49,18 @@ export const AuditsContent = () => {
       accessorKey: "severity",
       header: "Severity",
       cell: ({ row }) => {
-        const severity = row.original.severity;
+        const severity = row.getValue("severity") as string;
         return (
           <Badge
-            variant="secondary"
-            className={
-              severity === "critical"
-                ? "bg-destructive text-destructive-foreground"
-                : severity === "warning"
-                  ? "bg-secondary text-secondary-foreground"
-                  : "bg-primary text-primary-foreground"
+            variant={
+              severity === "high"
+                ? "destructive"
+                : severity === "medium"
+                  ? "default"
+                  : "secondary"
             }
           >
-            {severity.charAt(0).toUpperCase() + severity.slice(1)}
+            {severity.toUpperCase()}
           </Badge>
         );
       },
@@ -68,7 +68,9 @@ export const AuditsContent = () => {
     {
       accessorKey: "timestamp",
       header: "Date",
-      cell: ({ row }) => new Date(row.original.timestamp).toLocaleString(),
+      cell: ({ row }) => {
+        return new Date(row.original.timestamp).toLocaleDateString();
+      },
     },
     {
       id: "actions",
@@ -86,6 +88,10 @@ export const AuditsContent = () => {
       },
     },
   ];
+
+  if (isError && ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)) {
+    return <PermissionDenied />;
+  }
 
   if (isLoading) {
     return <DataTableSkeleton columnCount={5} />;
