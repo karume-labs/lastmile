@@ -3,22 +3,40 @@
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import { CreateBatchForm } from "@/features/programmes/components/CreateBatchForm";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { BulkUploadZone } from "@/features/registration/components/BulkUploadZone";
 import { ProgrammeGrid } from "@/features/programmes/components/ProgrammeGrid";
 
 export const ProgrammesContent: React.FC = () => {
-  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showDisbursementDialog, setShowDisbursementDialog] = useState(false);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-end">
-        <Dialog open={showCreateForm} onOpenChange={setShowCreateForm}>
+        <Dialog open={showDisbursementDialog} onOpenChange={setShowDisbursementDialog}>
           <DialogTrigger render={<Button size="sm" />}>
             <Plus className="mr-2 size-4" />
-            New Batch
+            New Disbursement
           </DialogTrigger>
-          <CreateBatchForm onSuccess={() => setShowCreateForm(false)} />
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>New Disbursement / Beneficiary Registration</DialogTitle>
+              <DialogDescription>
+                Upload spreadsheets (CSV or Excel) to bulk register new beneficiaries and initiate a disbursement batch.
+              </DialogDescription>
+            </DialogHeader>
+            <BulkUploadZone
+              className="border-0 shadow-none p-0"
+              onSuccess={() => setShowDisbursementDialog(false)}
+            />
+          </DialogContent>
         </Dialog>
       </div>
       <ProgrammeGrid />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { CheckCircle2, XCircle } from "lucide-react";
 import Papa from "papaparse";
@@ -20,6 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { cn } from "@/lib/utils";
 
 // Expected Row Structure
 export interface BeneficiaryRow {
@@ -30,7 +31,13 @@ export interface BeneficiaryRow {
   isProxy: boolean;
 }
 
-export const BulkUploadZone = () => {
+export interface BulkUploadZoneProps {
+  onSuccess?: () => void;
+  className?: string;
+}
+
+export const BulkUploadZone = ({ onSuccess, className }: BulkUploadZoneProps = {}) => {
+  const queryClient = useQueryClient();
   const [data, setData] = useState<BeneficiaryRow[]>([]);
   const [programmeTitle, setProgrammeTitle] = useState("");
   const [targetCurrency, setTargetCurrency] = useState("USDC");
@@ -47,8 +54,10 @@ export const BulkUploadZone = () => {
       return response.data;
     },
     onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ["programmes"] });
       toast.success(`Successfully uploaded ${res.referenceIds?.length} records!`);
       setData([]); // Reset after successful upload
+      onSuccess?.();
     },
     onError: (error: Error) => {
       console.error(error);
@@ -121,7 +130,7 @@ export const BulkUploadZone = () => {
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
+    <Card className={cn("w-full max-w-4xl mx-auto", className)}>
       <CardHeader>
         <CardTitle>Bulk Upload Beneficiaries</CardTitle>
       </CardHeader>

@@ -3,7 +3,6 @@
 import {
   AlertTriangle,
   ClipboardList,
-  FileSpreadsheet,
   FolderOpen,
   HelpCircle,
   LayoutDashboard,
@@ -35,12 +34,6 @@ import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
   { title: "Dashboard", url: "/admin/dashboard", icon: LayoutDashboard, id: "tour-dashboard" },
-  {
-    title: "Registration",
-    url: "/admin/registration",
-    icon: FileSpreadsheet,
-    id: "tour-registration",
-  },
   { title: "Deliveries", url: "/admin/deliveries", icon: Send, id: "tour-deliveries" },
   { title: "Programmes", url: "/admin/programmes", icon: FolderOpen, id: "tour-programmes" },
   {
