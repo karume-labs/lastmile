@@ -35,11 +35,24 @@ export const DELETE = async (request: NextRequest, { params }: Params) => {
 const proxyRequest = async (request: NextRequest, proxy: string[]) => {
   const path = proxy.join("/");
   const url = new URL(request.url);
-  const targetUrl = `${apiBase}/api/${path}${url.search}`;
+  
+  // Normalize apiBase to avoid trailing slash issues and map localhost to 127.0.0.1 for Node/axios IPv4 resolution
+  let base = apiBase.replace(/\/+$/, "");
+  if (base.includes("://localhost:")) {
+    base = base.replace("://localhost:", "://127.0.0.1:");
+  }
+  const targetUrl = `${base}/api/${path}${url.search}`;
 
   const headers = new Headers();
   request.headers.forEach((value, key) => {
-    if (key !== "host") {
+    const lower = key.toLowerCase();
+    if (
+      lower !== "host" &&
+      lower !== "connection" &&
+      lower !== "content-length" &&
+      lower !== "transfer-encoding" &&
+      lower !== "accept-encoding"
+    ) {
       headers.set(key, value);
     }
   });
@@ -75,7 +88,8 @@ const proxyRequest = async (request: NextRequest, proxy: string[]) => {
       statusText: response.statusText,
       headers: responseHeaders,
     });
-  } catch {
-    return NextResponse.json({ error: "Failed to proxy request" }, { status: 502 });
+  } catch (error: any) {
+    console.error(`[PROXY ERROR] Failed to proxy ${request.method} to ${targetUrl}:`, error?.message || error);
+    return NextResponse.json({ error: "Failed to proxy request", details: error?.message }, { status: 502 });
   }
 };

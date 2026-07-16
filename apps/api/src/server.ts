@@ -1,5 +1,7 @@
+import auditsRouter from "@lastmile/api/features/audits/routers";
 import clawbackRouter from "@lastmile/api/features/clawback/routers";
 import dashboardRouter from "@lastmile/api/features/dashboard/routers";
+import deliveriesRouter from "@lastmile/api/features/deliveries/routers";
 import offrampRouter from "@lastmile/api/features/offramp/routers";
 import programmesRouter from "@lastmile/api/features/programmes/routers";
 import proxiesRouter from "@lastmile/api/features/proxies/routers";
@@ -47,6 +49,9 @@ app.get("/api/health", (_req: Request, res: Response) => {
 app.use("/api/sync", syncRouter);
 app.use("/api/ussd", ussdSessionRouter);
 app.use("/api/admin", clawbackRouter);
+app.use("/api/stagnant-funds", clawbackRouter);
+app.use("/api/audits", auditsRouter);
+app.use("/api/deliveries", deliveriesRouter);
 app.use("/api/programmes", programmesRouter);
 app.use("/api/offramp", offrampRouter);
 app.use("/api/registration", registrationRouter);
@@ -58,6 +63,6 @@ app.use("/api/staff", staffRouter);
 // Error Handler (must be last)
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`Express API running on http://localhost:${PORT}`);
 });
