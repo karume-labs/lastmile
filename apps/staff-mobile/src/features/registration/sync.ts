@@ -55,7 +55,7 @@ const toSyncPayload = (record: QueuedRegistration): SyncRegistrationPayload => (
   verificationType: record.verificationType,
   verificationValue: record.verificationValue,
   locationLabel: record.locationLabel,
-  coordinates: record.coordinates,
+  coordinates: record.coordinates ?? null,
   programmeId: record.programmeId,
   proxy: record.hasPhone
     ? null
@@ -65,7 +65,7 @@ const toSyncPayload = (record: QueuedRegistration): SyncRegistrationPayload => (
         relationship: record.proxyRelationship ?? "",
         nationalId: record.proxyNationalId || null,
       },
-  photoUri: record.photoUri,
+  photoUri: record.photoUri ?? null,
   consentGiven: record.consentGiven,
   queuedAt: record.queuedAt,
 });
