@@ -2,6 +2,7 @@ import type {
   BatchInsertSchema,
   BatchSelectSchema,
   ClawbackRequestSchema,
+  CreateBatchRequestSchema,
   DisbursementInsertSchema,
   DisbursementSelectSchema,
   DisbursementTriggerRequestSchema,
@@ -27,6 +28,7 @@ export type InsertBatch = z.infer<typeof BatchInsertSchema>;
 export type DisbursementTriggerRequest = z.infer<typeof DisbursementTriggerRequestSchema>;
 export type ClawbackRequest = z.infer<typeof ClawbackRequestSchema>;
 export type StagnantFundsQuery = z.infer<typeof StagnantFundsQuerySchema>;
+export type CreateBatchRequest = z.infer<typeof CreateBatchRequestSchema>;
 
 export type ClawbackResponse = {
   success: boolean;

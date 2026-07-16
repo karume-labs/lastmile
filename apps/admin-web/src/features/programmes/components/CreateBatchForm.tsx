@@ -1,8 +1,9 @@
 "use client";
 
 import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
+import type { CreateBatchRequest } from "@lastmile/types/programmes";
+import { CreateBatchRequestSchema } from "@lastmile/validators/programmes";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   DialogContent,
@@ -11,8 +12,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Form, FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -22,35 +24,20 @@ import {
 } from "@/components/ui/select";
 import { useCreateBatch } from "@/features/programmes/services/mutations";
 
-const batchSchema = z.object({
-  programmeName: z.string().min(1, "Programme name is required"),
-  targetCurrency: z.string().min(1, "Currency is required"),
-  batchSize: z.number().min(1, "Batch size must be at least 1"),
-});
-
-type BatchFormValues = z.infer<typeof batchSchema>;
-
 export interface CreateBatchFormProps {
   onSuccess?: () => void;
 }
 
 export const CreateBatchForm = ({ onSuccess }: CreateBatchFormProps = {}) => {
   const createBatchMutation = useCreateBatch();
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    reset,
-    formState: { errors },
-  } = useForm<BatchFormValues>({
-    resolver: standardSchemaResolver(batchSchema),
+  const form = useForm<CreateBatchRequest>({
+    resolver: standardSchemaResolver(CreateBatchRequestSchema),
   });
 
-  const onSubmit = (data: BatchFormValues) => {
+  const onSubmit = (data: CreateBatchRequest) => {
     createBatchMutation.mutate(data, {
       onSuccess: () => {
-        reset();
+        form.reset();
         onSuccess?.();
       },
     });
@@ -62,60 +49,85 @@ export const CreateBatchForm = ({ onSuccess }: CreateBatchFormProps = {}) => {
         <DialogTitle>Create New Batch</DialogTitle>
         <DialogDescription>Create a new disbursement batch for a programme.</DialogDescription>
       </DialogHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="space-y-4 px-1 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="programmeName">Programme Name</Label>
-            <Input
-              id="programmeName"
-              placeholder="e.g., Emergency Relief Q4"
-              {...register("programmeName")}
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="space-y-4 px-1 py-4">
+            <FormField
+              control={form.control}
+              name="programmeName"
+              render={({ field }) => (
+                <Field data-invalid={!!form.formState.errors.programmeName}>
+                  <FieldLabel htmlFor={field.name}>Programme Name</FieldLabel>
+                  <Input
+                    id={field.name}
+                    placeholder="e.g., Emergency Relief Q4"
+                    {...field}
+                    aria-invalid={!!form.formState.errors.programmeName}
+                  />
+                  {form.formState.errors.programmeName && (
+                    <FieldError>{form.formState.errors.programmeName.message}</FieldError>
+                  )}
+                </Field>
+              )}
             />
-            {errors.programmeName && (
-              <p className="text-sm text-destructive">{errors.programmeName.message}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="targetCurrency">Target Currency</Label>
-            <Select
-              value={watch("targetCurrency")}
-              onValueChange={(value) => {
-                if (value) setValue("targetCurrency", value);
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select currency" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="USD">USD - US Dollar</SelectItem>
-                <SelectItem value="NGN">NGN - Nigerian Naira</SelectItem>
-                <SelectItem value="KES">KES - Kenyan Shilling</SelectItem>
-                <SelectItem value="GHS">GHS - Ghanaian Cedi</SelectItem>
-              </SelectContent>
-            </Select>
-            {errors.targetCurrency && (
-              <p className="text-sm text-destructive">{errors.targetCurrency.message}</p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="batchSize">Batch Size</Label>
-            <Input
-              id="batchSize"
-              type="number"
-              placeholder="Number of participants"
-              {...register("batchSize", { valueAsNumber: true })}
+
+            <FormField
+              control={form.control}
+              name="targetCurrency"
+              render={({ field }) => (
+                <Field data-invalid={!!form.formState.errors.targetCurrency}>
+                  <FieldLabel htmlFor={field.name}>Target Currency</FieldLabel>
+                  <Select
+                    value={field.value}
+                    onValueChange={(value) => {
+                      if (value) field.onChange(value);
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select currency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="USD">USD - US Dollar</SelectItem>
+                      <SelectItem value="NGN">NGN - Nigerian Naira</SelectItem>
+                      <SelectItem value="KES">KES - Kenyan Shilling</SelectItem>
+                      <SelectItem value="GHS">GHS - Ghanaian Cedi</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {form.formState.errors.targetCurrency && (
+                    <FieldError>{form.formState.errors.targetCurrency.message}</FieldError>
+                  )}
+                </Field>
+              )}
             />
-            {errors.batchSize && (
-              <p className="text-sm text-destructive">{errors.batchSize.message}</p>
-            )}
+
+            <FormField
+              control={form.control}
+              name="batchSize"
+              render={({ field }) => (
+                <Field data-invalid={!!form.formState.errors.batchSize}>
+                  <FieldLabel htmlFor={field.name}>Batch Size</FieldLabel>
+                  <Input
+                    id={field.name}
+                    type="number"
+                    placeholder="Number of participants"
+                    {...field}
+                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    aria-invalid={!!form.formState.errors.batchSize}
+                  />
+                  {form.formState.errors.batchSize && (
+                    <FieldError>{form.formState.errors.batchSize.message}</FieldError>
+                  )}
+                </Field>
+              )}
+            />
           </div>
-        </div>
-        <DialogFooter>
-          <Button type="submit" disabled={createBatchMutation.isPending} className="w-full">
-            {createBatchMutation.isPending ? "Creating..." : "Create Batch"}
-          </Button>
-        </DialogFooter>
-      </form>
+          <DialogFooter>
+            <Button type="submit" disabled={createBatchMutation.isPending} className="w-full">
+              {createBatchMutation.isPending ? "Creating..." : "Create Batch"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </Form>
     </DialogContent>
   );
 };

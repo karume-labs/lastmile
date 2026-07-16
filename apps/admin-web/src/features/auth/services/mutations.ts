@@ -1,3 +1,8 @@
+import type {
+  AuthSignInRequest,
+  AuthSignInResponse,
+  AuthSignUpRequest,
+} from "@lastmile/types/auth";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { apiClient } from "@/lib/api-client";
@@ -7,8 +12,8 @@ export const useSignIn = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: { email: string; password: string }) => {
-      const response = await apiClient.post("/auth/sign-in", data);
+    mutationFn: async (data: AuthSignInRequest) => {
+      const response = await apiClient.post<AuthSignInResponse>("/auth/sign-in", data);
       return response.data;
     },
     onSuccess: () => {
@@ -30,6 +35,22 @@ export const useSignOut = () => {
     onSuccess: () => {
       queryClient.clear();
       router.push("/sign-in");
+    },
+  });
+};
+
+export const useSignUp = () => {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: AuthSignUpRequest) => {
+      const response = await apiClient.post<AuthSignInResponse>("/auth/sign-up", data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["auth"] });
+      router.push("/admin/dashboard");
     },
   });
 };

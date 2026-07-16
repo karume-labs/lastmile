@@ -36,3 +36,10 @@ export const ClawbackRequestSchema = z.object({
 export const StagnantFundsQuerySchema = z.object({
   daysPending: z.coerce.number().int().positive().default(7),
 });
+
+// ── Create Batch ──
+export const CreateBatchRequestSchema = z.object({
+  programmeName: z.string().min(1, "Programme name is required"),
+  targetCurrency: z.string().min(1, "Currency is required"),
+  batchSize: z.number().min(1, "Batch size must be at least 1"),
+});

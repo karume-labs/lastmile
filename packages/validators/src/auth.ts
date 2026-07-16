@@ -1,13 +1,13 @@
 import { z } from "zod";
 
-export const AuthRegisterSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(8),
-  name: z.string().min(2),
-  role: z.enum(["ADMIN", "REGISTRAR"]),
+export const AuthSignUpSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
 });
 
-export const AuthLoginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(1),
+export const AuthSignInSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
 });

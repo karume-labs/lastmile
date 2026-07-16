@@ -1,10 +1,10 @@
-import type { AuthLoginSchema, AuthRegisterSchema } from "@lastmile/validators/auth";
+import type { AuthSignInSchema, AuthSignUpSchema } from "@lastmile/validators/auth";
 import type { z } from "zod";
 
 // ── API Request / Response ──
 
-export type AuthRegister = z.infer<typeof AuthRegisterSchema>;
-export type AuthLogin = z.infer<typeof AuthLoginSchema>;
+export type AuthSignUpRequest = z.infer<typeof AuthSignUpSchema>;
+export type AuthSignInRequest = z.infer<typeof AuthSignInSchema>;
 
 export type AuthUser = {
   id: string;
@@ -13,7 +13,7 @@ export type AuthUser = {
   role: "ADMIN" | "REGISTRAR";
 };
 
-export type AuthLoginResponse = {
+export type AuthSignInResponse = {
   user: AuthUser;
   token: string;
 };

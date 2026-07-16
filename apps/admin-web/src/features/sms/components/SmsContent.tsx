@@ -1,9 +1,12 @@
 "use client";
 
-import type { SmsMessage } from "@lastmile/types/sms";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { SmsCreateRequest, SmsMessage } from "@lastmile/types/sms";
+import { SmsCreateRequestSchema } from "@lastmile/validators/sms";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +17,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Form, FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { DataTable } from "@/features/shared/components/table/DataTable";
 import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
@@ -25,34 +30,30 @@ import { useSmsMessages } from "@/features/sms/services/queries";
 
 export const SmsContent = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [recipient, setRecipient] = useState("");
-  const [content, setContent] = useState("");
 
   const { search, setSearch, clearFilters } = useDataTablePagination();
   const { data: smsResponse, isLoading } = useSmsMessages();
   const createSms = useCreateSms();
 
-  const onSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!recipient || !content) {
-      toast.error("Please fill in both fields.");
-      return;
-    }
+  const form = useForm<SmsCreateRequest>({
+    resolver: zodResolver(SmsCreateRequestSchema),
+    defaultValues: {
+      recipient: "",
+      content: "",
+    },
+  });
 
-    createSms.mutate(
-      { recipient, content },
-      {
-        onSuccess: () => {
-          toast.success("SMS queued for sending");
-          setIsDialogOpen(false);
-          setRecipient("");
-          setContent("");
-        },
-        onError: () => {
-          toast.error("Failed to send SMS");
-        },
+  const onSubmit = (values: SmsCreateRequest) => {
+    createSms.mutate(values, {
+      onSuccess: () => {
+        toast.success("SMS queued for sending");
+        setIsDialogOpen(false);
+        form.reset();
       },
-    );
+      onError: () => {
+        toast.error("Failed to send SMS");
+      },
+    });
   };
 
   const columns: ColumnDef<SmsMessage, unknown>[] = [
@@ -130,7 +131,7 @@ export const SmsContent = () => {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold tracking-tight">SMS Messages</h2>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
+          <DialogTrigger>
             <Button>
               <Plus className="mr-2 h-4 w-4" /> Send SMS
             </Button>
@@ -139,36 +140,72 @@ export const SmsContent = () => {
             <DialogHeader>
               <DialogTitle>Send SMS Message</DialogTitle>
             </DialogHeader>
-            <form onSubmit={onSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Recipient Phone Number
-                </label>
-                <Input
-                  placeholder="+1234567890"
-                  value={recipient}
-                  onChange={(e) => setRecipient(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Message Content
-                </label>
-                <textarea
-                  className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                  placeholder="Type your message here..."
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="flex justify-end pt-4">
-                <Button type="submit" disabled={createSms.isPending}>
-                  {createSms.isPending ? "Sending..." : "Send Message"}
-                </Button>
-              </div>
-            </form>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                <fieldset disabled={createSms.isPending} className="space-y-5">
+                  <FormField
+                    control={form.control}
+                    name="recipient"
+                    render={({ field }) => (
+                      <Field data-invalid={!!form.formState.errors.recipient}>
+                        <FieldLabel
+                          htmlFor={field.name}
+                          className="text-xs font-bold text-foreground"
+                        >
+                          Recipient Phone Number
+                        </FieldLabel>
+                        <Input
+                          id={field.name}
+                          type="text"
+                          placeholder="+1234567890"
+                          className="bg-muted/50 rounded-xl"
+                          {...field}
+                          aria-invalid={!!form.formState.errors.recipient}
+                        />
+                        {form.formState.errors.recipient && (
+                          <FieldError>{form.formState.errors.recipient.message}</FieldError>
+                        )}
+                      </Field>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="content"
+                    render={({ field }) => (
+                      <Field data-invalid={!!form.formState.errors.content}>
+                        <FieldLabel
+                          htmlFor={field.name}
+                          className="text-xs font-bold text-foreground"
+                        >
+                          Message Content
+                        </FieldLabel>
+                        <textarea
+                          id={field.name}
+                          className="flex min-h-20 w-full bg-muted/50 rounded-xl border border-input px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                          placeholder="Type your message here..."
+                          aria-invalid={!!form.formState.errors.content}
+                          {...field}
+                        />
+                        {form.formState.errors.content && (
+                          <FieldError>{form.formState.errors.content.message}</FieldError>
+                        )}
+                      </Field>
+                    )}
+                  />
+
+                  <div className="pt-2">
+                    <Button
+                      type="submit"
+                      className="w-full rounded-xl font-medium py-6"
+                      disabled={createSms.isPending}
+                    >
+                      {createSms.isPending ? "Sending..." : "Send Message"}
+                    </Button>
+                  </div>
+                </fieldset>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
       </div>

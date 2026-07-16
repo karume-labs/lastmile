@@ -61,7 +61,7 @@ export const verifyToken = (token: string) => {
 };
 
 export const authService = {
-  async register(email: string, password: string, name: string, role: "ADMIN" | "REGISTRAR") {
+  async signUp(email: string, password: string, name: string, role: "ADMIN" | "REGISTRAR") {
     const existingUser = await db.query.user.findFirst({
       where: eq(user.email, email),
     });
@@ -95,7 +95,7 @@ export const authService = {
     };
   },
 
-  async login(email: string, password: string) {
+  async signIn(email: string, password: string) {
     const userResult = await db.query.user.findFirst({
       where: eq(user.email, email),
     });

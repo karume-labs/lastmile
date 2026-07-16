@@ -1,20 +1,30 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { AuthSignUpRequest } from "@lastmile/types/auth";
+import { AuthSignUpSchema } from "@lastmile/validators/auth";
 import Link from "next/link";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Form, FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useSignUp } from "../services/mutations";
 
 export const SignUpForm = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const { register, handleSubmit } = useForm();
+  const signUpMutation = useSignUp();
+  const form = useForm<AuthSignUpRequest>({
+    resolver: zodResolver(AuthSignUpSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+    },
+  });
 
-  const onSubmit = async (_data: unknown) => {
-    setIsLoading(true);
-    // TODO: implement sign up
-    setTimeout(() => setIsLoading(false), 2000);
+  const onSubmit = (data: AuthSignUpRequest) => {
+    signUpMutation.mutate(data);
   };
 
   return (
@@ -35,70 +45,112 @@ export const SignUpForm = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        <fieldset disabled={isLoading} className="space-y-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName" className="text-xs font-bold text-foreground">
-                First Name
-              </Label>
-              <Input
-                id="firstName"
-                placeholder="John"
-                className="bg-muted/50 rounded-xl"
-                {...register("firstName", { required: true })}
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+          <fieldset disabled={signUpMutation.isPending} className="space-y-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <Field data-invalid={!!form.formState.errors.firstName}>
+                    <FieldLabel htmlFor={field.name} className="text-xs font-bold text-foreground">
+                      First Name
+                    </FieldLabel>
+                    <Input
+                      id={field.name}
+                      placeholder="John"
+                      className="bg-muted/50 rounded-xl"
+                      {...field}
+                      aria-invalid={!!form.formState.errors.firstName}
+                    />
+                    {form.formState.errors.firstName && (
+                      <FieldError>{form.formState.errors.firstName.message}</FieldError>
+                    )}
+                  </Field>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <Field data-invalid={!!form.formState.errors.lastName}>
+                    <FieldLabel htmlFor={field.name} className="text-xs font-bold text-foreground">
+                      Last Name
+                    </FieldLabel>
+                    <Input
+                      id={field.name}
+                      placeholder="Doe"
+                      className="bg-muted/50 rounded-xl"
+                      {...field}
+                      aria-invalid={!!form.formState.errors.lastName}
+                    />
+                    {form.formState.errors.lastName && (
+                      <FieldError>{form.formState.errors.lastName.message}</FieldError>
+                    )}
+                  </Field>
+                )}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="lastName" className="text-xs font-bold text-foreground">
-                Last Name
-              </Label>
-              <Input
-                id="lastName"
-                placeholder="Doe"
-                className="bg-muted/50 rounded-xl"
-                {...register("lastName", { required: true })}
-              />
+
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <Field data-invalid={!!form.formState.errors.email}>
+                  <FieldLabel htmlFor={field.name} className="text-xs font-bold text-foreground">
+                    Email Address
+                  </FieldLabel>
+                  <Input
+                    id={field.name}
+                    type="email"
+                    placeholder="m@example.com"
+                    className="bg-muted/50 rounded-xl"
+                    {...field}
+                    aria-invalid={!!form.formState.errors.email}
+                  />
+                  {form.formState.errors.email && (
+                    <FieldError>{form.formState.errors.email.message}</FieldError>
+                  )}
+                </Field>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <Field data-invalid={!!form.formState.errors.password}>
+                  <FieldLabel htmlFor={field.name} className="text-xs font-bold text-foreground">
+                    Password
+                  </FieldLabel>
+                  <Input
+                    id={field.name}
+                    type="password"
+                    placeholder="Enter password"
+                    className="bg-muted/50 rounded-xl"
+                    {...field}
+                    aria-invalid={!!form.formState.errors.password}
+                  />
+                  {form.formState.errors.password && (
+                    <FieldError>{form.formState.errors.password.message}</FieldError>
+                  )}
+                </Field>
+              )}
+            />
+
+            <div className="pt-2">
+              <Button
+                type="submit"
+                className="w-full rounded-xl font-medium py-6"
+                disabled={signUpMutation.isPending}
+              >
+                Create Account
+              </Button>
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-xs font-bold text-foreground">
-              Email Address
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="m@example.com"
-              className="bg-muted/50 rounded-xl"
-              {...register("email", { required: true })}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-xs font-bold text-foreground">
-              Password
-            </Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder="Enter password"
-              className="bg-muted/50 rounded-xl"
-              {...register("password", { required: true })}
-            />
-          </div>
-
-          <div className="pt-2">
-            <Button
-              type="submit"
-              className="w-full rounded-xl font-medium py-6"
-              isLoading={isLoading}
-            >
-              Create Account
-            </Button>
-          </div>
-        </fieldset>
-      </form>
+          </fieldset>
+        </form>
+      </Form>
     </div>
   );
 };

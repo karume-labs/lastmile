@@ -1,20 +1,28 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { AuthSignInRequest } from "@lastmile/types/auth";
+import { AuthSignInSchema } from "@lastmile/validators/auth";
 import Link from "next/link";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Form, FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useSignIn } from "../services/mutations";
 
 export const SignInForm = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const { register, handleSubmit } = useForm();
+  const signInMutation = useSignIn();
+  const form = useForm<AuthSignInRequest>({
+    resolver: zodResolver(AuthSignInSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
-  const onSubmit = async (_data: unknown) => {
-    setIsLoading(true);
-    // TODO: implement sign in with better-auth client
-    setTimeout(() => setIsLoading(false), 2000);
+  const onSubmit = (data: AuthSignInRequest) => {
+    signInMutation.mutate(data);
   };
 
   return (
@@ -35,53 +43,75 @@ export const SignInForm = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        <fieldset disabled={isLoading} className="space-y-5">
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-xs font-bold text-foreground">
-              Email Address
-            </Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="m@example.com"
-              className="bg-muted/50 rounded-xl"
-              {...register("email", { required: true })}
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+          <fieldset disabled={signInMutation.isPending} className="space-y-5">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <Field data-invalid={!!form.formState.errors.email}>
+                  <FieldLabel htmlFor={field.name} className="text-xs font-bold text-foreground">
+                    Email Address
+                  </FieldLabel>
+                  <Input
+                    id={field.name}
+                    type="email"
+                    placeholder="m@example.com"
+                    className="bg-muted/50 rounded-xl"
+                    {...field}
+                    aria-invalid={!!form.formState.errors.email}
+                  />
+                  {form.formState.errors.email && (
+                    <FieldError>{form.formState.errors.email.message}</FieldError>
+                  )}
+                </Field>
+              )}
             />
-          </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between w-full">
-              <Label htmlFor="password" className="text-xs font-bold text-foreground">
-                Password
-              </Label>
-              <Link
-                href="/forgot-password"
-                className="text-sm font-medium text-primary hover:underline"
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <Field data-invalid={!!form.formState.errors.password}>
+                  <div className="flex items-center justify-between w-full">
+                    <FieldLabel htmlFor={field.name} className="text-xs font-bold text-foreground">
+                      Password
+                    </FieldLabel>
+                    <Link
+                      href="/forgot-password"
+                      className="text-sm font-medium text-primary hover:underline"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
+                  <Input
+                    id={field.name}
+                    type="password"
+                    placeholder="**********"
+                    className="bg-muted/50 rounded-xl"
+                    {...field}
+                    aria-invalid={!!form.formState.errors.password}
+                  />
+                  {form.formState.errors.password && (
+                    <FieldError>{form.formState.errors.password.message}</FieldError>
+                  )}
+                </Field>
+              )}
+            />
+
+            <div className="pt-2">
+              <Button
+                type="submit"
+                className="w-full rounded-xl font-medium py-6"
+                disabled={signInMutation.isPending}
               >
-                Forgot password?
-              </Link>
+                Sign in
+              </Button>
             </div>
-            <Input
-              id="password"
-              type="password"
-              placeholder="**********"
-              className="bg-muted/50 rounded-xl"
-              {...register("password", { required: true })}
-            />
-          </div>
-
-          <div className="pt-2">
-            <Button
-              type="submit"
-              className="w-full rounded-xl font-medium py-6"
-              isLoading={isLoading}
-            >
-              Sign in
-            </Button>
-          </div>
-        </fieldset>
-      </form>
+          </fieldset>
+        </form>
+      </Form>
     </div>
   );
 };
