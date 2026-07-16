@@ -5,6 +5,7 @@ import programmesRouter from "@lastmile/api/features/programmes/routers";
 import proxiesRouter from "@lastmile/api/features/proxies/routers";
 import registrationRouter from "@lastmile/api/features/registration/routers";
 import { smsRouter } from "@lastmile/api/features/sms/routers";
+import staffRouter from "@lastmile/api/features/staff/routers";
 import syncRouter from "@lastmile/api/features/sync/routers";
 import ussdSessionRouter from "@lastmile/api/features/ussd/routers";
 import { auditLogMiddleware } from "@lastmile/api/middlewares/audit-log";
@@ -52,6 +53,7 @@ app.use("/api/registration", registrationRouter);
 app.use("/api/sms", smsRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/proxies", proxiesRouter);
+app.use("/api/staff", staffRouter);
 
 // Error Handler (must be last)
 app.use(errorHandler);

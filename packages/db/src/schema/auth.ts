@@ -1,1 +1,1 @@
-export * from "../auth/schema/index";
+export * from "@lastmile/db/schemas/auth";

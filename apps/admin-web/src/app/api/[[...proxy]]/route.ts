@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
+import axios from "axios";
 import { env } from "@/env";
 
 const apiBase = env.NEXT_PUBLIC_API_URL;
@@ -47,18 +48,19 @@ const proxyRequest = async (request: NextRequest, proxy: string[]) => {
     request.method !== "GET" && request.method !== "HEAD" ? await request.arrayBuffer() : undefined;
 
   try {
-    const response = await fetch(targetUrl, {
+    const response = await axios({
+      url: targetUrl,
       method: request.method,
-      headers,
-      body,
+      headers: Object.fromEntries(headers.entries()),
+      data: body,
+      responseType: "arraybuffer",
+      validateStatus: () => true,
     });
 
-    const responseBody = await response.arrayBuffer();
-
-    return new NextResponse(responseBody, {
+    return new NextResponse(response.data, {
       status: response.status,
       statusText: response.statusText,
-      headers: Object.fromEntries(response.headers.entries()),
+      headers: response.headers as HeadersInit,
     });
   } catch {
     return NextResponse.json({ error: "Failed to proxy request" }, { status: 502 });

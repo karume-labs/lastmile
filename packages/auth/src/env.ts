@@ -10,7 +10,7 @@ const envSchema = z.object({
 const _env = envSchema.safeParse(process.env);
 
 if (!_env.success) {
-  console.error("❌ Invalid auth environment variables:", _env.error.format());
+  console.error("Invalid auth environment variables:", z.prettifyError(_env.error));
   throw new Error("Invalid auth environment variables");
 }
 

@@ -33,10 +33,6 @@ if (!apiKey) {
   console.warn("AT_API_KEY is not set — SMS dispatch will fail.");
 }
 
-console.log("\n🔍 --- DIAGNOSTIC CHECK ---");
-console.log(`Loaded Username: '${username}'`);
-console.log(`Loaded API Key: '${apiKey.slice(0, 12)}...[HIDDEN]... (Length: ${apiKey.length})'`);
-console.log("---------------------------\n");
 
 const africasTalking = AfricasTalking({
   apiKey,

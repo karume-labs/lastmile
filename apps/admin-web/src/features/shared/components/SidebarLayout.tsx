@@ -53,7 +53,7 @@ const NAV_ITEMS = [
   { title: "Proxies", url: "/admin/proxies", icon: Users, id: "tour-proxies" },
   { title: "Tours & Help", url: "/admin/tours", icon: HelpCircle, id: "tour-help" },
   { title: "SMS", url: "/admin/sms", icon: MessageSquare, id: "tour-sms" },
-  { title: "Staff & Team", url: "/admin/staff", icon: Users, id: "tour-staff" },
+  { title: "Staff", url: "/admin/staff", icon: Users, id: "tour-staff" },
 ] as const;
 
 const AppSidebar = () => {
@@ -64,7 +64,7 @@ const AppSidebar = () => {
   return (
     <Sidebar collapsible="icon" className="border-border">
       <SidebarHeader className="border-b border-border/50">
-        <div className="flex flex-col items-start justify-center gap-0.5 px-6 py-6 transition-all duration-200 group-data-[collapsible=icon]:px-2 group-data-[collapsible=icon]:items-center h-20">
+        <div className="flex flex-col justify-center gap-0.5 py-6 transition-all duration-200 px-6 group-data-[collapsible=icon]:px-2 items-start group-data-[collapsible=icon]:items-center h-20" style={{}}>
           <span
             className={cn(
               "text-lg font-semibold tracking-tight",
@@ -97,13 +97,13 @@ const AppSidebar = () => {
                       className={cn(
                         "transition-all duration-300 py-7 px-5 group-data-[collapsible=icon]:p-2 rounded-2xl group",
                         isActive
-                          ? "bg-primary/10 hover:bg-primary/10 text-primary hover:text-primary font-semibold dark:bg-primary/20 dark:hover:bg-primary/20"
+                          ? "bg-primary/10 hover:bg-primary/10 dark:bg-primary/20 dark:hover:bg-primary/20 text-primary hover:text-primary font-semibold"
                           : "hover:bg-transparent text-muted-foreground",
                       )}
                       render={
                         <Link
                           href={item.url}
-                          className="flex items-center gap-4 w-full group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0!"
+                          className="flex items-center w-full gap-4 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:gap-0!"
                         />
                       }
                     >

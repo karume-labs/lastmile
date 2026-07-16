@@ -1,9 +1,10 @@
+import { dispatchAlert } from "@lastmile/api/features/sms/services/notifications";
 import {
   dictionary,
   type SupportedLanguage,
 } from "@lastmile/api/features/ussd/services/dictionary";
 
-// Example mock SMS dispatcher
+// Actual SMS dispatcher using Africa's Talking
 export const sendDisbursementSms = async (
   phoneNumber: string,
   referenceId: string,
@@ -13,9 +14,9 @@ export const sendDisbursementSms = async (
   // Use the dictionary to format the message dynamically based on user's language
   const message = `${dictionary[lang].successClaim} Ref: ${referenceId}. OTP: ${otp}. Dial *340# to claim.`;
 
-  console.log(`\n💬 [SMS DISPATCH MOCK to ${phoneNumber} (${lang})]:`);
+  console.log(`\n💬 [SMS DISPATCH to ${phoneNumber} (${lang})]:`);
   console.log(`"${message}"\n`);
 
-  // TODO: Replace with actual Africa's Talking POST request
-  // await axios.post('https://api.africastalking.com/version1/messaging', ...)
+  // Call the actual Africa's Talking service
+  await dispatchAlert(phoneNumber, message);
 };

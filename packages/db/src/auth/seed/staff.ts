@@ -1,5 +1,5 @@
 import { db } from "@lastmile/db/client";
-import { user } from "../schema";
+import { user } from "@lastmile/db/schemas/auth";
 
 export async function seedStaff() {
   console.log("Seeding staff members...");

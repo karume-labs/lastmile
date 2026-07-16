@@ -9,7 +9,7 @@ const envSchema = z.object({
 const _env = envSchema.safeParse(process.env);
 
 if (!_env.success) {
-  console.error("❌ Invalid API environment variables:", _env.error.format());
+  console.error("Invalid API environment variables:", z.prettifyError(_env.error));
   throw new Error("Invalid API environment variables");
 }
 
