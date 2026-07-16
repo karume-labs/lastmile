@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react-native";
-import { Text, TextInput, type TextInputProps, View } from "react-native";
+import { StyleSheet, Text, TextInput, type TextInputProps, View } from "react-native";
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -10,26 +10,63 @@ interface InputProps extends TextInputProps {
 
 export const Input = ({ label, error, hint, icon: Icon, style, ...inputProps }: InputProps) => {
   return (
-    <View className="gap-1.5">
-      {label ? <Text className="text-sm font-semibold text-foreground">{label}</Text> : null}
-      <View
-        className={`flex-row items-center gap-2 rounded-lg border bg-background px-3 ${
-          error ? "border-destructive bg-destructive/5" : "border-border"
-        }`}
-      >
+    <View style={styles.wrapper}>
+      {label ? <Text style={styles.label}>{label}</Text> : null}
+      <View style={[styles.container, error ? styles.containerError : styles.containerNormal]}>
         {Icon ? <Icon color={error ? "#ef4444" : "#71717a"} size={20} /> : null}
         <TextInput
-          className="flex-1 py-3 text-base"
+          style={[styles.input, style]}
           placeholderTextColor="#a1a1aa"
-          style={[{ color: "#09090b" }, style]}
           {...inputProps}
         />
       </View>
       {error ? (
-        <Text className="text-xs text-destructive font-medium">{error}</Text>
+        <Text style={styles.error}>{error}</Text>
       ) : hint ? (
-        <Text className="text-xs text-muted-foreground">{hint}</Text>
+        <Text style={styles.hint}>{hint}</Text>
       ) : null}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  wrapper: {
+    gap: 6,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#09090b",
+  },
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+  },
+  containerNormal: {
+    borderColor: "#e4e4e7",
+    backgroundColor: "#ffffff",
+  },
+  containerError: {
+    borderColor: "#ef4444",
+    backgroundColor: "#fef2f2",
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: "#09090b",
+  },
+  error: {
+    fontSize: 12,
+    color: "#ef4444",
+    fontWeight: "500",
+  },
+  hint: {
+    fontSize: 12,
+    color: "#71717a",
+  },
+});

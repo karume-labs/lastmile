@@ -1,5 +1,5 @@
 import { Phone } from "lucide-react-native";
-import { Text, TextInput, View } from "react-native";
+import { StyleSheet, Text, TextInput, View } from "react-native";
 
 interface PhoneInputProps {
   label?: string;
@@ -11,14 +11,6 @@ interface PhoneInputProps {
   placeholder?: string;
 }
 
-/**
- * Professional phone input component with:
- * - Phone pad keyboard
- * - Automatic formatting (removes non-digits)
- * - E.164 format support
- * - Phone icon indicator
- * - Clear error messaging
- */
 export const PhoneInput = ({
   label,
   error,
@@ -29,14 +21,10 @@ export const PhoneInput = ({
   placeholder = "+254 712 345 678",
 }: PhoneInputProps) => {
   const handleChangeText = (text: string) => {
-    // Remove all non-digit characters except leading +
     let processed = text;
-
-    // If it starts with +, keep it; otherwise remove any +
     if (!text.startsWith("+")) {
       processed = text.replace(/[^\d]/g, "");
     } else {
-      // Keep only the first +, remove any others, and strip non-digits after +
       const plusCount = text.match(/\+/g)?.length || 0;
       if (plusCount > 1) {
         processed = "+" + text.replace(/\D/g, "");
@@ -44,30 +32,22 @@ export const PhoneInput = ({
         processed = "+" + text.slice(1).replace(/\D/g, "");
       }
     }
-
-    // Max 15 digits (E.164 standard)
     if (processed.startsWith("+")) {
-      processed = processed.substring(0, 16); // + plus 15 digits
+      processed = processed.substring(0, 16);
     } else {
       processed = processed.substring(0, 15);
     }
-
     onChangeText(processed);
   };
 
   return (
-    <View className="gap-1.5">
-      {label ? <Text className="text-sm font-semibold text-foreground">{label}</Text> : null}
-      <View
-        className={`flex-row items-center gap-2 rounded-lg border bg-background px-3 ${
-          error ? "border-destructive bg-destructive/5" : "border-border"
-        }`}
-      >
+    <View style={styles.wrapper}>
+      {label ? <Text style={styles.label}>{label}</Text> : null}
+      <View style={[styles.container, error ? styles.containerError : styles.containerNormal]}>
         <Phone size={20} color={error ? "#ef4444" : "#71717a"} />
         <TextInput
-          className="flex-1 py-3 text-base"
+          style={styles.input}
           placeholderTextColor="#a1a1aa"
-          style={{ color: "#09090b" }}
           keyboardType="phone-pad"
           autoCapitalize="none"
           autoCorrect={false}
@@ -80,10 +60,21 @@ export const PhoneInput = ({
         />
       </View>
       {error ? (
-        <Text className="text-xs text-destructive font-medium">{error}</Text>
+        <Text style={styles.error}>{error}</Text>
       ) : hint ? (
-        <Text className="text-xs text-muted-foreground">{hint}</Text>
+        <Text style={styles.hint}>{hint}</Text>
       ) : null}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  wrapper: { gap: 6 },
+  label: { fontSize: 14, fontWeight: "600", color: "#09090b" },
+  container: { flexDirection: "row", alignItems: "center", gap: 8, borderWidth: 1, borderRadius: 8, paddingHorizontal: 12 },
+  containerNormal: { borderColor: "#e4e4e7", backgroundColor: "#ffffff" },
+  containerError: { borderColor: "#ef4444", backgroundColor: "#fef2f2" },
+  input: { flex: 1, paddingVertical: 12, fontSize: 16, color: "#09090b" },
+  error: { fontSize: 12, color: "#ef4444", fontWeight: "500" },
+  hint: { fontSize: 12, color: "#71717a" },
+});
