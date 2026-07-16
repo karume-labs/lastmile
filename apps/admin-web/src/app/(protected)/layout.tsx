@@ -18,7 +18,7 @@ const ProtectedLayout = async ({ children }: { children: React.ReactNode }) => {
   const reqHeaders = await headers();
 
   try {
-    const apiRes = await axios.get(`${env.NEXT_PUBLIC_API_URL}/auth/get-session`, {
+    const apiRes = await axios.get(`${env.NEXT_PUBLIC_API_URL}/api/auth/get-session`, {
       headers: {
         Cookie: `${tokenName}=${sessionToken}`,
         "User-Agent": reqHeaders.get("user-agent") || "NextJs-Layout",
@@ -33,7 +33,7 @@ const ProtectedLayout = async ({ children }: { children: React.ReactNode }) => {
 
     const session = apiRes.data;
 
-    if (!session?.user || session.user.role !== "admin") {
+    if (!session?.user || !["admin", "super_admin"].includes(session.user.role)) {
       redirect("/sign-in");
     }
   } catch (error) {

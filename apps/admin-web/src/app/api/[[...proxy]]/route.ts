@@ -57,10 +57,23 @@ const proxyRequest = async (request: NextRequest, proxy: string[]) => {
       validateStatus: () => true,
     });
 
+    // Build response headers, properly forwarding Set-Cookie
+    const responseHeaders = new Headers();
+    for (const [key, value] of Object.entries(response.headers)) {
+      if (key.toLowerCase() === "set-cookie") {
+        const cookies = Array.isArray(value) ? value : [value];
+        for (const cookie of cookies) {
+          if (cookie) responseHeaders.append("Set-Cookie", cookie);
+        }
+      } else if (value != null) {
+        responseHeaders.set(key, String(value));
+      }
+    }
+
     return new NextResponse(response.data, {
       status: response.status,
       statusText: response.statusText,
-      headers: response.headers as HeadersInit,
+      headers: responseHeaders,
     });
   } catch {
     return NextResponse.json({ error: "Failed to proxy request" }, { status: 502 });

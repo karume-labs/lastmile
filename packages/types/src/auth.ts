@@ -10,7 +10,7 @@ export type AuthUser = {
   id: string;
   email: string;
   name: string;
-  role: "ADMIN" | "REGISTRAR";
+  role: "super_admin" | "admin" | "staff" | "user";
 };
 
 export type AuthSignInResponse = {

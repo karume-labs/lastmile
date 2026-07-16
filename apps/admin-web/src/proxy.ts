@@ -25,7 +25,7 @@ export async function proxy(request: NextRequest) {
     }
 
     try {
-      const apiRes = await apiClient.get(`${env.NEXT_PUBLIC_API_URL}/auth/get-session`, {
+      const apiRes = await apiClient.get(`${env.NEXT_PUBLIC_API_URL}/api/auth/get-session`, {
         headers: {
           Cookie: `${tokenName}=${sessionToken}`,
           "User-Agent": request.headers.get("user-agent") || "NextJs-Proxy",
@@ -40,7 +40,7 @@ export async function proxy(request: NextRequest) {
 
       const session = apiRes.data;
 
-      if (!session?.user || session.user.role !== "admin") {
+      if (!session?.user || !["admin", "super_admin"].includes(session.user.role)) {
         return NextResponse.redirect(new URL("/sign-in", request.url));
       }
     } catch (error) {
