@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "bun --watch src/server.ts"
+    "dev": "bun --watch src/server.ts",
+    "start": "bun src/server.ts"
   },
   "dependencies": {
     "@lastmile/auth": "workspace:*",

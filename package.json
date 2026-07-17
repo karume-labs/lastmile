@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "bun run --filter './apps/*' --parallel dev",
     "build": "bun run --filter './apps/*' --parallel build",
+    "start": "bun run --filter './apps/*' --parallel start",
     "dev:web": "bun --cwd apps/admin-web dev",
     "build:web": "bun --cwd apps/admin-web build",
     "start:web": "bun --cwd apps/admin-web start",
