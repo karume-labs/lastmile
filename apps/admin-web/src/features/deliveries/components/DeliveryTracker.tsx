@@ -2,6 +2,7 @@
 
 import type { Disbursement } from "@lastmile/types/programmes";
 import type { ColumnDef } from "@tanstack/react-table";
+import axios from "axios";
 import { parseAsString, useQueryState } from "nuqs";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -149,7 +150,8 @@ export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => 
 
   if (
     isError &&
-    ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)
+    axios.isAxiosError(error) &&
+    (error.response?.status === 401 || error.response?.status === 403)
   ) {
     return <PermissionDenied />;
   }

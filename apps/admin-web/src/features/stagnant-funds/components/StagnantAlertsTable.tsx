@@ -2,6 +2,7 @@
 
 import type { StagnantFundItem } from "@lastmile/types/programmes";
 import type { ColumnDef } from "@tanstack/react-table";
+import axios from "axios";
 import { AlertTriangle } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
 import { useState } from "react";
@@ -119,7 +120,8 @@ export const StagnantAlertsTable = ({ onClawbackSelect }: StagnantAlertsTablePro
 
   if (
     isError &&
-    ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)
+    axios.isAxiosError(error) &&
+    (error.response?.status === 401 || error.response?.status === 403)
   ) {
     return <PermissionDenied />;
   }

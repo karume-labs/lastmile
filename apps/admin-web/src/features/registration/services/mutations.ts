@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
 import { toast } from "sonner";
 import { apiClient } from "@/lib/api-client";
 
@@ -14,7 +15,7 @@ export const useUnblockParticipant = () => {
       queryClient.invalidateQueries({ queryKey: ["participants"] });
       toast.success("Participant unblocked successfully");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ error?: string }>) => {
       toast.error(error?.response?.data?.error || "Failed to unblock participant");
     },
   });

@@ -12,13 +12,12 @@ export const sendDisbursementSms = async (
   amount: number,
   lang: SupportedLanguage = "en",
 ) => {
-  // Use the dictionary to format the message dynamically based on user's language
-  const message = `${dictionary[lang].successClaim} Ref: ${referenceId}. Amount: ${amount}. OTP: ${otp}. Dial *340# to claim.`;
+  const d = dictionary[lang];
+  const message = `${d.successClaim} ${d.refLabel}: ${referenceId}. ${d.amountLabel}: ${amount}. ${d.otpLabel}: ${otp}. ${d.dialToClaim}`;
 
   console.log(`\n💬 [SMS DISPATCH to ${phoneNumber} (${lang})]:`);
   console.log(`"${message}"\n`);
 
-  // Call the Africa's Talking service directly
   await dispatchAlert(phoneNumber, message);
 };
 
@@ -28,8 +27,8 @@ export const sendConfirmationSms = async (
   referenceId: string,
   lang: SupportedLanguage = "en",
 ) => {
-  // Use the dictionary's successClaim message
-  const message = `${dictionary[lang].successClaim} Ref: ${referenceId}. Amount: ${amount}`;
+  const d = dictionary[lang];
+  const message = `${d.successClaim} ${d.refLabel}: ${referenceId}. ${d.amountLabel}: ${amount}`;
 
   console.log(`\n💬 [SMS DISPATCH (CONFIRMATION) to ${phoneNumber} (${lang})]:`);
   console.log(`"${message}"\n`);

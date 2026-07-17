@@ -93,13 +93,11 @@ const proxyRequest = async (request: NextRequest, proxy: string[]) => {
       statusText: response.statusText,
       headers: responseHeaders,
     });
-  } catch (error: any) {
-    console.error(
-      `[PROXY ERROR] Failed to proxy ${request.method} to ${targetUrl}:`,
-      error?.message || error,
-    );
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`[PROXY ERROR] Failed to proxy ${request.method} to ${targetUrl}:`, message);
     return NextResponse.json(
-      { error: "Failed to proxy request", details: error?.message },
+      { error: "Failed to proxy request", details: message },
       { status: 502 },
     );
   }
