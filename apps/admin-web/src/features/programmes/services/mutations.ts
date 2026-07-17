@@ -68,3 +68,24 @@ export const useDeleteProgramme = () => {
     },
   });
 };
+
+export interface MockOnrampPayload {
+  programmeId: string;
+  amountKes: number;
+  mpesaPhoneNumber: string;
+}
+
+export const useMockOnramp = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (payload: MockOnrampPayload) => {
+      const response = await apiClient.post("/onramp/mock", payload);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["programmes"] });
+      queryClient.invalidateQueries({ queryKey: ["deliveries"] });
+    },
+  });
+};

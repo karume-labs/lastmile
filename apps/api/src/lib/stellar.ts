@@ -96,7 +96,7 @@ export const transferOnChainOnrampFunds = async (
  */
 export const invokeContractOnramp = async (
   donorSecret: string,
-  amount: number,
+  amount: number | string,
 ): Promise<{ success: boolean; transactionHash?: string; error?: any }> => {
   try {
     const server = new rpc.Server(env.STELLAR_RPC_URL);
@@ -107,8 +107,8 @@ export const invokeContractOnramp = async (
 
     const contract = new Contract(env.SOROBAN_CONTRACT_ID);
 
-    // Convert decimal amount to Soroban i128 format (typically scaled by 10^7 for Stellar assets)
-    const scaledAmount = BigInt(Math.floor(amount * 10_000_000));
+    // Convert decimal amount to Soroban i128 format safely (scaled by 10^7 for Stellar assets)
+    const scaledAmount = BigInt(Math.round(Number(amount) * 10_000_000));
 
     // Construct the operation to call 'fund(donor: Address, amount: i128)'
     const operation = contract.call("fund",

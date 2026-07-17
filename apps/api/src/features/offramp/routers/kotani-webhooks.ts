@@ -9,9 +9,10 @@ export const kotaniWebhooksRouter = Router();
 
 kotaniWebhooksRouter.post("/", async (req: Request, res: Response) => {
   try {
-    const signatureHeader = req.headers["x-signature"] || req.headers["x-kotani-signature"];
+    const rawHeader = req.headers["x-signature"] || req.headers["x-kotani-signature"];
+    const signatureStr = Array.isArray(rawHeader) ? rawHeader[0] : rawHeader;
     
-    if (!signatureHeader) {
+    if (!signatureStr) {
       res.status(401).json({ error: "Missing signature header" });
       return;
     }
@@ -23,9 +24,14 @@ kotaniWebhooksRouter.post("/", async (req: Request, res: Response) => {
       .update(payloadString)
       .digest("hex");
 
+    if (signatureStr.length !== expectedSignature.length) {
+      res.status(401).json({ error: "Invalid signature structural length" });
+      return;
+    }
+
     // Use timingSafeEqual to prevent timing attacks
     const isVerified = crypto.timingSafeEqual(
-      Buffer.from(String(signatureHeader)),
+      Buffer.from(signatureStr),
       Buffer.from(expectedSignature)
     );
 

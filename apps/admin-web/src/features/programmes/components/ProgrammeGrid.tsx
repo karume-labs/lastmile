@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DisburseDialog } from "@/features/programmes/components/DisburseDialog";
+import { FundProgrammeDialog } from "@/features/programmes/components/FundProgrammeDialog";
 import { ProgrammeDetailDialog } from "@/features/programmes/components/ProgrammeDetailDialog";
 import {
   useDeleteProgramme,
@@ -36,6 +37,7 @@ const STATUS_STYLES: Record<string, string> = {
 
 export const ProgrammeGrid = () => {
   const [disburseConfirmTarget, setDisburseConfirmTarget] = useState<Programme | null>(null);
+  const [fundConfirmTarget, setFundConfirmTarget] = useState<Programme | null>(null);
   const [viewingProgramme, setViewingProgramme] = useState<Programme | null>(null);
   const { search, setSearch, clearFilters } = useDataTablePagination();
   const toggleStatus = useToggleProgrammeStatus();
@@ -110,6 +112,12 @@ export const ProgrammeGrid = () => {
                 label: "Disburse Batch",
                 onClick: () => {
                   setDisburseConfirmTarget(record);
+                },
+              },
+              {
+                label: "Fund Programme (Simulate)",
+                onClick: () => {
+                  setFundConfirmTarget(record);
                 },
               },
               {
@@ -218,6 +226,12 @@ export const ProgrammeGrid = () => {
         open={!!disburseConfirmTarget}
         onOpenChange={(open) => !open && setDisburseConfirmTarget(null)}
         programme={disburseConfirmTarget}
+      />
+
+      <FundProgrammeDialog
+        open={!!fundConfirmTarget}
+        onOpenChange={(open) => !open && setFundConfirmTarget(null)}
+        programme={fundConfirmTarget}
       />
 
       <ProgrammeDetailDialog

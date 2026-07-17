@@ -8,5 +8,7 @@ export const useDeliveries = () => {
       const response = await apiClient.get("/deliveries");
       return response.data;
     },
+    refetchInterval: 2500,
+    refetchOnWindowFocus: true,
   });
 };

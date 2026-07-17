@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { triggerOfframpToMpesa } from "@lastmile/api/lib/kotani-client";
+import { stellarRelayer } from "@lastmile/api/lib/stellar";
 import { relayerService } from "@lastmile/api/features/relayer/services";
 import {
   dictionary,
@@ -15,15 +16,14 @@ import { Router } from "express";
 
 const router = Router();
 
-function handleFailedAttempt(identityId: string, currentAttempts: number) {
+async function handleFailedAttempt(identityId: string, currentAttempts: number) {
   const newAttempts = currentAttempts + 1;
   const update: Record<string, unknown> = { failedAttempts: newAttempts };
 
-  db.update(identities)
+  await db.update(identities)
     .set(update)
     .where(eq(identities.id, identityId))
-    .execute()
-    .catch(console.error);
+    .execute();
 }
 
 router.post("/session", async (req, res, next) => {
@@ -121,7 +121,7 @@ router.post("/session", async (req, res, next) => {
           if (pendingDisbursements && pendingDisbursements.length > 0) {
             response_msg = `CON ${dictionary[lang].enterOtp}`;
           } else {
-            handleFailedAttempt(userReg[0].identityId, userReg[0].failedAttempts);
+            await handleFailedAttempt(userReg[0].identityId, userReg[0].failedAttempts);
             response_msg = `END ${dictionary[lang].invalidRef}`;
           }
         }
@@ -197,34 +197,42 @@ router.post("/session", async (req, res, next) => {
                 .execute()
                 .catch(console.error);
 
-              // Trigger Kotani Pay offramp
-              const offrampRes = await triggerOfframpToMpesa(
-                phoneNumber,
-                record.amount,
-                enteredRef,
-              );
+              // Trigger on-chain escrow release
+              const relayerResult = await stellarRelayer.executeDisbursementClaim(enteredRef);
 
-              if (offrampRes.success) {
-                // Update disbursement status to processing
-                await db
-                  .update(disbursements)
-                  .set({
-                    status: "processing",
-                    kotaniTxId: offrampRes.kotaniTransactionId,
-                  })
-                  .where(eq(disbursements.id, record.disbursementId));
+              if (relayerResult.success) {
+                // Trigger Kotani Pay offramp
+                const offrampRes = await triggerOfframpToMpesa(
+                  phoneNumber,
+                  record.amount,
+                  enteredRef,
+                );
 
-                // Notify user that funds are being processed
-                response_msg = `END Your OTP is verified. Your funds are being processed to your M-Pesa account.`;
+                if (offrampRes.success) {
+                  // Update disbursement status to processing
+                  await db
+                    .update(disbursements)
+                    .set({
+                      status: "processing",
+                      kotaniTxId: offrampRes.kotaniTransactionId,
+                      txHash: relayerResult.transactionHash,
+                    })
+                    .where(eq(disbursements.id, record.disbursementId));
+
+                  // Notify user that funds are being processed
+                  response_msg = `END Your OTP is verified. Your funds are being processed to your M-Pesa account.`;
+                } else {
+                  response_msg = `END ${dictionary[lang].offrampFailed}`;
+                }
               } else {
-                response_msg = `END ${dictionary[lang].offrampFailed}`;
+                response_msg = `END On-chain disbursement failed.`;
               }
             } else {
-              handleFailedAttempt(userReg[0].identityId, userReg[0].failedAttempts);
+              await handleFailedAttempt(userReg[0].identityId, userReg[0].failedAttempts);
               response_msg = `END ${dictionary[lang].invalidOtp}`;
             }
           } else {
-            handleFailedAttempt(userReg[0].identityId, userReg[0].failedAttempts);
+            await handleFailedAttempt(userReg[0].identityId, userReg[0].failedAttempts);
             response_msg = `END ${dictionary[lang].invalidRef}`;
           }
         }
