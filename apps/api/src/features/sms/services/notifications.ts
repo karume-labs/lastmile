@@ -1,8 +1,9 @@
 import crypto from "node:crypto";
 import { db } from "@lastmile/db/client";
 import { smsMessages } from "@lastmile/db/schemas/sms";
-import AfricasTalking from "africastalking";
+import axios from "axios";
 import { eq } from "drizzle-orm";
+import { env } from "../../../env";
 
 interface AfricasTalkingSMSResponse {
   SMSMessageData: {
@@ -17,33 +18,6 @@ interface AfricasTalkingSMSResponse {
   };
 }
 
-interface AfricasTalkingSMSService {
-  send(options: {
-    to: string[];
-    message: string;
-    from?: string;
-  }): Promise<AfricasTalkingSMSResponse>;
-}
-
-interface AfricasTalkingClient {
-  SMS: AfricasTalkingSMSService;
-}
-
-// --- Credentials ---
-const username = (process.env.AT_USERNAME ?? "sandbox").trim();
-const apiKey = (process.env.AT_API_KEY ?? "").trim();
-
-if (!apiKey) {
-  console.warn("AT_API_KEY is not set — SMS dispatch will fail.");
-}
-
-const africasTalking = AfricasTalking({
-  apiKey,
-  username,
-}) as AfricasTalkingClient;
-
-const sms = africasTalking.SMS;
-
 // --- Core dispatch primitive ---
 
 /**
@@ -55,10 +29,31 @@ export async function dispatchAlert(
 ): Promise<AfricasTalkingSMSResponse | null> {
   try {
     const sanitizedMessage = message.trim().replace(/\s+/g, " ");
-    const response = await sms.send({ to: [phoneNumber], message: sanitizedMessage });
+
+    // console.log("AT_API_KEY", env.AT_API_KEY);
+    // console.log("AT_USERNAME", env.AT_USERNAME);
+
+    const payload = new URLSearchParams({
+      username: env.AT_USERNAME,
+      to: phoneNumber,
+      message: sanitizedMessage,
+    });
+
+    const response = await axios.post<AfricasTalkingSMSResponse>(
+      "https://api.sandbox.africastalking.com/version1/messaging",
+      payload,
+      {
+        headers: {
+          apiKey: env.AT_API_KEY,
+          Accept: "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
+
     console.log(` Dispatched alert to ${phoneNumber} successfully.`);
-    console.log(` SDK Response: ${JSON.stringify(response)}\n`);
-    return response;
+    console.log(` API Response: ${JSON.stringify(response.data)}\n`);
+    return response.data;
   } catch (err) {
     console.error(`Failed to dispatch to ${phoneNumber}:`, err);
     return null;

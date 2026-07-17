@@ -6,6 +6,8 @@ const envSchema = z.object({
   // Optional: comma-separated list of extra CORS origins (e.g. LAN IP access)
   CORS_ORIGINS: z.string().optional(),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+  AT_USERNAME: z.string().default("sandbox"),
+  AT_API_KEY: z.string().min(1, "AT_API_KEY is required"),
 });
 
 const _env = envSchema.safeParse(process.env);
