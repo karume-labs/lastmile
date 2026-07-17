@@ -6,7 +6,7 @@ export const phoneNumberSchema = z
   .string()
   .regex(/^\+[1-9]\d{6,14}$/, "Must be a valid E.164 phone number");
 
-export const currencySchema = z.enum(["KES", "SSP", "ETB", "USD", "USDC"]);
+export const currencySchema = z.enum(["KES", "SSP", "ETB"]);
 
 export const REGION_CURRENCIES = [
   { value: "KES", label: "KES — Kenyan Shilling (Turkana)" },
