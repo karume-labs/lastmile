@@ -3,6 +3,7 @@
 import type { Disbursement } from "@lastmile/types/programmes";
 import type { ColumnDef } from "@tanstack/react-table";
 import { parseAsString, useQueryState } from "nuqs";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -13,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { DeliveryDetailDialog } from "@/features/deliveries/components/DeliveryDetailDialog";
 import { useRetryDelivery } from "@/features/deliveries/services/mutations";
 import { useDeliveries } from "@/features/deliveries/services/queries";
 import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
@@ -41,6 +43,7 @@ interface DeliveryTrackerProps {
 export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => {
   const { search, setSearch, clearFilters } = useDataTablePagination();
   const retryDelivery = useRetryDelivery();
+  const [viewingDelivery, setViewingDelivery] = useState<Disbursement | null>(null);
 
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
 
@@ -126,10 +129,7 @@ export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => 
             actions={[
               {
                 label: "View Details",
-                onClick: () =>
-                  toast.info(
-                    `${record.participantName} — ${record.referenceId} — ${record.amount} ${record.currency} — ${record.status}`,
-                  ),
+                onClick: () => setViewingDelivery(record),
               },
               {
                 label: "Retry Delivery",
@@ -172,52 +172,60 @@ export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => 
   });
 
   return (
-    <DataTable
-      columns={columns}
-      data={filteredData}
-      toolbar={
-        <DataToolbar
-          actions={actions}
-          gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
-          searchKey="participantName"
-          searchValue={search}
-          onSearchChange={setSearch}
-          searchPlaceholder="Search by name or reference..."
-          onClear={() => {
-            clearFilters();
-            setStatusFilter("");
-            setMethodFilter("");
-          }}
-          filters={
-            <>
-              <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="sent">Sent</SelectItem>
-                  <SelectItem value="delivered">Delivered</SelectItem>
-                  <SelectItem value="failed">Failed</SelectItem>
-                </SelectContent>
-              </Select>
+    <>
+      <DataTable
+        columns={columns}
+        data={filteredData}
+        toolbar={
+          <DataToolbar
+            actions={actions}
+            gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+            searchKey="participantName"
+            searchValue={search}
+            onSearchChange={setSearch}
+            searchPlaceholder="Search by name or reference..."
+            onClear={() => {
+              clearFilters();
+              setStatusFilter("");
+              setMethodFilter("");
+            }}
+            filters={
+              <>
+                <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="sent">Sent</SelectItem>
+                    <SelectItem value="delivered">Delivered</SelectItem>
+                    <SelectItem value="failed">Failed</SelectItem>
+                  </SelectContent>
+                </Select>
 
-              <Select value={methodFilter} onValueChange={(val) => setMethodFilter(val)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Method" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Methods</SelectItem>
-                  <SelectItem value="direct">Direct</SelectItem>
-                  <SelectItem value="proxy-led">Proxy-Led</SelectItem>
-                </SelectContent>
-              </Select>
-            </>
-          }
-        />
-      }
-      emptyMessage="No deliveries found."
-    />
+                <Select value={methodFilter} onValueChange={(val) => setMethodFilter(val)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Method" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Methods</SelectItem>
+                    <SelectItem value="direct">Direct</SelectItem>
+                    <SelectItem value="proxy-led">Proxy-Led</SelectItem>
+                  </SelectContent>
+                </Select>
+              </>
+            }
+          />
+        }
+        emptyMessage="No deliveries found."
+      />
+
+      <DeliveryDetailDialog
+        open={!!viewingDelivery}
+        onOpenChange={(open) => !open && setViewingDelivery(null)}
+        delivery={viewingDelivery}
+      />
+    </>
   );
 };

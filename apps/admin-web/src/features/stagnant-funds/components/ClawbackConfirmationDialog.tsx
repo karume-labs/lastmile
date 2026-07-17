@@ -53,11 +53,11 @@ export const ClawbackConfirmationDialog = ({
         <AlertDialogHeader>
           <AlertDialogTitle className="text-destructive">Confirm Clawback</AlertDialogTitle>
           <AlertDialogDescription className="space-y-3">
-            <p>
+            <span className="block">
               You are about to initiate a Soroban transaction reversal for the following
               participant. This action is <strong className="text-destructive">irreversible</strong>{" "}
               once confirmed on-chain.
-            </p>
+            </span>
             <div className="rounded-md border p-4 space-y-2">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Participant:</span>
@@ -74,9 +74,9 @@ export const ClawbackConfirmationDialog = ({
                 </span>
               </div>
             </div>
-            <p className="text-sm font-medium">
+            <span className="block text-sm font-medium">
               Type <strong>CLAWBACK</strong> to confirm this action.
-            </p>
+            </span>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

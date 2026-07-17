@@ -4,7 +4,7 @@ import type { StagnantFundItem } from "@lastmile/types/programmes";
 import type { ColumnDef } from "@tanstack/react-table";
 import { AlertTriangle } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
-import { toast } from "sonner";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -19,6 +19,7 @@ import { DataTableSkeleton } from "@/features/shared/components/table/DataTableS
 import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
 import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
 import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
+import { StagnantDetailDialog } from "@/features/stagnant-funds/components/StagnantDetailDialog";
 import { useStagnantFunds } from "@/features/stagnant-funds/services/queries";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -34,6 +35,7 @@ interface StagnantAlertsTableProps {
 export const StagnantAlertsTable = ({ onClawbackSelect }: StagnantAlertsTableProps) => {
   const { search, setSearch, clearFilters } = useDataTablePagination();
   const { data: stagnantFundsResponse, isLoading, isError, error } = useStagnantFunds();
+  const [viewingRecord, setViewingRecord] = useState<StagnantFundItem | null>(null);
 
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
 
@@ -100,10 +102,7 @@ export const StagnantAlertsTable = ({ onClawbackSelect }: StagnantAlertsTablePro
             actions={[
               {
                 label: "View Details",
-                onClick: () =>
-                  toast.info(
-                    `${record.participantName} — ${record.referenceId} — ${record.amount} ${record.currency} — ${record.daysSinceActivity} days stagnant`,
-                  ),
+                onClick: () => setViewingRecord(record),
               },
               {
                 label: "Initiate Clawback",
@@ -142,36 +141,44 @@ export const StagnantAlertsTable = ({ onClawbackSelect }: StagnantAlertsTablePro
   });
 
   return (
-    <DataTable
-      columns={columns}
-      data={filteredData}
-      toolbar={
-        <DataToolbar
-          gridClassName="grid grid-cols-1 sm:grid-cols-2 gap-4"
-          searchKey="participantName"
-          searchValue={search}
-          onSearchChange={setSearch}
-          searchPlaceholder="Search stagnant funds..."
-          onClear={() => {
-            clearFilters();
-            setStatusFilter("");
-          }}
-          filters={
-            <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="stagnant">Stagnant</SelectItem>
-                <SelectItem value="under-review">Under Review</SelectItem>
-                <SelectItem value="clawed-back">Clawed Back</SelectItem>
-              </SelectContent>
-            </Select>
-          }
-        />
-      }
-      emptyMessage="No stagnant funds found."
-    />
+    <>
+      <DataTable
+        columns={columns}
+        data={filteredData}
+        toolbar={
+          <DataToolbar
+            gridClassName="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            searchKey="participantName"
+            searchValue={search}
+            onSearchChange={setSearch}
+            searchPlaceholder="Search stagnant funds..."
+            onClear={() => {
+              clearFilters();
+              setStatusFilter("");
+            }}
+            filters={
+              <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="stagnant">Stagnant</SelectItem>
+                  <SelectItem value="under-review">Under Review</SelectItem>
+                  <SelectItem value="clawed-back">Clawed Back</SelectItem>
+                </SelectContent>
+              </Select>
+            }
+          />
+        }
+        emptyMessage="No stagnant funds found."
+      />
+
+      <StagnantDetailDialog
+        open={!!viewingRecord}
+        onOpenChange={(open) => !open && setViewingRecord(null)}
+        record={viewingRecord}
+      />
+    </>
   );
 };

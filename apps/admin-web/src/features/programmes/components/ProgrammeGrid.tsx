@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DisburseDialog } from "@/features/programmes/components/DisburseDialog";
+import { ProgrammeDetailDialog } from "@/features/programmes/components/ProgrammeDetailDialog";
 import {
   useDeleteProgramme,
   useToggleProgrammeStatus,
@@ -34,6 +35,7 @@ const STATUS_STYLES: Record<string, string> = {
 
 export const ProgrammeGrid = () => {
   const [disburseConfirmTarget, setDisburseConfirmTarget] = useState<Programme | null>(null);
+  const [viewingProgramme, setViewingProgramme] = useState<Programme | null>(null);
   const { search, setSearch, clearFilters } = useDataTablePagination();
   const toggleStatus = useToggleProgrammeStatus();
   const deleteProgramme = useDeleteProgramme();
@@ -95,10 +97,7 @@ export const ProgrammeGrid = () => {
             actions={[
               {
                 label: "View Details",
-                onClick: () =>
-                  toast.info(
-                    `${record.name} — ${record.targetAudience} — Budget: $${record.budget.toLocaleString()} — Status: ${record.status}`,
-                  ),
+                onClick: () => setViewingProgramme(record),
               },
               {
                 label: "Edit Programme",
@@ -215,6 +214,12 @@ export const ProgrammeGrid = () => {
         open={!!disburseConfirmTarget}
         onOpenChange={(open) => !open && setDisburseConfirmTarget(null)}
         programme={disburseConfirmTarget}
+      />
+
+      <ProgrammeDetailDialog
+        open={!!viewingProgramme}
+        onOpenChange={(open) => !open && setViewingProgramme(null)}
+        programme={viewingProgramme}
       />
     </>
   );

@@ -4,6 +4,7 @@ import type { Proxy as ProxyRecord } from "@lastmile/types/identity";
 import type { ColumnDef } from "@tanstack/react-table";
 import { UserCheck, UserMinus, UserX } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ProxyDetailDialog } from "@/features/proxies/components/ProxyDetailDialog";
 import { useToggleProxyStatus } from "@/features/proxies/services/mutations";
 import { useProxies } from "@/features/proxies/services/queries";
 import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
@@ -26,6 +28,7 @@ import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagi
 export const ProxiesContent = () => {
   const { search, setSearch, clearFilters } = useDataTablePagination();
   const toggleProxyStatus = useToggleProxyStatus();
+  const [viewingProxy, setViewingProxy] = useState<ProxyRecord | null>(null);
 
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
 
@@ -89,10 +92,7 @@ export const ProxiesContent = () => {
             actions={[
               {
                 label: "View Profile",
-                onClick: () =>
-                  toast.info(
-                    `${record.name} — ${record.role} — ${record.phone} — ${record.location} (${record.participantCount} participants)`,
-                  ),
+                onClick: () => setViewingProxy(record),
               },
               {
                 label: record.status === "active" ? "Suspend Access" : "Restore Access",
@@ -153,57 +153,65 @@ export const ProxiesContent = () => {
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Field Agents & Proxies</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <DataTable
-          columns={columns}
-          data={filteredData}
-          toolbar={
-            <DataToolbar
-              gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
-              searchKey="name"
-              searchValue={search}
-              onSearchChange={setSearch}
-              searchPlaceholder="Search name, phone, or location..."
-              onClear={() => {
-                clearFilters();
-                setStatusFilter("");
-                setRoleFilter("");
-              }}
-              filters={
-                <>
-                  <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Statuses</SelectItem>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="suspended">Suspended</SelectItem>
-                    </SelectContent>
-                  </Select>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Field Agents & Proxies</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <DataTable
+            columns={columns}
+            data={filteredData}
+            toolbar={
+              <DataToolbar
+                gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+                searchKey="name"
+                searchValue={search}
+                onSearchChange={setSearch}
+                searchPlaceholder="Search name, phone, or location..."
+                onClear={() => {
+                  clearFilters();
+                  setStatusFilter("");
+                  setRoleFilter("");
+                }}
+                filters={
+                  <>
+                    <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Statuses</SelectItem>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="suspended">Suspended</SelectItem>
+                      </SelectContent>
+                    </Select>
 
-                  <Select value={roleFilter} onValueChange={(val) => setRoleFilter(val)}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Roles</SelectItem>
-                      <SelectItem value="Field Agent">Field Agent</SelectItem>
-                      <SelectItem value="Distributor">Distributor</SelectItem>
-                      <SelectItem value="Volunteer">Volunteer</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </>
-              }
-            />
-          }
-          emptyMessage="No proxy agents found."
-        />
-      </CardContent>
-    </Card>
+                    <Select value={roleFilter} onValueChange={(val) => setRoleFilter(val)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Roles</SelectItem>
+                        <SelectItem value="Field Agent">Field Agent</SelectItem>
+                        <SelectItem value="Distributor">Distributor</SelectItem>
+                        <SelectItem value="Volunteer">Volunteer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </>
+                }
+              />
+            }
+            emptyMessage="No proxy agents found."
+          />
+        </CardContent>
+      </Card>
+
+      <ProxyDetailDialog
+        open={!!viewingProxy}
+        onOpenChange={(open) => !open && setViewingProxy(null)}
+        proxy={viewingProxy}
+      />
+    </>
   );
 };

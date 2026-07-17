@@ -3,7 +3,7 @@
 import type { AuditLog } from "@lastmile/types/audit";
 import type { ColumnDef } from "@tanstack/react-table";
 import { parseAsString, useQueryState } from "nuqs";
-import { toast } from "sonner";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { AuditDetailDialog } from "@/features/audits/components/AuditDetailDialog";
 import { useAudits } from "@/features/audits/services/queries";
 import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
 import { DataTable } from "@/features/shared/components/table/DataTable";
@@ -23,6 +24,7 @@ import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagi
 
 export const AuditsContent = () => {
   const { search, setSearch, clearFilters } = useDataTablePagination();
+  const [viewingRecord, setViewingRecord] = useState<AuditLog | null>(null);
 
   const [severityFilter, setSeverityFilter] = useQueryState(
     "severity",
@@ -78,10 +80,7 @@ export const AuditsContent = () => {
             actions={[
               {
                 label: "View Details",
-                onClick: () =>
-                  toast.info(
-                    `${record.action} by ${record.actor} on ${record.target} [${record.severity.toUpperCase()}] — ${new Date(record.timestamp).toLocaleString()}`,
-                  ),
+                onClick: () => setViewingRecord(record),
               },
             ]}
           />
@@ -114,43 +113,51 @@ export const AuditsContent = () => {
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Recent Audit Entries</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <DataTable
-          columns={columns}
-          data={filteredData}
-          toolbar={
-            <DataToolbar
-              gridClassName="grid grid-cols-1 sm:grid-cols-2 gap-4"
-              searchKey="action"
-              searchValue={search}
-              onSearchChange={setSearch}
-              searchPlaceholder="Search action, actor, or target..."
-              onClear={() => {
-                clearFilters();
-                setSeverityFilter("");
-              }}
-              filters={
-                <Select value={severityFilter} onValueChange={(val) => setSeverityFilter(val)}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Severity" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Severities</SelectItem>
-                    <SelectItem value="info">Info</SelectItem>
-                    <SelectItem value="warning">Warning</SelectItem>
-                    <SelectItem value="critical">Critical</SelectItem>
-                  </SelectContent>
-                </Select>
-              }
-            />
-          }
-          emptyMessage="No audit entries found."
-        />
-      </CardContent>
-    </Card>
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Audit Entries</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <DataTable
+            columns={columns}
+            data={filteredData}
+            toolbar={
+              <DataToolbar
+                gridClassName="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                searchKey="action"
+                searchValue={search}
+                onSearchChange={setSearch}
+                searchPlaceholder="Search action, actor, or target..."
+                onClear={() => {
+                  clearFilters();
+                  setSeverityFilter("");
+                }}
+                filters={
+                  <Select value={severityFilter} onValueChange={(val) => setSeverityFilter(val)}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Severity" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Severities</SelectItem>
+                      <SelectItem value="info">Info</SelectItem>
+                      <SelectItem value="warning">Warning</SelectItem>
+                      <SelectItem value="critical">Critical</SelectItem>
+                    </SelectContent>
+                  </Select>
+                }
+              />
+            }
+            emptyMessage="No audit entries found."
+          />
+        </CardContent>
+      </Card>
+
+      <AuditDetailDialog
+        open={!!viewingRecord}
+        onOpenChange={(open) => !open && setViewingRecord(null)}
+        record={viewingRecord}
+      />
+    </>
   );
 };

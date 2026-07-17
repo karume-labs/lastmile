@@ -26,7 +26,7 @@ export const DisbursementTriggerRequestSchema = z.object({
 // Relayer to reverse a stagnant disbursement on-chain.
 
 export const ClawbackRequestSchema = z.object({
-  paymentId: z.string().uuid(),
+  paymentId: z.string().min(1),
 });
 
 // ── Stagnant Funds Query ──

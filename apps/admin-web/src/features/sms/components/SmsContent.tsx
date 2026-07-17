@@ -39,11 +39,13 @@ import { DataTableSkeleton } from "@/features/shared/components/table/DataTableS
 import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
 import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
 import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
+import { SmsDetailDialog } from "@/features/sms/components/SmsDetailDialog";
 import { useCreateSms } from "@/features/sms/services/mutations";
 import { useSmsMessages } from "@/features/sms/services/queries";
 
 export const SmsContent = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [viewingMessage, setViewingMessage] = useState<SmsMessage | null>(null);
 
   const { search, setSearch, clearFilters } = useDataTablePagination();
   const { data: smsResponse, isLoading } = useSmsMessages();
@@ -118,10 +120,7 @@ export const SmsContent = () => {
             actions={[
               {
                 label: "View Details",
-                onClick: () =>
-                  toast.info(
-                    `To: ${row.original.recipient} — Status: ${row.original.status} — ${row.original.content}`,
-                  ),
+                onClick: () => setViewingMessage(row.original),
               },
             ]}
           />
@@ -245,6 +244,12 @@ export const SmsContent = () => {
           />
         }
         emptyMessage="No SMS messages found."
+      />
+
+      <SmsDetailDialog
+        open={!!viewingMessage}
+        onOpenChange={(open) => !open && setViewingMessage(null)}
+        message={viewingMessage}
       />
     </div>
   );
