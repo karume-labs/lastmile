@@ -17,7 +17,9 @@ type DictionaryKeys =
   | "amountLabel"
   | "otpLabel"
   | "dialToClaim"
-  | "offrampFailed";
+  | "offrampFailed"
+  | "templateDisbursement"
+  | "templateSensitization";
 
 export const dictionary: Record<SupportedLanguage, Record<DictionaryKeys, string>> = {
   en: {
@@ -39,6 +41,9 @@ export const dictionary: Record<SupportedLanguage, Record<DictionaryKeys, string
     otpLabel: "OTP",
     dialToClaim: "Dial *340# to claim.",
     offrampFailed: "Failed to process payout. Please try again later.",
+    templateDisbursement: "You have received funds in your LastMile account. Dial *340# to claim.",
+    templateSensitization:
+      "Registration for the upcoming relief program starts next week in your area. Keep your ID ready.",
   },
   sw: {
     welcome: "Karibu LastMile.\n1. Dai Pesa\n2. Badilisha Lugha",
@@ -60,6 +65,9 @@ export const dictionary: Record<SupportedLanguage, Record<DictionaryKeys, string
     otpLabel: "OTP",
     dialToClaim: "Piga *340# ili uchukue pesa.",
     offrampFailed: "Imeshindikana kusindika malipo. Tafadhali jaribu tena baadaye.",
+    templateDisbursement: "Umepokea pesa kwenye akaunti yako ya LastMile. Piga *340# ili uchukue.",
+    templateSensitization:
+      "Usajili wa programu ya msaada inayofuata unaanza wiki ijayo katika eneo lako. Weka kitambulisho chako tayari.",
   },
   tu: {
     welcome: "Yokak LastMile.\n1. Ng'alakin Ng'aropiyen\n2. Ng'alakin Ng'ajore",
@@ -79,5 +87,8 @@ export const dictionary: Record<SupportedLanguage, Record<DictionaryKeys, string
     otpLabel: "OTP",
     dialToClaim: "Dial *340# na ng'alakin ng'aropiyen.",
     offrampFailed: "Emio ng'aropiyen ongekeyo. Todar nabo.",
+    templateDisbursement: "Ng'aropiyen iyokino nakony akaunti LastMile. Dial *340# na ng'alakin.",
+    templateSensitization:
+      "Ejono ka programu ng'amuny maeke soror oltung'a enye area. Ng'ajore ID kon.",
   },
 };

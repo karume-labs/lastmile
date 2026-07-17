@@ -1,7 +1,13 @@
+import {
+  dictionary,
+  type SupportedLanguage,
+} from "@lastmile/api/features/ussd/services/dictionary";
 import { db } from "@lastmile/db/client";
+import { identities } from "@lastmile/db/schemas/identity";
+import { registrations } from "@lastmile/db/schemas/registration";
 import { smsMessages } from "@lastmile/db/schemas/sms";
 import { SmsCreateRequestSchema } from "@lastmile/validators/sms";
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { Router } from "express";
 import { dispatchAndTrackAlert } from "../services/notifications";
 
@@ -14,6 +20,42 @@ smsRouter.get("/", async (_req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, error: "Failed to fetch SMS messages" });
+  }
+});
+
+smsRouter.get("/templates/:phoneNumber", async (req, res) => {
+  try {
+    const phoneNumber = req.params.phoneNumber;
+
+    const reg = await db
+      .select({ preferredLanguage: registrations.preferredLanguage })
+      .from(registrations)
+      .innerJoin(identities, eq(registrations.identityId, identities.id))
+      .where(eq(identities.phoneNumber, phoneNumber))
+      .limit(1);
+
+    let lang: SupportedLanguage = "en";
+    if (reg.length > 0) {
+      const preferred = reg[0].preferredLanguage;
+      if (preferred === "en" || preferred === "sw" || preferred === "tu") {
+        lang = preferred;
+      }
+    }
+
+    const d = dictionary[lang];
+    res.json({
+      success: true,
+      data: {
+        language: lang,
+        templates: {
+          disbursement: d.templateDisbursement,
+          sensitization: d.templateSensitization,
+        },
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, error: "Failed to fetch SMS templates" });
   }
 });
 
