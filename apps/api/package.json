@@ -13,6 +13,7 @@
     "@lastmile/db": "workspace:*",
     "@lastmile/types": "workspace:*",
     "@lastmile/validators": "workspace:*",
+    "@stellar/stellar-sdk": "^12.2.0",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "axios": "^1.18.1",
