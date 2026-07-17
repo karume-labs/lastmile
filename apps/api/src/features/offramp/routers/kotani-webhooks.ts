@@ -2,13 +2,38 @@ import { db } from "@lastmile/db/client";
 import { disbursements } from "@lastmile/db/schemas/programmes";
 import { eq } from "drizzle-orm";
 import { type Request, type Response, Router } from "express";
-// In a real implementation, you would use KOTANI_WEBHOOK_SECRET to verify signatures.
-// import { env } from "@lastmile/api/env";
+import { env } from "@lastmile/api/env";
+import crypto from "node:crypto";
 
 export const kotaniWebhooksRouter = Router();
 
 kotaniWebhooksRouter.post("/", async (req: Request, res: Response) => {
   try {
+    const signatureHeader = req.headers["x-signature"] || req.headers["x-kotani-signature"];
+    
+    if (!signatureHeader) {
+      res.status(401).json({ error: "Missing signature header" });
+      return;
+    }
+
+    // Verify the signature
+    const payloadString = JSON.stringify(req.body);
+    const expectedSignature = crypto
+      .createHmac("sha256", env.KOTANI_WEBHOOK_SECRET || "")
+      .update(payloadString)
+      .digest("hex");
+
+    // Use timingSafeEqual to prevent timing attacks
+    const isVerified = crypto.timingSafeEqual(
+      Buffer.from(String(signatureHeader)),
+      Buffer.from(expectedSignature)
+    );
+
+    if (!isVerified) {
+      res.status(401).json({ error: "Invalid signature" });
+      return;
+    }
+
     const { reference, status, transactionId, blockchainHash } = req.body;
 
     if (!reference || !status) {
