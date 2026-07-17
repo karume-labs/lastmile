@@ -59,8 +59,10 @@
       "programmeName": "Kisumu County Flood Relief 2026",
       "amount": 50,
       "currency": "USDC",
-      "status": "delivered",
+      "status": "completed",
       "deliveryMethod": "direct",
+      "kotaniTxId": "kp_txn_1001_succ",
+      "txHash": "a1b2c3d4e5f67a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
       "otpHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
@@ -70,8 +72,10 @@
       "programmeName": "Kisumu County Flood Relief 2026",
       "amount": 50,
       "currency": "USDC",
-      "status": "claimed",
+      "status": "processing",
       "deliveryMethod": "direct",
+      "kotaniTxId": "kp_txn_1002_proc",
+      "txHash": null,
       "otpHash": null
     },
     {
