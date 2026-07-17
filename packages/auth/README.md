@@ -1,52 +1,64 @@
-# `@lastmile/auth`
+## `@lastmile/auth`
 
-Shared authentication library for the LastMile system, powered by **Better Auth**.
+Shared authentication library for the LastMile system, powered by Better Auth.
 
 ## Overview
 
-This package encapsulates the authentication configuration, server-side instance, and client-side integration helpers used across both the Next.js admin dashboard and the Express API backend.
+This package provides authentication configuration and helpers used by the admin web UI and the API backend. It centralizes session handling, token creation/verification, and environment validation.
 
-It is backed by SQLite via `@lastmile/db` and utilizes the Drizzle Adapter for session and user storage.
+It relies on `@lastmile/db` for user/session persistence and exposes both server and client helpers to keep auth logic consistent across apps.
 
 ## Features
 
-- **Better Auth Integration**: Standardizes authentication settings.
-- **Drizzle Adapter**: Automatically syncs user and session tables to the database.
-- **Admin Plugin**: Built-in support for administrative role-based access control.
-- **Cross-Platform Support**: Configured with trusted origins for both web (`NEXT_PUBLIC_APP_URL`) and Expo mobile app (`EXPO_PUBLIC_APP_URL` / `exp://` protocols).
+- Better Auth integration with standardized settings
+- Drizzle adapter for user and session persistence
+- Admin role support and RBAC helpers
+- Cross-platform trusted-origins (web & Expo)
 
 ## Key Files
 
-- [src/index.ts](file:///c:/Users/brend/Documents/PROJECTS/lastmile/packages/auth/src/index.ts): Main authentication server instance configuration.
-- [src/client.ts](file:///c:/Users/brend/Documents/PROJECTS/lastmile/packages/auth/src/client.ts): Client-side React authentication client setup (`authClient`).
-- [src/env.ts](file:///c:/Users/brend/Documents/PROJECTS/lastmile/packages/auth/src/env.ts): Zod schema for validating auth-related environment variables.
+- [src/index.ts](src/index.ts): Main server-side auth instance and helpers
+- [src/client.ts](src/client.ts): Client-side auth client (`authClient`) for sign-in/out flows
+- [src/env.ts](src/env.ts): Zod schema for validating package environment variables
 
 ## Usage
 
-### Server-Side (e.g. Express API or Next.js API Routes)
+Server-side (Express/Next.js API routes): import and use the `auth` instance for session checks and middleware.
 
-```typescript
+Client-side (React/Next.js): use `authClient` to perform sign-in, sign-out, and session refresh operations.
+
+Example server snippet
+
+```ts
 import { auth } from "@lastmile/auth";
 
-// Example: Retrieve session
+// Retrieve session for a request
 const session = await auth.api.getSession({ headers });
 ```
 
-### Client-Side (React/Next.js)
+Example client snippet
 
-```typescript
+```ts
 import { authClient } from "@lastmile/auth/client";
 
-// Example: Register user or Sign In
-await authClient.signIn.email({
-  email: "admin@sapcone.org",
-  password: "password123",
-});
+await authClient.signIn.email({ email: "admin@sapcone.org", password: "password123" });
 ```
 
 ## Environment Variables
 
-The package requires the following environment variables (which are validated via Zod at runtime):
-- `NEXT_PUBLIC_APP_URL`: The URL of the Next.js admin interface (used as `baseURL` and in trusted origins).
-- `EXPO_PUBLIC_APP_URL`: The URL of the Expo React Native app (used in trusted origins).
-- `NODE_ENV`: Runs in `development` or `production` mode to determine cookie safety settings.
+The package validates required variables via Zod. Commonly used variables:
+
+- `NEXT_PUBLIC_APP_URL` — admin web URL used as base/trusted origin
+- `EXPO_PUBLIC_APP_URL` — Expo mobile app URL used as trusted origin
+- `NODE_ENV` — `development` or `production`
+
+## Development
+
+- Use the monorepo's package manager (see root `package.json`) to bootstrap.
+- Run build/test tasks scoped to this package with your workspace tool (pnpm/bun/npm).
+
+## Notes
+
+- When changing public types, update `packages/types` accordingly to avoid type mismatches across apps.
+- Keep auth middleware backward-compatible where possible.
+

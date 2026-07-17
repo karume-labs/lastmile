@@ -1,0 +1,111 @@
+{
+  "programmes": [
+    {
+      "id": "prog-001",
+      "name": "Kisumu County Flood Relief 2026",
+      "targetCurrency": "USDC",
+      "targetAudience": "Flood-affected households in West Kolwa",
+      "budget": 50000,
+      "status": "Active",
+      "startDate": "2026-06-01T00:00:00Z",
+      "endDate": "2026-12-31T23:59:59Z"
+    },
+    {
+      "id": "prog-002",
+      "name": "Dadaab Clean Energy Subsidy",
+      "targetCurrency": "USDC",
+      "targetAudience": "Solar lantern subsidy beneficiaries",
+      "budget": 25000,
+      "status": "Active",
+      "startDate": "2026-05-15T00:00:00Z",
+      "endDate": "2026-11-30T23:59:59Z"
+    },
+    {
+      "id": "prog-003",
+      "name": "Marigat Pastoralist Resilience Grant",
+      "targetCurrency": "KES",
+      "targetAudience": "Pastoralist women cooperatives",
+      "budget": 1200000,
+      "status": "Completed",
+      "startDate": "2026-01-01T00:00:00Z",
+      "endDate": "2026-06-30T23:59:59Z"
+    }
+  ],
+  "batches": [
+    {
+      "id": "batch-001",
+      "programmeId": "prog-001",
+      "size": 50,
+      "status": "processed"
+    },
+    {
+      "id": "batch-002",
+      "programmeId": "prog-002",
+      "size": 25,
+      "status": "completed"
+    },
+    {
+      "id": "batch-003",
+      "programmeId": "prog-003",
+      "size": 100,
+      "status": "pending"
+    }
+  ],
+  "disbursements": [
+    {
+      "id": "disb-001",
+      "referenceId": "1001",
+      "participantName": "Wanjiku Kamau",
+      "programmeName": "Kisumu County Flood Relief 2026",
+      "amount": 50,
+      "currency": "USDC",
+      "status": "delivered",
+      "deliveryMethod": "direct",
+      "otpHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "id": "disb-002",
+      "referenceId": "1002",
+      "participantName": "Otieno Juma",
+      "programmeName": "Kisumu County Flood Relief 2026",
+      "amount": 50,
+      "currency": "USDC",
+      "status": "claimed",
+      "deliveryMethod": "direct",
+      "otpHash": null
+    },
+    {
+      "id": "disb-003",
+      "referenceId": "1003",
+      "participantName": "Fatuma Ali",
+      "programmeName": "Dadaab Clean Energy Subsidy",
+      "amount": 30,
+      "currency": "USDC",
+      "status": "pending",
+      "deliveryMethod": "proxy-led",
+      "otpHash": "8d969eef6ecad3c29a3a629280e686cf0c3f5d5a86aff3ca12020c923adc6c92"
+    },
+    {
+      "id": "disb-004",
+      "referenceId": "1004",
+      "participantName": "John Kimani",
+      "programmeName": "Kisumu County Flood Relief 2026",
+      "amount": 50,
+      "currency": "USDC",
+      "status": "stagnant",
+      "deliveryMethod": "direct",
+      "otpHash": null
+    },
+    {
+      "id": "disb-005",
+      "referenceId": "1005",
+      "participantName": "Grace Achieng",
+      "programmeName": "Marigat Pastoralist Resilience Grant",
+      "amount": 10000,
+      "currency": "KES",
+      "status": "clawed_back",
+      "deliveryMethod": "direct",
+      "otpHash": null
+    }
+  ]
+}

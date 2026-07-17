@@ -1,23 +1,15 @@
 "use client";
 
-import { StagnantAlertsTable } from "@/features/stagnant-funds/components/StagnantAlertsTable";
-import { ClawbackConfirmationDialog } from "@/features/stagnant-funds/components/ClawbackConfirmationDialog";
+import type { StagnantFundItem } from "@lastmile/types/programmes";
 import { useState } from "react";
-
-interface ClawbackRecord {
-  id: string;
-  participantName: string;
-  referenceId: string;
-  amount: string;
-  currency: string;
-}
+import { ClawbackConfirmationDialog } from "@/features/stagnant-funds/components/ClawbackConfirmationDialog";
+import { StagnantAlertsTable } from "@/features/stagnant-funds/components/StagnantAlertsTable";
 
 export const StagnantFundsContent = () => {
-  const [clawbackTarget, setClawbackTarget] =
-    useState<ClawbackRecord | null>(null);
+  const [clawbackTarget, setClawbackTarget] = useState<StagnantFundItem | null>(null);
   const [clawbackDialogOpen, setClawbackDialogOpen] = useState(false);
 
-  const handleClawbackSelect = (record: ClawbackRecord) => {
+  const handleClawbackSelect = (record: StagnantFundItem) => {
     setClawbackTarget(record);
     setClawbackDialogOpen(true);
   };

@@ -1,0 +1,35 @@
+import { identities } from "@lastmile/db/schemas/identity";
+import { relations, sql } from "drizzle-orm";
+import { index, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
+
+export const registrations = sqliteTable(
+  "registrations",
+  {
+    id: text("id").primaryKey(),
+    referenceId: text("reference_id").notNull().unique(),
+    identityId: text("identity_id")
+      .notNull()
+      .references(() => identities.id),
+    programmeId: text("programme_id").notNull(),
+    currency: text("currency").notNull(),
+    amount: real("amount").notNull().default(0),
+    preferredLanguage: text("preferred_language", { enum: ["en", "sw", "tu"] })
+      .default("en")
+      .notNull(),
+    isProxy: integer("is_proxy", { mode: "boolean" }).notNull(),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .default(sql`(strftime('%s', 'now'))`)
+      .notNull(),
+  },
+  (table) => ({
+    identityIdIdx: index("registrations_identityId_idx").on(table.identityId),
+    referenceIdIdx: index("registrations_referenceId_idx").on(table.referenceId),
+  }),
+);
+
+export const registrationsRelations = relations(registrations, ({ one }) => ({
+  identity: one(identities, {
+    fields: [registrations.identityId],
+    references: [identities.id],
+  }),
+}));

@@ -2,6 +2,27 @@
   "name": "@lastmile/validators",
   "version": "0.1.0",
   "private": true,
-  "main": "src/index.ts",
-  "types": "src/index.ts"
+  "exports": {
+    "./shared": "./src/shared.ts",
+    "./auth": "./src/auth.ts",
+    "./registration": "./src/registration.ts",
+    "./programmes": "./src/programmes.ts",
+    "./channels": "./src/channels.ts",
+    "./offramp": "./src/offramp.ts",
+    "./identity": "./src/identity.ts",
+    "./audit": "./src/audit.ts",
+    "./sms": "./src/sms.ts",
+    "./sync": "./src/sync.ts",
+    "./ussd": "./src/ussd.ts",
+    "./staff": "./src/staff.ts"
+  },
+  "dependencies": {
+    "@lastmile/db": "workspace:*",
+    "drizzle-orm": "^0.38.0",
+    "drizzle-zod": "^0.8.3",
+    "zod": "^3.25.0"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
 }

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "zod/v4";
 
 const envSchema = z.object({
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required").default("file:../../local.db"),
@@ -8,7 +8,7 @@ const envSchema = z.object({
 const _env = envSchema.safeParse(process.env);
 
 if (!_env.success) {
-  console.error("Invalid db environment variables:", _env.error.format());
+  console.error("Invalid db environment variables:", z.prettifyError(_env.error));
   throw new Error("Invalid db environment variables");
 }
 

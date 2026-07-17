@@ -1,0 +1,1 @@
+ALTER TABLE `registrations` ADD `programme_id` text NOT NULL;

@@ -1,8 +1,10 @@
 pre-commit:
+  parallel: true
   commands:
-    lint:
-      glob: "*.{js,ts,jsx,tsx,json,jsonc}"
-      run: bunx @biomejs/biome check --write --no-errors-on-unmatched {staged_files}
+    biome:
+      glob: "*.{js,ts,jsx,tsx,json}"
+      run: bunx @biomejs/biome check --write --no-errors-on-unmatched {staged_files} --unsafe
       stage_fixed: true
     typecheck:
-      run: bun run --filter "*" typecheck
+      glob: "*.{ts,tsx}"
+      run: bun run typecheck

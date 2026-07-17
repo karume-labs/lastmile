@@ -5,8 +5,8 @@ export const useInitiateClawback = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (fundId: string) => {
-      const response = await apiClient.post(`/clawback/initiate`, { fundId });
+    mutationFn: async (paymentId: string) => {
+      const response = await apiClient.post(`/programmes/clawback/execute`, { paymentId });
       return response.data;
     },
     onSuccess: () => {

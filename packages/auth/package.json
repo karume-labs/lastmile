@@ -4,12 +4,19 @@
   "private": true,
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./options": "./src/options.ts",
+    "./server": "./src/server.ts",
+    "./client": "./src/client.ts",
+    "./env": "./src/env.ts"
+  },
   "dependencies": {
     "better-auth": "^1.1.20",
     "@lastmile/db": "workspace:*"
   },
   "scripts": {
-    "db:generate-auth": "bunx @better-auth/cli@latest generate --output ../db/src/schema/auth.ts --config ./src/index.ts --yes",
+    "db:generate-auth": "bunx @better-auth/cli@latest generate --output ../db/src/auth/schema/index.ts --config ./src/index.ts --yes",
     "typecheck": "tsc --noEmit"
   }
 }

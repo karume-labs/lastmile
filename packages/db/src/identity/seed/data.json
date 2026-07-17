@@ -1,0 +1,58 @@
+{
+  "identities": [
+    {
+      "id": "ident-001",
+      "fullName": "Wanjiku Kamau",
+      "phoneNumber": "+254711234567"
+    },
+    {
+      "id": "ident-002",
+      "fullName": "Otieno Juma",
+      "phoneNumber": "+254722345678"
+    },
+    {
+      "id": "ident-003",
+      "fullName": "Fatuma Ali",
+      "phoneNumber": "+254733456789"
+    },
+    {
+      "id": "ident-004",
+      "fullName": "John Kimani",
+      "phoneNumber": "+254744567890"
+    },
+    {
+      "id": "ident-005",
+      "fullName": "Grace Achieng",
+      "phoneNumber": "+254755678901"
+    }
+  ],
+  "proxies": [
+    {
+      "id": "proxy-001",
+      "name": "David Ochieng",
+      "phone": "+254700111222",
+      "status": "active",
+      "participantCount": 45,
+      "location": "Kisumu County, West Kolwa",
+      "role": "Field Agent"
+    },
+    {
+      "id": "proxy-002",
+      "name": "Zahra Hassan",
+      "phone": "+254700333444",
+      "status": "active",
+      "participantCount": 62,
+      "location": "Garissa County, Dadaab",
+      "role": "Field Agent"
+    },
+    {
+      "id": "proxy-003",
+      "name": "Elders Council of Baringo",
+      "phone": "+254700555666",
+      "status": "active",
+      "participantCount": 120,
+      "location": "Baringo County, Marigat",
+      "role": "Community Leader"
+    }
+  ]
+}

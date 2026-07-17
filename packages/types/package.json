@@ -2,6 +2,24 @@
   "name": "@lastmile/types",
   "version": "0.1.0",
   "private": true,
-  "main": "src/index.ts",
-  "types": "src/index.ts"
+  "exports": {
+    "./api": "./src/api.ts",
+    "./auth": "./src/auth.ts",
+    "./registration": "./src/registration.ts",
+    "./programmes": "./src/programmes.ts",
+    "./channels": "./src/channels.ts",
+    "./offramp": "./src/offramp.ts",
+    "./identity": "./src/identity.ts",
+    "./audit": "./src/audit.ts",
+    "./sms": "./src/sms.ts",
+    "./ussd": "./src/ussd.ts",
+    "./staff": "./src/staff.ts"
+  },
+  "dependencies": {
+    "@lastmile/validators": "workspace:*",
+    "zod": "^3.25.0"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
 }

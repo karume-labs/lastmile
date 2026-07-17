@@ -1,42 +1,39 @@
 "use client";
 
-import { type ColumnDef } from "@tanstack/react-table";
+import type { Disbursement } from "@lastmile/types/programmes";
+import type { ColumnDef } from "@tanstack/react-table";
+import { parseAsString, useQueryState } from "nuqs";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { DeliveryDetailDialog } from "@/features/deliveries/components/DeliveryDetailDialog";
+import { useRetryDelivery } from "@/features/deliveries/services/mutations";
+import { useDeliveries } from "@/features/deliveries/services/queries";
+import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
 import { DataTable } from "@/features/shared/components/table/DataTable";
+import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
 import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
 import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
-import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
-import { useDeliveries } from "@/features/deliveries/services/queries";
 import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
-import { useState } from "react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-
-interface DeliveryRecord {
-  id: string;
-  participantName: string;
-  referenceId: string;
-  programmeName: string;
-  amount: string;
-  currency: string;
-  status: "pending" | "sent" | "delivered" | "failed";
-  deliveryMethod: "direct" | "proxy-led";
-  createdAt: string;
-}
 
 const STATUS_STYLES: Record<string, string> = {
-  pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300",
-  sent: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
-  delivered: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300",
-  failed: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
+  pending: "bg-secondary text-secondary-foreground",
+  sent: "bg-primary text-primary-foreground",
+  delivered: "bg-accent text-accent-foreground",
+  failed: "bg-destructive text-destructive-foreground",
 };
 
 const METHOD_STYLES: Record<string, string> = {
   direct: "bg-primary/10 text-primary",
-  "proxy-led": "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300",
+  "proxy-led": "bg-muted text-muted-foreground",
 };
 
 interface DeliveryTrackerProps {
@@ -44,11 +41,17 @@ interface DeliveryTrackerProps {
 }
 
 export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => {
-  const [searchValue, setSearchValue] = useState("");
-  const { state, handlers } = useDataTablePagination();
-  const { data: deliveries, isLoading } = useDeliveries();
+  const { search, setSearch, clearFilters } = useDataTablePagination();
+  const retryDelivery = useRetryDelivery();
+  const [viewingDelivery, setViewingDelivery] = useState<Disbursement | null>(null);
 
-  const columns: ColumnDef<DeliveryRecord, unknown>[] = [
+  const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
+
+  const [methodFilter, setMethodFilter] = useQueryState("method", parseAsString.withDefault(""));
+
+  const { data: deliveriesResponse, isLoading, isError, error } = useDeliveries();
+
+  const columns: ColumnDef<Disbursement, unknown>[] = [
     {
       accessorKey: "referenceId",
       header: "Reference ID",
@@ -57,7 +60,9 @@ export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => 
         return (
           <Tooltip>
             <TooltipTrigger>
-              <span className="font-mono text-sm">{id.slice(0, 8)}...</span>
+              <span className="font-mono text-sm cursor-pointer border-b border-dashed">
+                {id.slice(0, 8)}...
+              </span>
             </TooltipTrigger>
             <TooltipContent>{id}</TooltipContent>
           </Tooltip>
@@ -112,7 +117,7 @@ export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => 
       accessorKey: "createdAt",
       header: "Date",
       cell: ({ row }) => {
-        return new Date(row.getValue("createdAt") as string).toLocaleDateString();
+        return new Date(row.original.createdAt).toLocaleDateString();
       },
     },
     {
@@ -124,11 +129,16 @@ export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => 
             actions={[
               {
                 label: "View Details",
-                onClick: () => {},
+                onClick: () => setViewingDelivery(record),
               },
               {
                 label: "Retry Delivery",
-                onClick: () => {},
+                onClick: () => {
+                  retryDelivery.mutate(record.id, {
+                    onSuccess: () => toast.success("Delivery retry initiated"),
+                    onError: () => toast.error("Failed to retry delivery"),
+                  });
+                },
               },
             ]}
           />
@@ -137,29 +147,85 @@ export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => 
     },
   ];
 
+  if (
+    isError &&
+    ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)
+  ) {
+    return <PermissionDenied />;
+  }
+
   if (isLoading) {
     return <DataTableSkeleton columnCount={8} />;
   }
 
-  const filteredData = (deliveries ?? []).filter(
-    (d: DeliveryRecord) =>
-      d.participantName.toLowerCase().includes(searchValue.toLowerCase()) ||
-      d.referenceId.toLowerCase().includes(searchValue.toLowerCase()),
-  );
+  const rawData = deliveriesResponse?.data || [];
+
+  const filteredData = rawData.filter((d: Disbursement) => {
+    const matchesSearch =
+      d.participantName.toLowerCase().includes(search.toLowerCase()) ||
+      d.referenceId.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus =
+      statusFilter === "" || statusFilter === "all" || d.status === statusFilter;
+    const matchesMethod =
+      methodFilter === "" || methodFilter === "all" || d.deliveryMethod === methodFilter;
+    return matchesSearch && matchesStatus && matchesMethod;
+  });
 
   return (
-    <DataTable
-      columns={columns}
-      data={filteredData}
-      toolbar={
-        <DataToolbar
-          searchKey="participantName"
-          searchValue={searchValue}
-          onSearchChange={setSearchValue}
-          searchPlaceholder="Search by name or reference..."
-        />
-      }
-      emptyMessage="No deliveries found."
-    />
+    <>
+      <DataTable
+        columns={columns}
+        data={filteredData}
+        toolbar={
+          <DataToolbar
+            actions={actions}
+            gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+            searchKey="participantName"
+            searchValue={search}
+            onSearchChange={setSearch}
+            searchPlaceholder="Search by name or reference..."
+            onClear={() => {
+              clearFilters();
+              setStatusFilter("");
+              setMethodFilter("");
+            }}
+            filters={
+              <>
+                <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="sent">Sent</SelectItem>
+                    <SelectItem value="delivered">Delivered</SelectItem>
+                    <SelectItem value="failed">Failed</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={methodFilter} onValueChange={(val) => setMethodFilter(val)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Method" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Methods</SelectItem>
+                    <SelectItem value="direct">Direct</SelectItem>
+                    <SelectItem value="proxy-led">Proxy-Led</SelectItem>
+                  </SelectContent>
+                </Select>
+              </>
+            }
+          />
+        }
+        emptyMessage="No deliveries found."
+      />
+
+      <DeliveryDetailDialog
+        open={!!viewingDelivery}
+        onOpenChange={(open) => !open && setViewingDelivery(null)}
+        delivery={viewingDelivery}
+      />
+    </>
   );
 };

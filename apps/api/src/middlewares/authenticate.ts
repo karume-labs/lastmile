@@ -1,55 +1,42 @@
-import type { NextFunction, Request, Response } from 'express';
-import { verifyToken } from '../features/auth/services';
+import { auth } from "@lastmile/auth";
+import { fromNodeHeaders } from "better-auth/node";
+import type { NextFunction, Request, Response } from "express";
 
 declare global {
-	namespace Express {
-		interface Request {
-			user?: {
-				id: string;
-				email: string;
-				role: 'ADMIN' | 'REGISTRAR';
-			};
-		}
-	}
+  namespace Express {
+    interface Request {
+      user?: {
+        id: string;
+        email: string;
+        name: string;
+        role?: string | null;
+      };
+      session?: unknown;
+    }
+  }
 }
 
-const readCookie = (cookieHeader: string | undefined, cookieName: string) => {
-	if (!cookieHeader) return undefined;
+export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const session = await auth.api.getSession({
+      headers: fromNodeHeaders(req.headers),
+    });
 
-	const match = cookieHeader
-		.split(';')
-		.map((part) => part.trim())
-		.find((part) => part.startsWith(`${cookieName}=`));
+    if (!session || !session.user) {
+      res.status(401).json({ success: false, error: "Unauthorized" });
+      return;
+    }
 
-	if (!match) return undefined;
+    req.user = {
+      id: session.user.id,
+      email: session.user.email,
+      name: session.user.name,
+      role: session.user.role,
+    };
+    req.session = session.session;
 
-	return decodeURIComponent(match.slice(cookieName.length + 1));
-};
-
-export const authenticate = (req: Request, res: Response, next: NextFunction) => {
-	const bearerToken = req.headers.authorization?.startsWith('Bearer ')
-		? req.headers.authorization.slice(7)
-		: undefined;
-	const cookieToken = readCookie(req.headers.cookie, 'lm_auth_token');
-	const token = bearerToken ?? cookieToken;
-
-	if (!token) {
-		res.status(401).json({ success: false, error: 'Unauthorized' });
-		return;
-	}
-
-	const payload = verifyToken(token);
-
-	if (!payload) {
-		res.status(401).json({ success: false, error: 'Unauthorized' });
-		return;
-	}
-
-	req.user = {
-		id: payload.id,
-		email: payload.email,
-		role: payload.role,
-	};
-
-	next();
+    next();
+  } catch (error) {
+    next(error);
+  }
 };

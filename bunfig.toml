@@ -1,0 +1,14 @@
+[install]
+# Default Bun isolated linker is used (no override needed).
+#
+# IMPORTANT: This monorepo has a fundamental tailwindcss version conflict:
+#   - apps/admin-web   requires tailwindcss@^4
+#   - apps/staff-mobile requires tailwindcss@^3  (NativeWind v4 requirement)
+#
+# The hoisted linker resolves tailwindcss@4 at the root, breaking NativeWind.
+# The isolated linker (Bun default) keeps each workspace's tailwindcss separate,
+# which is the correct behavior here.
+#
+# expo-doctor "duplicate native modules" warnings that appear with the isolated
+# linker are false positives caused by Bun's content-addressed peer-dep storage
+# (same version, different +hash contexts). They do NOT cause Metro build failures.

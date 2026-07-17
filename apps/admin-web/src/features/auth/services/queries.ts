@@ -5,7 +5,7 @@ export const useSession = () => {
   return useQuery({
     queryKey: ["auth", "session"],
     queryFn: async () => {
-      const response = await apiClient.get("/auth/session");
+      const response = await apiClient.get("/auth/get-session");
       return response.data;
     },
     retry: false,

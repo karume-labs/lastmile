@@ -1,87 +1,97 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { useSignIn } from "@/features/auth/services/mutations";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { AuthSignInRequest } from "@lastmile/types/auth";
+import { AuthSignInSchema } from "@lastmile/validators/auth";
 import { useForm } from "react-hook-form";
-import { standardSchemaResolver } from "@hookform/resolvers/standard-schema";
-import { z } from "zod";
-
-const signInSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(1, "Password is required"),
-});
-
-type SignInFormValues = z.infer<typeof signInSchema>;
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useSignIn } from "@/features/auth/services/mutations";
 
 export const SignInForm = () => {
   const signInMutation = useSignIn();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SignInFormValues>({
-    resolver: standardSchemaResolver(signInSchema),
+  const form = useForm<AuthSignInRequest>({
+    resolver: zodResolver(AuthSignInSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
   });
 
-  const onSubmit = (data: SignInFormValues) => {
+  const onSubmit = (data: AuthSignInRequest) => {
     signInMutation.mutate(data);
   };
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle>Sign In</CardTitle>
-        <CardDescription>
-          Enter your credentials to access the admin panel.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="admin@lastmile.org"
-              {...register("email")}
+    <div className="w-full pb-4">
+      <div className="flex flex-col items-center mb-8 text-center">
+        <h1 className="text-2xl font-bold tracking-tight mb-2">
+          Welcome back to <span className="text-primary">Last</span>
+          <span className="text-foreground">Mile</span>
+        </h1>
+      </div>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+          <fieldset disabled={signInMutation.isPending} className="space-y-5">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs font-bold text-foreground">Email Address</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="email"
+                      placeholder="m@example.com"
+                      className="bg-muted/50 rounded-xl"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.email && (
-              <p className="text-sm text-destructive">
-                {errors.email.message}
-              </p>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              {...register("password")}
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs font-bold text-foreground">Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="**********"
+                      className="bg-muted/50 rounded-xl"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            {errors.password && (
-              <p className="text-sm text-destructive">
-                {errors.password.message}
-              </p>
-            )}
-          </div>
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={signInMutation.isPending}
-          >
-            {signInMutation.isPending ? "Signing in..." : "Sign In"}
-          </Button>
+
+            <div className="pt-2">
+              <Button
+                type="submit"
+                className="w-full rounded-xl font-medium py-6"
+                isLoading={signInMutation.isPending}
+              >
+                Sign in
+              </Button>
+            </div>
+          </fieldset>
         </form>
-      </CardContent>
-    </Card>
+      </Form>
+    </div>
   );
 };

@@ -1,80 +1,45 @@
 "use client";
 
-import { type ColumnDef } from "@tanstack/react-table";
+import type { StagnantFundItem } from "@lastmile/types/programmes";
+import type { ColumnDef } from "@tanstack/react-table";
+import { AlertTriangle } from "lucide-react";
+import { parseAsString, useQueryState } from "nuqs";
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
 import { DataTable } from "@/features/shared/components/table/DataTable";
+import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
 import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
 import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
-import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
-import { Button } from "@/components/ui/button";
-import { useStagnantFunds } from "@/features/stagnant-funds/services/queries";
 import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
-import { useState } from "react";
-import { AlertTriangle } from "lucide-react";
-
-interface StagnantFundRecord {
-  id: string;
-  participantName: string;
-  referenceId: string;
-  programmeName: string;
-  amount: string;
-  currency: string;
-  status: "stagnant" | "clawed-back" | "under-review";
-  lastActivityDate: string;
-  daysSinceActivity: number;
-}
+import { StagnantDetailDialog } from "@/features/stagnant-funds/components/StagnantDetailDialog";
+import { useStagnantFunds } from "@/features/stagnant-funds/services/queries";
 
 const STATUS_STYLES: Record<string, string> = {
-  stagnant: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300",
-  "clawed-back": "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300",
-  "under-review": "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300",
+  stagnant: "bg-secondary text-secondary-foreground",
+  "clawed-back": "bg-destructive text-destructive-foreground",
+  "under-review": "bg-primary text-primary-foreground",
 };
 
 interface StagnantAlertsTableProps {
-  onClawbackSelect?: (record: StagnantFundRecord) => void;
+  onClawbackSelect?: (record: StagnantFundItem) => void;
 }
 
-export const StagnantAlertsTable = ({
-  onClawbackSelect,
-}: StagnantAlertsTableProps) => {
-  const [searchValue, setSearchValue] = useState("");
-  const [selectedRows, setSelectedRows] = useState<string[]>([]);
-  const { state, handlers } = useDataTablePagination();
-  const { data: stagnantFunds, isLoading } = useStagnantFunds();
+export const StagnantAlertsTable = ({ onClawbackSelect }: StagnantAlertsTableProps) => {
+  const { search, setSearch, clearFilters } = useDataTablePagination();
+  const { data: stagnantFundsResponse, isLoading, isError, error } = useStagnantFunds();
+  const [viewingRecord, setViewingRecord] = useState<StagnantFundItem | null>(null);
 
-  const columns: ColumnDef<StagnantFundRecord, unknown>[] = [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={table.getIsAllPageRowsSelected()}
-          indeterminate={table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected()}
-          onCheckedChange={(value) =>
-            table.toggleAllPageRowsSelected(!!value)
-          }
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => {
-            row.toggleSelected(!!value);
-            if (value) {
-              setSelectedRows((prev) => [...prev, row.original.id]);
-            } else {
-              setSelectedRows((prev) =>
-                prev.filter((id) => id !== row.original.id),
-              );
-            }
-          }}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
+  const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
+
+  const columns: ColumnDef<StagnantFundItem, unknown>[] = [
     {
       accessorKey: "referenceId",
       header: "Reference ID",
@@ -109,11 +74,7 @@ export const StagnantAlertsTable = ({
       header: "Days Stagnant",
       cell: ({ row }) => {
         const days = row.getValue("daysSinceActivity") as number;
-        return (
-          <span className={days > 90 ? "font-bold text-destructive" : ""}>
-            {days} days
-          </span>
-        );
+        return <span className={days > 90 ? "font-bold text-destructive" : ""}>{days} days</span>;
       },
     },
     {
@@ -141,7 +102,7 @@ export const StagnantAlertsTable = ({
             actions={[
               {
                 label: "View Details",
-                onClick: () => {},
+                onClick: () => setViewingRecord(record),
               },
               {
                 label: "Initiate Clawback",
@@ -156,48 +117,68 @@ export const StagnantAlertsTable = ({
     },
   ];
 
+  if (
+    isError &&
+    ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)
+  ) {
+    return <PermissionDenied />;
+  }
+
   if (isLoading) {
     return <DataTableSkeleton columnCount={8} />;
   }
 
-  const filteredData = (stagnantFunds ?? []).filter(
-    (f: StagnantFundRecord) =>
-      f.participantName.toLowerCase().includes(searchValue.toLowerCase()) ||
-      f.referenceId.toLowerCase().includes(searchValue.toLowerCase()),
-  );
+  const rawData = stagnantFundsResponse?.data || [];
+
+  const filteredData = rawData.filter((f: StagnantFundItem) => {
+    const matchesSearch =
+      f.participantName.toLowerCase().includes(search.toLowerCase()) ||
+      f.referenceId.toLowerCase().includes(search.toLowerCase());
+    const matchesStatus =
+      statusFilter === "" || statusFilter === "all" || f.status === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
 
   return (
-    <DataTable
-      columns={columns}
-      data={filteredData}
-      toolbar={
-        <div className="flex items-center justify-between">
+    <>
+      <DataTable
+        columns={columns}
+        data={filteredData}
+        toolbar={
           <DataToolbar
+            gridClassName="grid grid-cols-1 sm:grid-cols-2 gap-4"
             searchKey="participantName"
-            searchValue={searchValue}
-            onSearchChange={setSearchValue}
+            searchValue={search}
+            onSearchChange={setSearch}
             searchPlaceholder="Search stagnant funds..."
+            onClear={() => {
+              clearFilters();
+              setStatusFilter("");
+            }}
+            filters={
+              <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="stagnant">Stagnant</SelectItem>
+                  <SelectItem value="under-review">Under Review</SelectItem>
+                  <SelectItem value="clawed-back">Clawed Back</SelectItem>
+                </SelectContent>
+              </Select>
+            }
           />
-          {selectedRows.length > 0 && (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={() => {
-                const firstSelected = filteredData.find(
-                  (f: StagnantFundRecord) => f.id === selectedRows[0],
-                );
-                if (firstSelected) {
-                  onClawbackSelect?.(firstSelected);
-                }
-              }}
-            >
-              <AlertTriangle className="mr-2 size-4" />
-              Clawback Selected ({selectedRows.length})
-            </Button>
-          )}
-        </div>
-      }
-      emptyMessage="No stagnant funds found."
-    />
+        }
+        emptyMessage="No stagnant funds found."
+      />
+
+      <StagnantDetailDialog
+        open={!!viewingRecord}
+        onOpenChange={(open) => !open && setViewingRecord(null)}
+        record={viewingRecord}
+      />
+    </>
   );
 };

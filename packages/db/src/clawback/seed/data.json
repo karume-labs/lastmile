@@ -1,0 +1,18 @@
+{
+  "clawbackLogs": [
+    {
+      "id": "claw-001",
+      "paymentId": "disb-005",
+      "transactionHash": "0xabc123def45678901234567890abcdef1234567890abcdef1234567890abcdef",
+      "executedBy": "john.smith@lastmile.com",
+      "createdAt": "2026-06-10T12:00:00Z"
+    },
+    {
+      "id": "claw-002",
+      "paymentId": "disb-999",
+      "transactionHash": "0x9876543210fedcba0987654321fedcba0987654321fedcba0987654321fedcba",
+      "executedBy": "system",
+      "createdAt": "2026-06-11T15:30:00Z"
+    }
+  ]
+}

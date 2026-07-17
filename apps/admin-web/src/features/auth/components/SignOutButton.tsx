@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useSignOut } from "@/features/auth/services/mutations";
 
 export const SignOutButton = () => {

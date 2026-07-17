@@ -1,7 +1,7 @@
-import { AdminPanelPageLayout } from "@/features/shared/components/AdminPanelPageLayout";
-import { ProxiesContent } from "@/features/proxies/components/ProxiesContent";
-import { Button } from "@/components/ui/button";
 import { Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ProxiesContent } from "@/features/proxies/components/ProxiesContent";
+import { AdminPanelPageLayout } from "@/features/shared/components/AdminPanelPageLayout";
 
 const ProxiesPage = () => {
   return (

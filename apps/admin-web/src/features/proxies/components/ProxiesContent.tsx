@@ -1,84 +1,217 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { Proxy as ProxyRecord } from "@lastmile/types/identity";
+import type { ColumnDef } from "@tanstack/react-table";
+import { UserCheck, UserMinus, UserX } from "lucide-react";
+import { parseAsString, useQueryState } from "nuqs";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ProxyDetailDialog } from "@/features/proxies/components/ProxyDetailDialog";
+import { useToggleProxyStatus } from "@/features/proxies/services/mutations";
 import { useProxies } from "@/features/proxies/services/queries";
+import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
+import { DataTable } from "@/features/shared/components/table/DataTable";
 import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
-import { Users, UserCheck, UserX } from "lucide-react";
+import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
+import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
+import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
 
 export const ProxiesContent = () => {
-  const { data: proxies, isLoading } = useProxies();
+  const { search, setSearch, clearFilters } = useDataTablePagination();
+  const toggleProxyStatus = useToggleProxyStatus();
+  const [viewingProxy, setViewingProxy] = useState<ProxyRecord | null>(null);
 
-  if (isLoading) {
-    return <DataTableSkeleton columnCount={4} />;
+  const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
+
+  const [roleFilter, setRoleFilter] = useQueryState("role", parseAsString.withDefault(""));
+
+  const { data: proxiesResponse, isLoading, isError, error } = useProxies();
+
+  const columns: ColumnDef<ProxyRecord, unknown>[] = [
+    {
+      accessorKey: "name",
+      header: "Name",
+      cell: ({ row }) => <span className="font-medium">{row.original.name}</span>,
+    },
+    {
+      accessorKey: "role",
+      header: "Role",
+    },
+    {
+      accessorKey: "phone",
+      header: "Phone",
+    },
+    {
+      accessorKey: "location",
+      header: "Location",
+    },
+    {
+      accessorKey: "participantCount",
+      header: "Participants",
+      cell: ({ row }) => row.original.participantCount,
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.original.status;
+        return (
+          <Badge
+            variant="secondary"
+            className={
+              status === "active"
+                ? "bg-accent text-accent-foreground"
+                : "bg-destructive text-destructive-foreground"
+            }
+          >
+            {status === "active" ? (
+              <UserCheck className="mr-1 size-3" />
+            ) : (
+              <UserX className="mr-1 size-3" />
+            )}
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        const record = row.original;
+        return (
+          <TableMenuActions
+            actions={[
+              {
+                label: "View Profile",
+                onClick: () => setViewingProxy(record),
+              },
+              {
+                label: record.status === "active" ? "Suspend Access" : "Restore Access",
+                destructive: record.status === "active",
+                requiresConfirm: true,
+                confirmTitle:
+                  record.status === "active" ? "Suspend this proxy?" : "Restore this proxy?",
+                confirmDescription: `Are you sure you want to ${record.status === "active" ? "suspend" : "restore"} ${record.name}?`,
+                icon:
+                  record.status === "active" ? (
+                    <UserMinus className="size-4" />
+                  ) : (
+                    <UserCheck className="size-4" />
+                  ),
+                onClick: () => {
+                  const newStatus = record.status === "active" ? "suspended" : "active";
+                  toggleProxyStatus.mutate(
+                    { proxyId: record.id, status: newStatus },
+                    {
+                      onSuccess: () =>
+                        toast.success(`Proxy ${newStatus === "active" ? "restored" : "suspended"}`),
+                      onError: () => toast.error("Failed to update proxy status"),
+                    },
+                  );
+                },
+              },
+            ]}
+          />
+        );
+      },
+    },
+  ];
+
+  if (
+    isError &&
+    ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)
+  ) {
+    return <PermissionDenied />;
   }
 
+  if (isLoading) {
+    return <DataTableSkeleton columnCount={7} />;
+  }
+
+  const rawData = proxiesResponse?.data || [];
+
+  const filteredData = rawData.filter((p: ProxyRecord) => {
+    const matchesSearch =
+      p.name.toLowerCase().includes(search.toLowerCase()) ||
+      p.phone.includes(search) ||
+      p.location.toLowerCase().includes(search.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === "" || statusFilter === "all" || p.status === statusFilter;
+    const matchesRole = roleFilter === "" || roleFilter === "all" || p.role === roleFilter;
+
+    return matchesSearch && matchesStatus && matchesRole;
+  });
+
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {(proxies ?? []).map(
-        (proxy: {
-          id: string;
-          name: string;
-          phone: string;
-          status: "active" | "suspended";
-          participantCount: number;
-          location: string;
-        }) => (
-          <Card key={proxy.id}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                {proxy.name}
-              </CardTitle>
-              <Badge
-                variant="secondary"
-                className={
-                  proxy.status === "active"
-                    ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800"
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>Field Agents & Proxies</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <DataTable
+            columns={columns}
+            data={filteredData}
+            toolbar={
+              <DataToolbar
+                gridClassName="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+                searchKey="name"
+                searchValue={search}
+                onSearchChange={setSearch}
+                searchPlaceholder="Search name, phone, or location..."
+                onClear={() => {
+                  clearFilters();
+                  setStatusFilter("");
+                  setRoleFilter("");
+                }}
+                filters={
+                  <>
+                    <Select value={statusFilter} onValueChange={(val) => setStatusFilter(val)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Statuses</SelectItem>
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="suspended">Suspended</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Select value={roleFilter} onValueChange={(val) => setRoleFilter(val)}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Roles</SelectItem>
+                        <SelectItem value="Field Agent">Field Agent</SelectItem>
+                        <SelectItem value="Distributor">Distributor</SelectItem>
+                        <SelectItem value="Volunteer">Volunteer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </>
                 }
-              >
-                {proxy.status === "active" ? (
-                  <UserCheck className="mr-1 size-3" />
-                ) : (
-                  <UserX className="mr-1 size-3" />
-                )}
-                {proxy.status}
-              </Badge>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Phone:</span>
-                <span>{proxy.phone}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Location:</span>
-                <span>{proxy.location}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Participants:</span>
-                <span className="font-medium">{proxy.participantCount}</span>
-              </div>
-              <div className="flex items-center justify-between pt-2">
-                <Label htmlFor={`proxy-toggle-${proxy.id}`} className="text-sm">
-                  Active
-                </Label>
-                <Switch
-                  id={`proxy-toggle-${proxy.id}`}
-                  checked={proxy.status === "active"}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        ),
-      )}
-      {(proxies ?? []).length === 0 && (
-        <div className="col-span-full py-8 text-center text-sm text-muted-foreground">
-          No proxy agents registered.
-        </div>
-      )}
-    </div>
+              />
+            }
+            emptyMessage="No proxy agents found."
+          />
+        </CardContent>
+      </Card>
+
+      <ProxyDetailDialog
+        open={!!viewingProxy}
+        onOpenChange={(open) => !open && setViewingProxy(null)}
+        proxy={viewingProxy}
+      />
+    </>
   );
 };
