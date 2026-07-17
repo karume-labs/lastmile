@@ -8,7 +8,7 @@ export const useCreateSms = () => {
   return useMutation({
     mutationFn: async (data: SmsCreateRequest) => {
       const response = await axios.post<{ success: boolean; data: SmsMessage }>(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/sms`,
+        "/api/sms",
         data,
         { withCredentials: true },
       );

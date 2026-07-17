@@ -15,7 +15,7 @@ export const useSmsMessages = () => {
     queryKey: ["smsMessages"],
     queryFn: async () => {
       const response = await axios.get<{ success: boolean; data: SmsMessage[] }>(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/sms`,
+        "/api/sms",
         { withCredentials: true },
       );
       return response.data;
@@ -28,7 +28,7 @@ export const useSmsTemplates = (phoneNumber: string) => {
     queryKey: ["smsTemplates", phoneNumber],
     queryFn: async () => {
       const response = await axios.get<{ success: boolean; data: SmsTemplatesResponse }>(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/sms/templates/${encodeURIComponent(phoneNumber)}`,
+        `/api/sms/templates/${encodeURIComponent(phoneNumber)}`,
         { withCredentials: true },
       );
       return response.data;
