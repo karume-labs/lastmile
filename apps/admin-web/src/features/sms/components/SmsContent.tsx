@@ -41,15 +41,19 @@ import { TableMenuActions } from "@/features/shared/components/table/TableMenuAc
 import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
 import { SmsDetailDialog } from "@/features/sms/components/SmsDetailDialog";
 import { useCreateSms } from "@/features/sms/services/mutations";
-import { useSmsMessages } from "@/features/sms/services/queries";
+import { useSmsMessages, useSmsTemplates } from "@/features/sms/services/queries";
 
 export const SmsContent = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [viewingMessage, setViewingMessage] = useState<SmsMessage | null>(null);
+  const [recipientPhone, setRecipientPhone] = useState("");
 
   const { search, setSearch, clearFilters } = useDataTablePagination();
   const { data: smsResponse, isLoading } = useSmsMessages();
+  const { data: templatesResponse } = useSmsTemplates(recipientPhone);
   const createSms = useCreateSms();
+
+  const templates = templatesResponse?.data?.templates;
 
   const form = useForm<SmsCreateRequest>({
     resolver: zodResolver(SmsCreateRequestSchema),
@@ -170,6 +174,10 @@ export const SmsContent = () => {
                             placeholder="+1234567890"
                             className="bg-muted/50 rounded-xl"
                             {...field}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              setRecipientPhone(e.target.value);
+                            }}
                           />
                         </FormControl>
                         <FormMessage />
@@ -194,12 +202,23 @@ export const SmsContent = () => {
                             <SelectValue placeholder="Quick Templates" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="You have received funds in your LastMile account. Dial *340# to claim.">
-                              Disbursement
-                            </SelectItem>
-                            <SelectItem value="Registration for the upcoming relief program starts next week in your area. Keep your ID ready.">
-                              Sensitization
-                            </SelectItem>
+                            {templates ? (
+                              <>
+                                <SelectItem value={templates.disbursement}>Disbursement</SelectItem>
+                                <SelectItem value={templates.sensitization}>
+                                  Sensitization
+                                </SelectItem>
+                              </>
+                            ) : (
+                              <>
+                                <SelectItem value="You have received funds in your LastMile account. Dial *340# to claim.">
+                                  Disbursement
+                                </SelectItem>
+                                <SelectItem value="Registration for the upcoming relief program starts next week in your area. Keep your ID ready.">
+                                  Sensitization
+                                </SelectItem>
+                              </>
+                            )}
                           </SelectContent>
                         </Select>
                         <FormControl>
