@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { kotaniPaySimulation } from "@lastmile/api/features/offramp/services";
+import { triggerOfframpToMpesa } from "@lastmile/api/lib/kotani-client";
 import { relayerService } from "@lastmile/api/features/relayer/services";
 import {
   dictionary,
@@ -197,28 +197,25 @@ router.post("/session", async (req, res, next) => {
                 .execute()
                 .catch(console.error);
 
-              // Wait for Kotani Pay offramp
-              const offrampRes = await kotaniPaySimulation.processPayout(
+              // Trigger Kotani Pay offramp
+              const offrampRes = await triggerOfframpToMpesa(
                 phoneNumber,
                 record.amount,
                 enteredRef,
               );
-              if (offrampRes.success) {
-                // Wait for Soroban
-                await relayerService.unlockFunds(enteredRef);
 
-                // Update disbursement status to claimed
+              if (offrampRes.success) {
+                // Update disbursement status to processing
                 await db
                   .update(disbursements)
-                  .set({ status: "claimed" })
+                  .set({
+                    status: "processing",
+                    kotaniTxId: offrampRes.kotaniTransactionId,
+                  })
                   .where(eq(disbursements.id, record.disbursementId));
 
-                // Send confirmation SMS
-                await sendConfirmationSms(phoneNumber, record.amount, enteredRef, lang).catch(
-                  console.error,
-                );
-
-                response_msg = `END ${dictionary[lang].successClaim}`;
+                // Notify user that funds are being processed
+                response_msg = `END Your OTP is verified. Your funds are being processed to your M-Pesa account.`;
               } else {
                 response_msg = `END ${dictionary[lang].offrampFailed}`;
               }

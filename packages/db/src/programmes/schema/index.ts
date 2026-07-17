@@ -41,13 +41,25 @@ export const disbursements = sqliteTable(
     amount: real("amount").notNull(),
     currency: text("currency").notNull().default("USDC"),
     status: text("status", {
-      enum: ["pending", "sent", "delivered", "failed", "claimed", "stagnant", "clawed_back"],
+      enum: [
+        "pending",
+        "processing",
+        "sent",
+        "delivered",
+        "failed",
+        "completed",
+        "claimed",
+        "stagnant",
+        "clawed_back",
+      ],
     })
       .notNull()
       .default("pending"),
     deliveryMethod: text("delivery_method", { enum: ["direct", "proxy-led"] })
       .notNull()
       .default("direct"),
+    kotaniTxId: text("kotani_tx_id"),
+    txHash: text("tx_hash"),
     otpHash: text("otp_hash"),
     createdAt: integer("created_at", { mode: "timestamp" })
       .default(sql`(strftime('%s', 'now'))`)

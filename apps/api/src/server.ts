@@ -9,6 +9,7 @@ import registrationRouter from "@lastmile/api/features/registration/routers";
 import { smsRouter } from "@lastmile/api/features/sms/routers";
 import staffRouter from "@lastmile/api/features/staff/routers";
 import syncRouter from "@lastmile/api/features/sync/routers";
+import { kotaniWebhooksRouter } from "@lastmile/api/features/offramp/routers/kotani-webhooks";
 import ussdSessionRouter from "@lastmile/api/features/ussd/routers";
 import { auditLogMiddleware } from "@lastmile/api/middlewares/audit-log";
 import { errorHandler } from "@lastmile/api/middlewares/error-handler";
@@ -61,6 +62,7 @@ app.get("/api/health", (_req: Request, res: Response) => {
 
 // Feature Routers
 app.use("/api/sync", syncRouter);
+app.use("/api/webhooks/kotani", kotaniWebhooksRouter);
 app.use("/api/ussd", ussdSessionRouter);
 app.use("/api/admin", clawbackRouter);
 app.use("/api/stagnant-funds", clawbackRouter);
