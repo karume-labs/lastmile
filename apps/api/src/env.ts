@@ -8,6 +8,8 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   AT_USERNAME: z.string().default("sandbox"),
   AT_API_KEY: z.string().min(1, "AT_API_KEY is required"),
+  KOTANI_API_KEY: z.string().min(1, "KOTANI_API_KEY is required"),
+  KOTANI_API_SECRET: z.string().min(1, "KOTANI_API_SECRET is required"),
 });
 
 const _env = envSchema.safeParse(process.env);
