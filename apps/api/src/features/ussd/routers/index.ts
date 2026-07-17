@@ -19,13 +19,6 @@ function handleFailedAttempt(identityId: string, currentAttempts: number) {
   const newAttempts = currentAttempts + 1;
   const update: Record<string, unknown> = { failedAttempts: newAttempts };
 
-  if (newAttempts >= 10) {
-    update.ussdBlocked = true;
-  } else if (newAttempts >= 3) {
-    const lockoutSeconds = 5 * (newAttempts - 2);
-    update.lockoutUntil = new Date(Date.now() + lockoutSeconds * 1000);
-  }
-
   db.update(identities)
     .set(update)
     .where(eq(identities.id, identityId))
@@ -204,9 +197,6 @@ router.post("/session", async (req, res, next) => {
                 .execute()
                 .catch(console.error);
 
-              // Wait for Soroban
-              await relayerService.unlockFunds(enteredRef);
-
               // Wait for Kotani Pay offramp
               const offrampRes = await kotaniPaySimulation.processPayout(
                 phoneNumber,
@@ -214,6 +204,9 @@ router.post("/session", async (req, res, next) => {
                 enteredRef,
               );
               if (offrampRes.success) {
+                // Wait for Soroban
+                await relayerService.unlockFunds(enteredRef);
+
                 // Update disbursement status to claimed
                 await db
                   .update(disbursements)
