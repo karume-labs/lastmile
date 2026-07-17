@@ -127,3 +127,4 @@ test-results/
 .eslintcache
 .stylelintcache
 .prettiercache
+*.csv

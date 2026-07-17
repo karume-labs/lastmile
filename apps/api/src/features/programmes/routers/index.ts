@@ -111,7 +111,7 @@ router.post("/disburse", requireRole("admin"), async (req, res, next) => {
         reg.preferredLanguage === "tu"
           ? reg.preferredLanguage
           : "en";
-      sendDisbursementSms(reg.phoneNumber, reg.referenceId, otp, amountUsdc, lang).catch(console.error);
+      sendDisbursementSms(reg.phoneNumber, reg.referenceId, otp, reg.amount, programmeName, lang).catch(console.error);
     }
 
     // Insert all disbursements in a single query
