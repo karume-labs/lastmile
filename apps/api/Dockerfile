@@ -1,7 +1,7 @@
 FROM oven/bun:1-alpine AS base
 WORKDIR /app
 
-# Install dependencies
+# ── Dependency stage ──────────────────────────────────────────────────────────
 FROM base AS deps
 WORKDIR /app
 
@@ -16,10 +16,9 @@ COPY packages/types/package.json ./packages/types/
 COPY packages/validators/package.json ./packages/validators/
 COPY packages/auth/package.json ./packages/auth/
 
-# FIX: Removed --frozen-lockfile so Bun can safely ignore the missing workspaces
 RUN bun install --ignore-scripts
 
-# Runner
+# ── Runner stage ──────────────────────────────────────────────────────────────
 FROM base AS runner
 WORKDIR /app
 
@@ -31,12 +30,16 @@ COPY --from=deps /app ./
 # Copy the rest of the application code
 COPY . .
 
-# Set working directory to the API app
-WORKDIR /app/apps/api
+# Copy and make the entrypoint script executable
+COPY apps/api/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 # Expose the API port
 EXPOSE 8000
 ENV PORT=8000
 
-# Run the API
-CMD ["bun", "run", "start"]
+# On container start:
+#   1. Run DB migrations  (drizzle-kit migrate)
+#   2. Force-seed the DB  (bun run src/seed/index.ts -f)
+#   3. Start the API      (bun run start)
+ENTRYPOINT ["/entrypoint.sh"]
