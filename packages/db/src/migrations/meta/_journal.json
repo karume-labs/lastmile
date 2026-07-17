@@ -43,6 +43,13 @@
       "when": 1784261545251,
       "tag": "0005_absurd_the_order",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1784303908724,
+      "tag": "0006_wakeful_nocturne",
+      "breakpoints": true
     }
   ]
 }
