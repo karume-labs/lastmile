@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "bun --watch src/server.ts",
-    "start": "bun src/server.ts"
+    "start": "bun src/server.ts",
+    "build": "bun build src/server.ts --target=node --outdir=dist",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@lastmile/auth": "workspace:*",
