@@ -40,6 +40,6 @@ ENV PORT=8000
 
 # On container start:
 #   1. Run DB migrations  (drizzle-kit migrate)
-#   2. Force-seed the DB  (bun run src/seed/index.ts -f)
+#   2. Force-seed the DB  (bun run src/seed/index.ts -F)
 #   3. Start the API      (bun run start)
 ENTRYPOINT ["/entrypoint.sh"]

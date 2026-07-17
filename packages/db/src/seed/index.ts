@@ -38,7 +38,7 @@ Options:
   --sms            Seed SMS notifications
   --audit          Seed audit logs
   --clawback       Seed clawback logs
-  --force, -f      Clear all data before seeding
+  --force, -f, -F  Clear all data before seeding (use -F to skip confirmation prompt)
   --help, -h       Show this help message
 
 If no entity flags are specified, all connected entities are seeded.
@@ -100,7 +100,9 @@ const SEED_ORDER: { flag: Entity; label: string; fn: () => Promise<void> }[] = [
 
 async function main() {
   const args = process.argv.slice(2);
-  const hasForce = args.includes("--force") || args.includes("-f");
+  const hasForce = args.includes("--force") || args.includes("-f") || args.includes("-F");
+  // -F skips the interactive confirmation prompt (useful in Docker/CI)
+  const skipConfirm = args.includes("-F") || !process.stdin.isTTY;
   const hasHelp = args.includes("--help") || args.includes("-h");
 
   const requestedEntities = args
@@ -108,7 +110,7 @@ async function main() {
       (a): a is Entity =>
         a.startsWith("--") &&
         !a.startsWith("--no-") &&
-        !["--force", "-f", "--help", "-h"].includes(a) &&
+        !["--force", "-f", "-F", "--help", "-h"].includes(a) &&
         ENTITY_FLAGS.includes(a.replace(/^--/, "") as Entity),
     )
     .map((a) => a.replace(/^--/, "") as Entity);
@@ -116,7 +118,7 @@ async function main() {
   const unknownFlags = args.filter(
     (a) =>
       a.startsWith("--") &&
-      !["--force", "-f", "--help", "-h"].includes(a) &&
+      !["--force", "-f", "-F", "--help", "-h"].includes(a) &&
       !ENTITY_FLAGS.includes(a.replace(/^--/, "") as Entity),
   );
 
@@ -137,12 +139,17 @@ async function main() {
     if (env.NODE_ENV === "production") {
       console.log("\n⚠  PRODUCTION ENVIRONMENT DETECTED ⚠\n");
     }
-    const confirmed = await askForConfirmation(
-      "⚠  This will DELETE all existing data and re-seed from scratch",
-    );
-    if (!confirmed) {
-      console.log("Aborted.");
-      process.exit(0);
+    if (skipConfirm) {
+      // Non-interactive mode (Docker, CI, or -F flag): skip prompt and proceed
+      console.log("⚠  Skipping confirmation (non-interactive mode).");
+    } else {
+      const confirmed = await askForConfirmation(
+        "⚠  This will DELETE all existing data and re-seed from scratch",
+      );
+      if (!confirmed) {
+        console.log("Aborted.");
+        process.exit(0);
+      }
     }
     console.log("Clearing all data before seeding...");
     await clearAllData();
