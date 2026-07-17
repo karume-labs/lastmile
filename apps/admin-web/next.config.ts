@@ -1,11 +1,16 @@
-import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ['10.40.3.147'],
+  allowedDevOrigins: ["10.40.3.147"],
   reactCompiler: true,
-  turbopack: {
-    root: path.resolve(__dirname, "../.."),
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        // Proxies all /api/* requests from Vercel/Next.js directly to the Express backend on Render
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
+      },
+    ];
   },
   async redirects() {
     return [
