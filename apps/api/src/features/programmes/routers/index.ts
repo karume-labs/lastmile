@@ -11,7 +11,7 @@ import {
   CreateBatchRequestSchema,
   DisbursementTriggerRequestSchema,
 } from "@lastmile/validators/programmes";
-import { eq, and } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { Router } from "express";
 
 const router = Router();
@@ -60,7 +60,7 @@ router.post("/batches", async (req, res, next) => {
 // Trigger a single batch disbursement for a programme
 router.post("/disburse", requireRole("admin"), async (req, res, next) => {
   try {
-    const { programmeId, amountUsdc } = DisbursementTriggerRequestSchema.parse(req.body);
+    const { programmeId } = DisbursementTriggerRequestSchema.parse(req.body);
 
     const prog = await db.select().from(programmes).where(eq(programmes.id, programmeId)).limit(1);
     if (!prog || prog.length === 0) {
@@ -75,6 +75,7 @@ router.post("/disburse", requireRole("admin"), async (req, res, next) => {
         phoneNumber: identities.phoneNumber,
         preferredLanguage: registrations.preferredLanguage,
         participantName: identities.fullName,
+        amount: registrations.amount,
       })
       .from(registrations)
       .innerJoin(identities, eq(registrations.identityId, identities.id))
@@ -86,7 +87,7 @@ router.post("/disburse", requireRole("admin"), async (req, res, next) => {
     }
 
     const newDisbursements: (typeof disbursements.$inferInsert)[] = [];
-    
+
     for (const reg of allRegs) {
       const otp = generateOtp();
       // In production, hash this using argon2 or bcrypt before storing
@@ -97,14 +98,16 @@ router.post("/disburse", requireRole("admin"), async (req, res, next) => {
         referenceId: reg.referenceId,
         participantName: reg.participantName,
         programmeName,
-        amount: amountUsdc,
+        amount: reg.amount,
         status: "pending",
         otpHash,
       });
 
       // Send SMS asynchronously (fire and forget to not block)
       const lang =
-        reg.preferredLanguage === "en" || reg.preferredLanguage === "sw" || reg.preferredLanguage === "tu"
+        reg.preferredLanguage === "en" ||
+        reg.preferredLanguage === "sw" ||
+        reg.preferredLanguage === "tu"
           ? reg.preferredLanguage
           : "en";
       sendDisbursementSms(reg.phoneNumber, reg.referenceId, otp, lang).catch(console.error);
@@ -114,7 +117,8 @@ router.post("/disburse", requireRole("admin"), async (req, res, next) => {
     await db.insert(disbursements).values(newDisbursements);
 
     // Update the pending batch to completed for this programme
-    await db.update(batches)
+    await db
+      .update(batches)
       .set({ status: "completed" })
       .where(and(eq(batches.programmeId, programmeId), eq(batches.status, "pending")));
 
@@ -149,6 +153,55 @@ router.post("/clawback/execute", requireRole("super_admin"), async (req, res, ne
       transactionHash,
       status: "clawed_back",
     });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// PATCH /api/programmes/:id/status — toggle programme status
+router.patch("/:id/status", requireRole("admin"), async (req, res, next) => {
+  try {
+    const id = String(req.params.id);
+    const { status } = req.body as { status: "Active" | "Draft" };
+
+    if (!status || !["Active", "Draft"].includes(status)) {
+      res.status(400).json({ success: false, error: "Status must be 'Active' or 'Draft'" });
+      return;
+    }
+
+    const updated = await db
+      .update(programmes)
+      .set({ status })
+      .where(eq(programmes.id, id))
+      .returning();
+
+    if (!updated.length) {
+      res.status(404).json({ success: false, error: "Programme not found" });
+      return;
+    }
+
+    res.json({ success: true, data: updated[0] });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// DELETE /api/programmes/:id — delete a programme
+router.delete("/:id", requireRole("admin"), async (req, res, next) => {
+  try {
+    const id = String(req.params.id);
+
+    const deleted = await db
+      .delete(programmes)
+      .where(eq(programmes.id, id))
+      .returning({ id: programmes.id });
+
+    if (!deleted.length) {
+      res.status(404).json({ success: false, error: "Programme not found" });
+      return;
+    }
+
+    res.json({ success: true, message: "Programme deleted" });
   } catch (error) {
     next(error);
   }

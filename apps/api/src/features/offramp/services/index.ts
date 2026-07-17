@@ -6,8 +6,10 @@ export const kotaniPaySimulation = {
   ): Promise<{ success: boolean; transactionHash?: string; error?: string }> => {
     // In a real scenario, this would call the Kotani Pay API to offramp the USDC to mobile money (M-PESA)
     // and wait for the webhook response.
-    
-    console.log(`[KotaniPay] Simulating offramp of ${amountUsdc} USDC to ${phoneNumber} for ${referenceId}`);
+
+    console.log(
+      `[KotaniPay] Simulating offramp of ${amountUsdc} USDC to ${phoneNumber} for ${referenceId}`,
+    );
 
     // Simulate network delay
     await new Promise((resolve) => setTimeout(resolve, 1000));

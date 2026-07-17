@@ -1,7 +1,6 @@
 import { db } from "@lastmile/db/client";
 import data from "@lastmile/db/registration/seed/data.json";
 import { registrations } from "@lastmile/db/schemas/registration";
-import { eq } from "drizzle-orm";
 
 export async function seedRegistrations() {
   console.log("  Seeding registrations...");

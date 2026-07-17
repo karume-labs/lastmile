@@ -1,7 +1,6 @@
 import { db } from "@lastmile/db/client";
 import data from "@lastmile/db/identity/seed/data.json";
 import { identities, proxies } from "@lastmile/db/schemas/identity";
-import { eq } from "drizzle-orm";
 
 export async function seedIdentities() {
   console.log("  Seeding identities & proxies...");

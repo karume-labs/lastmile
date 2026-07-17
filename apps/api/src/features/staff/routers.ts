@@ -35,11 +35,7 @@ staffRouter.patch("/:id", requireRole("super_admin"), async (req: Request, res: 
     if (validated.role !== undefined) updateData.role = validated.role;
 
     if (Object.keys(updateData).length > 0) {
-      const updated = await db
-        .update(user)
-        .set(updateData)
-        .where(eq(user.id, id))
-        .returning();
+      const updated = await db.update(user).set(updateData).where(eq(user.id, id)).returning();
 
       if (!updated || updated.length === 0) {
         res.status(404).json({ success: false, error: "Staff member not found" });
@@ -73,26 +69,26 @@ staffRouter.patch("/:id", requireRole("super_admin"), async (req: Request, res: 
 });
 
 // PATCH /api/staff/:id/ban
-staffRouter.patch("/:id/ban", requireRole("super_admin"), async (req: Request, res: Response, next) => {
-  try {
-    const id = Array.isArray(req.params.id) ? req.params.id[0] : String(req.params.id);
-    const { banned } = ToggleBanSchema.parse(req.body);
+staffRouter.patch(
+  "/:id/ban",
+  requireRole("super_admin"),
+  async (req: Request, res: Response, next) => {
+    try {
+      const id = Array.isArray(req.params.id) ? req.params.id[0] : String(req.params.id);
+      const { banned } = ToggleBanSchema.parse(req.body);
 
-    const updated = await db
-      .update(user)
-      .set({ banned })
-      .where(eq(user.id, id))
-      .returning();
+      const updated = await db.update(user).set({ banned }).where(eq(user.id, id)).returning();
 
-    if (!updated || updated.length === 0) {
-      res.status(404).json({ success: false, error: "Staff member not found" });
-      return;
+      if (!updated || updated.length === 0) {
+        res.status(404).json({ success: false, error: "Staff member not found" });
+        return;
+      }
+
+      return res.json({ success: true, data: updated[0] });
+    } catch (error) {
+      next(error);
     }
-
-    return res.json({ success: true, data: updated[0] });
-  } catch (error) {
-    next(error);
-  }
-});
+  },
+);
 
 export default staffRouter;

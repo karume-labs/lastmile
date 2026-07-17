@@ -37,7 +37,10 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, change, icon, des
 export const DashboardContent = () => {
   const { data: metrics, isLoading, isError, error } = useDashboardMetrics();
 
-  if (isError && ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)) {
+  if (
+    isError &&
+    ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)
+  ) {
     return <PermissionDenied />;
   }
 

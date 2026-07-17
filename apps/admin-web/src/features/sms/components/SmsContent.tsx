@@ -26,6 +26,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { DataTable } from "@/features/shared/components/table/DataTable";
 import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
@@ -105,13 +112,16 @@ export const SmsContent = () => {
     },
     {
       id: "actions",
-      cell: () => {
+      cell: ({ row }) => {
         return (
           <TableMenuActions
             actions={[
               {
                 label: "View Details",
-                onClick: () => {},
+                onClick: () =>
+                  toast.info(
+                    `To: ${row.original.recipient} — Status: ${row.original.status} — ${row.original.content}`,
+                  ),
               },
             ]}
           />
@@ -176,6 +186,23 @@ export const SmsContent = () => {
                         <FormLabel className="text-xs font-bold text-foreground">
                           Message Content
                         </FormLabel>
+                        <Select
+                          onValueChange={(value) => {
+                            if (typeof value === "string") form.setValue("content", value);
+                          }}
+                        >
+                          <SelectTrigger className="bg-muted/50 rounded-xl">
+                            <SelectValue placeholder="Quick Templates" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="You have received funds in your LastMile account. Dial *340# to claim.">
+                              Disbursement
+                            </SelectItem>
+                            <SelectItem value="Registration for the upcoming relief program starts next week in your area. Keep your ID ready.">
+                              Sensitization
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormControl>
                           <Textarea
                             className="bg-muted/50 rounded-xl min-h-20"

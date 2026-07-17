@@ -1,7 +1,6 @@
 import { db } from "@lastmile/db/client";
 import { smsMessages } from "@lastmile/db/schemas/sms";
 import data from "@lastmile/db/sms/seed/data.json";
-import { eq } from "drizzle-orm";
 
 export async function seedSmsMessages() {
   console.log("  Seeding SMS messages...");

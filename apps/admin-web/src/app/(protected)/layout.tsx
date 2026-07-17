@@ -1,6 +1,6 @@
+import axios from "axios";
 import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
-import axios from "axios";
 import { env } from "@/env";
 
 const ProtectedLayout = async ({ children }: { children: React.ReactNode }) => {

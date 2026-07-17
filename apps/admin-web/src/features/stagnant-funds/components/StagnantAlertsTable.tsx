@@ -4,6 +4,7 @@ import type { StagnantFundItem } from "@lastmile/types/programmes";
 import type { ColumnDef } from "@tanstack/react-table";
 import { AlertTriangle } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -12,12 +13,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
 import { DataTable } from "@/features/shared/components/table/DataTable";
 import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
 import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
 import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
 import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
-import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
 import { useStagnantFunds } from "@/features/stagnant-funds/services/queries";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -99,7 +100,10 @@ export const StagnantAlertsTable = ({ onClawbackSelect }: StagnantAlertsTablePro
             actions={[
               {
                 label: "View Details",
-                onClick: () => {},
+                onClick: () =>
+                  toast.info(
+                    `${record.participantName} — ${record.referenceId} — ${record.amount} ${record.currency} — ${record.daysSinceActivity} days stagnant`,
+                  ),
               },
               {
                 label: "Initiate Clawback",
@@ -114,7 +118,10 @@ export const StagnantAlertsTable = ({ onClawbackSelect }: StagnantAlertsTablePro
     },
   ];
 
-  if (isError && ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)) {
+  if (
+    isError &&
+    ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)
+  ) {
     return <PermissionDenied />;
   }
 

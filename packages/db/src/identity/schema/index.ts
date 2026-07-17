@@ -5,6 +5,9 @@ export const identities = sqliteTable("identities", {
   id: text("id").primaryKey(),
   fullName: text("full_name").notNull(),
   phoneNumber: text("phone_number").notNull(),
+  failedAttempts: integer("failed_attempts").notNull().default(0),
+  lockoutUntil: integer("lockout_until", { mode: "timestamp" }),
+  ussdBlocked: integer("ussd_blocked", { mode: "boolean" }).notNull().default(false),
   createdAt: integer("created_at", { mode: "timestamp" })
     .default(sql`(strftime('%s', 'now'))`)
     .notNull(),

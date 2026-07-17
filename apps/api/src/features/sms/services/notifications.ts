@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
-import AfricasTalking from "africastalking";
 import { db } from "@lastmile/db/client";
 import { smsMessages } from "@lastmile/db/schemas/sms";
+import AfricasTalking from "africastalking";
 import { eq } from "drizzle-orm";
 
 interface AfricasTalkingSMSResponse {
@@ -37,7 +37,6 @@ if (!apiKey) {
   console.warn("AT_API_KEY is not set — SMS dispatch will fail.");
 }
 
-
 const africasTalking = AfricasTalking({
   apiKey,
   username,
@@ -55,7 +54,8 @@ export async function dispatchAlert(
   message: string,
 ): Promise<AfricasTalkingSMSResponse | null> {
   try {
-    const response = await sms.send({ to: [phoneNumber], message });
+    const sanitizedMessage = message.trim().replace(/\s+/g, " ");
+    const response = await sms.send({ to: [phoneNumber], message: sanitizedMessage });
     console.log(` Dispatched alert to ${phoneNumber} successfully.`);
     console.log(` SDK Response: ${JSON.stringify(response)}\n`);
     return response;
@@ -73,7 +73,7 @@ export async function dispatchAndTrackAlert(
   message: string,
 ): Promise<AfricasTalkingSMSResponse | null> {
   const messageId = crypto.randomUUID();
-  
+
   // Create pending record
   await db.insert(smsMessages).values({
     id: messageId,
@@ -83,12 +83,13 @@ export async function dispatchAndTrackAlert(
   });
 
   const response = await dispatchAlert(phoneNumber, message);
-  
+
   // Update status based on response
-  await db.update(smsMessages)
+  await db
+    .update(smsMessages)
     .set({ status: response ? "sent" : "failed" })
     .where(eq(smsMessages.id, messageId));
-    
+
   return response;
 }
 

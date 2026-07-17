@@ -62,23 +62,17 @@
       "indexes": {
         "audit_logs_actor_idx": {
           "name": "audit_logs_actor_idx",
-          "columns": [
-            "actor"
-          ],
+          "columns": ["actor"],
           "isUnique": false
         },
         "audit_logs_action_idx": {
           "name": "audit_logs_action_idx",
-          "columns": [
-            "action"
-          ],
+          "columns": ["action"],
           "isUnique": false
         },
         "audit_logs_target_idx": {
           "name": "audit_logs_target_idx",
-          "columns": [
-            "target"
-          ],
+          "columns": ["target"],
           "isUnique": false
         }
       },
@@ -186,9 +180,7 @@
       "indexes": {
         "account_userId_idx": {
           "name": "account_userId_idx",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         }
       },
@@ -197,12 +189,8 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -282,16 +270,12 @@
       "indexes": {
         "session_token_unique": {
           "name": "session_token_unique",
-          "columns": [
-            "token"
-          ],
+          "columns": ["token"],
           "isUnique": true
         },
         "session_userId_idx": {
           "name": "session_userId_idx",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         }
       },
@@ -300,12 +284,8 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -402,9 +382,7 @@
       "indexes": {
         "user_email_unique": {
           "name": "user_email_unique",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": true
         }
       },
@@ -464,9 +442,7 @@
       "indexes": {
         "verification_identifier_idx": {
           "name": "verification_identifier_idx",
-          "columns": [
-            "identifier"
-          ],
+          "columns": ["identifier"],
           "isUnique": false
         }
       },
@@ -761,16 +737,12 @@
       "indexes": {
         "disbursements_referenceId_idx": {
           "name": "disbursements_referenceId_idx",
-          "columns": [
-            "reference_id"
-          ],
+          "columns": ["reference_id"],
           "isUnique": false
         },
         "disbursements_status_idx": {
           "name": "disbursements_status_idx",
-          "columns": [
-            "status"
-          ],
+          "columns": ["status"],
           "isUnique": false
         }
       },
@@ -915,23 +887,17 @@
       "indexes": {
         "registrations_reference_id_unique": {
           "name": "registrations_reference_id_unique",
-          "columns": [
-            "reference_id"
-          ],
+          "columns": ["reference_id"],
           "isUnique": true
         },
         "registrations_identityId_idx": {
           "name": "registrations_identityId_idx",
-          "columns": [
-            "identity_id"
-          ],
+          "columns": ["identity_id"],
           "isUnique": false
         },
         "registrations_referenceId_idx": {
           "name": "registrations_referenceId_idx",
-          "columns": [
-            "reference_id"
-          ],
+          "columns": ["reference_id"],
           "isUnique": false
         }
       },
@@ -940,12 +906,8 @@
           "name": "registrations_identity_id_identities_id_fk",
           "tableFrom": "registrations",
           "tableTo": "identities",
-          "columnsFrom": [
-            "identity_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["identity_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -998,16 +960,12 @@
       "indexes": {
         "sms_messages_recipient_idx": {
           "name": "sms_messages_recipient_idx",
-          "columns": [
-            "recipient"
-          ],
+          "columns": ["recipient"],
           "isUnique": false
         },
         "sms_messages_status_idx": {
           "name": "sms_messages_status_idx",
-          "columns": [
-            "status"
-          ],
+          "columns": ["status"],
           "isUnique": false
         }
       },

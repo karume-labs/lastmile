@@ -1,6 +1,6 @@
 import { identities } from "@lastmile/db/schemas/identity";
 import { relations, sql } from "drizzle-orm";
-import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const registrations = sqliteTable(
   "registrations",
@@ -12,6 +12,7 @@ export const registrations = sqliteTable(
       .references(() => identities.id),
     programmeId: text("programme_id").notNull(),
     currency: text("currency").notNull(),
+    amount: real("amount").notNull().default(0),
     preferredLanguage: text("preferred_language", { enum: ["en", "sw", "tu"] })
       .default("en")
       .notNull(),

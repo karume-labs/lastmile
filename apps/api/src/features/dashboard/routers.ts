@@ -16,7 +16,9 @@ dashboardRouter.get("/metrics", async (_req: Request, res: Response, next) => {
       .filter((d) => d.status === "delivered" || d.status === "claimed")
       .reduce((acc, curr) => acc + (curr.amount || 0), 0);
 
-    const activeDeliveries = allDisb.filter((d) => d.status === "pending" || d.status === "sent").length;
+    const activeDeliveries = allDisb.filter(
+      (d) => d.status === "pending" || d.status === "sent",
+    ).length;
     const stagnantFundsCount = allDisb.filter((d) => d.status === "stagnant").length;
     const activeProxiesCount = allProxies.filter((p) => p.status === "active").length;
 

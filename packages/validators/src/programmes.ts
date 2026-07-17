@@ -19,7 +19,6 @@ export const BatchSelectSchema = createSelectSchema(batches);
 
 export const DisbursementTriggerRequestSchema = z.object({
   programmeId: z.string().min(1),
-  amountUsdc: z.number().positive().max(10_000),
 });
 
 // ── Clawback Execute ──

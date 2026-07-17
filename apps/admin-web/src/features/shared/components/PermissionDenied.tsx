@@ -13,9 +13,12 @@ export const PermissionDenied = ({ message }: PermissionDeniedProps) => {
           <ShieldAlert className="size-6" />
         </div>
         <div className="space-y-1">
-          <CardTitle className="text-lg font-semibold text-destructive">Access Denied / Insufficient Permission</CardTitle>
+          <CardTitle className="text-lg font-semibold text-destructive">
+            Access Denied / Insufficient Permission
+          </CardTitle>
           <CardDescription className="text-sm text-muted-foreground">
-            {message || "You do not have sufficient permissions to view or interact with this resource. Please check your role privileges or contact a super administrator."}
+            {message ||
+              "You do not have sufficient permissions to view or interact with this resource. Please check your role privileges or contact a super administrator."}
           </CardDescription>
         </div>
       </CardHeader>

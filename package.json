@@ -42,7 +42,8 @@
     "@biomejs/biome": "2.2.0",
     "@types/africastalking": "^0.8.0",
     "@types/node": "^20",
-    "@types/react": "^19"
+    "@types/react": "^19",
+    "typescript": "^5.9.3"
   },
   "overrides": {}
 }

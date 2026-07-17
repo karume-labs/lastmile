@@ -82,7 +82,9 @@ export const TableMenuActions = ({ actions }: TableMenuActionsProps) => {
       <AlertDialog open={!!alertAction} onOpenChange={(open) => !open && setAlertAction(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>{alertAction?.confirmTitle || "Are you absolutely sure?"}</AlertDialogTitle>
+            <AlertDialogTitle>
+              {alertAction?.confirmTitle || "Are you absolutely sure?"}
+            </AlertDialogTitle>
             <AlertDialogDescription>
               {alertAction?.confirmDescription || (
                 <>
@@ -110,9 +112,12 @@ export const TableMenuActions = ({ actions }: TableMenuActionsProps) => {
       <Dialog open={!!confirmAction} onOpenChange={(open) => !open && setConfirmAction(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{confirmAction?.confirmTitle || `Confirm ${confirmAction?.label}`}</DialogTitle>
+            <DialogTitle>
+              {confirmAction?.confirmTitle || `Confirm ${confirmAction?.label}`}
+            </DialogTitle>
             <DialogDescription>
-              {confirmAction?.confirmDescription || `Are you sure you want to perform: ${confirmAction?.label}?`}
+              {confirmAction?.confirmDescription ||
+                `Are you sure you want to perform: ${confirmAction?.label}?`}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

@@ -1,7 +1,6 @@
-import { db } from "@lastmile/db/client";
 import data from "@lastmile/db/audit/seed/data.json";
+import { db } from "@lastmile/db/client";
 import { auditLogs } from "@lastmile/db/schemas/audit";
-import { eq } from "drizzle-orm";
 
 export async function seedAuditLogs() {
   console.log("  Seeding audit logs...");

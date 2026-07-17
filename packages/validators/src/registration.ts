@@ -17,6 +17,7 @@ export const BulkUploadRowSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
   phoneNumber: phoneNumberSchema,
   currency: currencySchema,
+  amount: z.coerce.number().positive(),
   preferredLanguage: z.enum(["en", "sw", "tu"]).default("en"),
   isProxy: z.boolean(),
 });

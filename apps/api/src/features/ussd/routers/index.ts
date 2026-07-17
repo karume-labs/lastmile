@@ -1,11 +1,11 @@
 import crypto from "node:crypto";
 import { kotaniPaySimulation } from "@lastmile/api/features/offramp/services";
-import { sendConfirmationSms } from "@lastmile/api/lib/sms-client";
 import { relayerService } from "@lastmile/api/features/relayer/services";
 import {
   dictionary,
   type SupportedLanguage,
 } from "@lastmile/api/features/ussd/services/dictionary";
+import { sendConfirmationSms } from "@lastmile/api/lib/sms-client";
 import { db } from "@lastmile/db/client";
 import { identities } from "@lastmile/db/schemas/identity";
 import { disbursements } from "@lastmile/db/schemas/programmes";
@@ -14,6 +14,24 @@ import { and, eq, inArray } from "drizzle-orm";
 import { Router } from "express";
 
 const router = Router();
+
+function handleFailedAttempt(identityId: string, currentAttempts: number) {
+  const newAttempts = currentAttempts + 1;
+  const update: Record<string, unknown> = { failedAttempts: newAttempts };
+
+  if (newAttempts >= 10) {
+    update.ussdBlocked = true;
+  } else if (newAttempts >= 3) {
+    const lockoutSeconds = 5 * (newAttempts - 2);
+    update.lockoutUntil = new Date(Date.now() + lockoutSeconds * 1000);
+  }
+
+  db.update(identities)
+    .set(update)
+    .where(eq(identities.id, identityId))
+    .execute()
+    .catch(console.error);
+}
 
 router.post("/session", async (req, res, next) => {
   try {
@@ -24,6 +42,9 @@ router.post("/session", async (req, res, next) => {
       .select({
         identityId: registrations.identityId,
         preferredLanguage: registrations.preferredLanguage,
+        failedAttempts: identities.failedAttempts,
+        lockoutUntil: identities.lockoutUntil,
+        ussdBlocked: identities.ussdBlocked,
       })
       .from(registrations)
       .innerJoin(identities, eq(registrations.identityId, identities.id))
@@ -40,6 +61,23 @@ router.post("/session", async (req, res, next) => {
     const preferred = userReg[0].preferredLanguage;
     if (preferred === "en" || preferred === "sw" || preferred === "tu") {
       lang = preferred;
+    }
+
+    if (userReg[0].ussdBlocked) {
+      res.setHeader("Content-Type", "text/plain");
+      res.status(200).send(`END ${dictionary[lang].accountBlocked}`);
+      return;
+    }
+
+    if (userReg[0].lockoutUntil && userReg[0].lockoutUntil > new Date()) {
+      const remainingSeconds = Math.ceil((userReg[0].lockoutUntil.getTime() - Date.now()) / 1000);
+      res.setHeader("Content-Type", "text/plain");
+      res
+        .status(200)
+        .send(
+          `END ${dictionary[lang].tryAgainLater.replace("{seconds}", String(remainingSeconds))}`,
+        );
+      return;
     }
 
     const cleanText = String(text || "").trim();
@@ -90,6 +128,7 @@ router.post("/session", async (req, res, next) => {
           if (pendingDisbursements && pendingDisbursements.length > 0) {
             response_msg = `CON ${dictionary[lang].enterOtp}`;
           } else {
+            handleFailedAttempt(userReg[0].identityId, userReg[0].failedAttempts);
             response_msg = `END ${dictionary[lang].invalidRef}`;
           }
         }
@@ -158,28 +197,44 @@ router.post("/session", async (req, res, next) => {
               console.log(
                 `DEBUG PAYOUT: Authorized KES ${record.amount} for reference ${enteredRef} to ${phoneNumber}`,
               );
+
+              db.update(identities)
+                .set({ failedAttempts: 0, lockoutUntil: null })
+                .where(eq(identities.id, userReg[0].identityId))
+                .execute()
+                .catch(console.error);
+
               // Wait for Soroban
               await relayerService.unlockFunds(enteredRef);
 
               // Wait for Kotani Pay offramp
-              const offrampRes = await kotaniPaySimulation.processPayout(phoneNumber, record.amount, enteredRef);
+              const offrampRes = await kotaniPaySimulation.processPayout(
+                phoneNumber,
+                record.amount,
+                enteredRef,
+              );
               if (offrampRes.success) {
                 // Update disbursement status to claimed
-                await db.update(disbursements)
+                await db
+                  .update(disbursements)
                   .set({ status: "claimed" })
                   .where(eq(disbursements.id, record.disbursementId));
-                  
+
                 // Send confirmation SMS
-                await sendConfirmationSms(phoneNumber, record.amount, enteredRef, lang).catch(console.error);
+                await sendConfirmationSms(phoneNumber, record.amount, enteredRef, lang).catch(
+                  console.error,
+                );
 
                 response_msg = `END ${dictionary[lang].successClaim}`;
               } else {
                 response_msg = `END Failed to process payout: ${offrampRes.error}`;
               }
             } else {
+              handleFailedAttempt(userReg[0].identityId, userReg[0].failedAttempts);
               response_msg = `END ${dictionary[lang].invalidOtp}`;
             }
           } else {
+            handleFailedAttempt(userReg[0].identityId, userReg[0].failedAttempts);
             response_msg = `END ${dictionary[lang].invalidRef}`;
           }
         }

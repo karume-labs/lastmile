@@ -3,6 +3,7 @@
 import type { Disbursement } from "@lastmile/types/programmes";
 import type { ColumnDef } from "@tanstack/react-table";
 import { parseAsString, useQueryState } from "nuqs";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -12,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useRetryDelivery } from "@/features/deliveries/services/mutations";
 import { useDeliveries } from "@/features/deliveries/services/queries";
 import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
 import { DataTable } from "@/features/shared/components/table/DataTable";
@@ -38,6 +40,7 @@ interface DeliveryTrackerProps {
 
 export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => {
   const { search, setSearch, clearFilters } = useDataTablePagination();
+  const retryDelivery = useRetryDelivery();
 
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
 
@@ -116,17 +119,26 @@ export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => 
     },
     {
       id: "actions",
-      cell: () => {
+      cell: ({ row }) => {
+        const record = row.original;
         return (
           <TableMenuActions
             actions={[
               {
                 label: "View Details",
-                onClick: () => {},
+                onClick: () =>
+                  toast.info(
+                    `${record.participantName} — ${record.referenceId} — ${record.amount} ${record.currency} — ${record.status}`,
+                  ),
               },
               {
                 label: "Retry Delivery",
-                onClick: () => {},
+                onClick: () => {
+                  retryDelivery.mutate(record.id, {
+                    onSuccess: () => toast.success("Delivery retry initiated"),
+                    onError: () => toast.error("Failed to retry delivery"),
+                  });
+                },
               },
             ]}
           />
@@ -135,7 +147,10 @@ export const DeliveryTracker: React.FC<DeliveryTrackerProps> = ({ actions }) => 
     },
   ];
 
-  if (isError && ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)) {
+  if (
+    isError &&
+    ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)
+  ) {
     return <PermissionDenied />;
   }
 

@@ -11,8 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { BulkUploadZone } from "@/features/registration/components/BulkUploadZone";
 import { ProgrammeGrid } from "@/features/programmes/components/ProgrammeGrid";
+import { BulkUploadZone } from "@/features/registration/components/BulkUploadZone";
 
 export const ProgrammesContent: React.FC = () => {
   const [showDisbursementDialog, setShowDisbursementDialog] = useState(false);
@@ -29,7 +29,8 @@ export const ProgrammesContent: React.FC = () => {
             <DialogHeader>
               <DialogTitle>New Disbursement / Beneficiary Registration</DialogTitle>
               <DialogDescription>
-                Upload spreadsheets (CSV or Excel) to bulk register new beneficiaries and initiate a disbursement batch.
+                Upload spreadsheets (CSV or Excel) to bulk register new beneficiaries and initiate a
+                disbursement batch.
               </DialogDescription>
             </DialogHeader>
             <BulkUploadZone

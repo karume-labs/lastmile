@@ -10,7 +10,9 @@ type DictionaryKeys =
   | "invalidOption"
   | "unregistered"
   | "invalidRef"
-  | "invalidOtp";
+  | "invalidOtp"
+  | "accountBlocked"
+  | "tryAgainLater";
 
 export const dictionary: Record<SupportedLanguage, Record<DictionaryKeys, string>> = {
   en: {
@@ -24,6 +26,9 @@ export const dictionary: Record<SupportedLanguage, Record<DictionaryKeys, string
     unregistered: "Your phone number is not registered.",
     invalidRef: "Invalid Reference ID.",
     invalidOtp: "Invalid OTP.",
+    accountBlocked:
+      "Your account is permanently blocked due to too many failed attempts. Contact Admin.",
+    tryAgainLater: "Too many failed attempts. Please wait {seconds} seconds and try again.",
   },
   sw: {
     welcome: "Karibu LastMile.\n1. Dai Pesa\n2. Badilisha Lugha",
@@ -36,6 +41,10 @@ export const dictionary: Record<SupportedLanguage, Record<DictionaryKeys, string
     unregistered: "Namba yako ya simu haijasajiliwa.",
     invalidRef: "Namba ya Kumbukumbu batili.",
     invalidOtp: "OTP batili.",
+    accountBlocked:
+      "Akaunti yako imefungwa kwa sababu ya majaribio mengi yaliyoshindwa. Wasiliana na msimamizi.",
+    tryAgainLater:
+      "Majaribio mengi yameshindwa. Tafadhali subiri sekunde {seconds} kisha ujaribu tena.",
   },
   tu: {
     welcome: "Yokak LastMile.\n1. Ng'alakin Ng'aropiyen\n2. Ng'alakin Ng'ajore",
@@ -48,5 +57,7 @@ export const dictionary: Record<SupportedLanguage, Record<DictionaryKeys, string
     unregistered: "Namba kon meere egirito.",
     invalidRef: "Reference ID erono.",
     invalidOtp: "OTP erono.",
+    accountBlocked: "Egolokino akaunti kon. Tojuma ng'akiro ka admin.",
+    tryAgainLater: "Ikorite akidwang'a. Todar ng'isekondin {seconds} kinywang'a nabo.",
   },
 };

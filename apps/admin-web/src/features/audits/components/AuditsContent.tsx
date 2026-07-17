@@ -3,6 +3,7 @@
 import type { AuditLog } from "@lastmile/types/audit";
 import type { ColumnDef } from "@tanstack/react-table";
 import { parseAsString, useQueryState } from "nuqs";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -53,11 +54,7 @@ export const AuditsContent = () => {
         return (
           <Badge
             variant={
-              severity === "high"
-                ? "destructive"
-                : severity === "medium"
-                  ? "default"
-                  : "secondary"
+              severity === "high" ? "destructive" : severity === "medium" ? "default" : "secondary"
             }
           >
             {severity.toUpperCase()}
@@ -74,13 +71,17 @@ export const AuditsContent = () => {
     },
     {
       id: "actions",
-      cell: () => {
+      cell: ({ row }) => {
+        const record = row.original;
         return (
           <TableMenuActions
             actions={[
               {
                 label: "View Details",
-                onClick: () => {},
+                onClick: () =>
+                  toast.info(
+                    `${record.action} by ${record.actor} on ${record.target} [${record.severity.toUpperCase()}] — ${new Date(record.timestamp).toLocaleString()}`,
+                  ),
               },
             ]}
           />
@@ -89,7 +90,10 @@ export const AuditsContent = () => {
     },
   ];
 
-  if (isError && ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)) {
+  if (
+    isError &&
+    ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)
+  ) {
     return <PermissionDenied />;
   }
 

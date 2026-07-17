@@ -30,7 +30,7 @@ export const useToggleProgrammeStatus = () => {
       status,
     }: {
       programmeId: string;
-      status: "active" | "paused";
+      status: "Active" | "Draft";
     }) => {
       const response = await apiClient.patch(`/programmes/${programmeId}/status`, { status });
       return response.data;
@@ -45,8 +45,22 @@ export const useDisburseProgramme = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: { programmeId: string; amountUsdc: number }) => {
+    mutationFn: async (payload: { programmeId: string }) => {
       const response = await apiClient.post("/programmes/disburse", payload);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["programmes"] });
+    },
+  });
+};
+
+export const useDeleteProgramme = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (programmeId: string) => {
+      const response = await apiClient.delete(`/programmes/${programmeId}`);
       return response.data;
     },
     onSuccess: () => {

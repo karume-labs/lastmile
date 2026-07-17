@@ -1,6 +1,6 @@
+import axios from "axios";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import axios from "axios";
 import { env } from "@/env";
 
 const apiBase = env.NEXT_PUBLIC_API_URL;
@@ -35,7 +35,7 @@ export const DELETE = async (request: NextRequest, { params }: Params) => {
 const proxyRequest = async (request: NextRequest, proxy: string[]) => {
   const path = proxy.join("/");
   const url = new URL(request.url);
-  
+
   // Normalize apiBase to avoid trailing slash issues and map localhost to 127.0.0.1 for Node/axios IPv4 resolution
   let base = apiBase.replace(/\/+$/, "");
   if (base.includes("://localhost:")) {
@@ -94,7 +94,13 @@ const proxyRequest = async (request: NextRequest, proxy: string[]) => {
       headers: responseHeaders,
     });
   } catch (error: any) {
-    console.error(`[PROXY ERROR] Failed to proxy ${request.method} to ${targetUrl}:`, error?.message || error);
-    return NextResponse.json({ error: "Failed to proxy request", details: error?.message }, { status: 502 });
+    console.error(
+      `[PROXY ERROR] Failed to proxy ${request.method} to ${targetUrl}:`,
+      error?.message || error,
+    );
+    return NextResponse.json(
+      { error: "Failed to proxy request", details: error?.message },
+      { status: 502 },
+    );
   }
 };

@@ -12,14 +12,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { EditStaffDialog } from "@/features/staff/components/EditStaffDialog";
-import { useToggleBan } from "@/features/staff/services/mutations";
 import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
 import { DataTable } from "@/features/shared/components/table/DataTable";
 import { DataTableSkeleton } from "@/features/shared/components/table/DataTableSkeleton";
 import { DataToolbar } from "@/features/shared/components/table/DataToolbar";
 import { TableMenuActions } from "@/features/shared/components/table/TableMenuActions";
 import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagination";
+import { EditStaffDialog } from "@/features/staff/components/EditStaffDialog";
+import { useToggleBan } from "@/features/staff/services/mutations";
 import { type StaffMember, useStaff } from "@/features/staff/services/queries";
 
 export const StaffContent = () => {
@@ -83,7 +83,7 @@ export const StaffContent = () => {
               {
                 label: member.banned ? "Unban User" : "Ban User",
                 destructive: !member.banned,
-                requiresConfirm: member.banned, // Safe confirm for unbanning
+                requiresConfirm: member.banned ?? undefined,
                 confirmTitle: member.banned ? "Unban this user?" : "Ban this user?",
                 confirmDescription: `Are you sure you want to ${member.banned ? "unban" : "ban"} ${member.name}?`,
                 onClick: () => toggleBanMutation.mutate({ id: member.id, banned: !member.banned }),
@@ -95,7 +95,10 @@ export const StaffContent = () => {
     },
   ];
 
-  if (isError && ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)) {
+  if (
+    isError &&
+    ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)
+  ) {
     return <PermissionDenied />;
   }
 
@@ -180,4 +183,3 @@ export const StaffContent = () => {
     </>
   );
 };
-

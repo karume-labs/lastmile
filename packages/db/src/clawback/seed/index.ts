@@ -1,7 +1,6 @@
+import data from "@lastmile/db/clawback/seed/data.json";
 import { db } from "@lastmile/db/client";
 import { clawbackLogs } from "@lastmile/db/schemas/clawback";
-import data from "@lastmile/db/clawback/seed/data.json";
-import { eq } from "drizzle-orm";
 
 export async function seedClawbackLogs() {
   console.log("  Seeding clawback logs...");
@@ -13,7 +12,9 @@ export async function seedClawbackLogs() {
     });
 
     if (existing) {
-      console.log(`    Clawback log "${item.id}" (payment: ${item.paymentId}) already exists, skipping.`);
+      console.log(
+        `    Clawback log "${item.id}" (payment: ${item.paymentId}) already exists, skipping.`,
+      );
       continue;
     }
 

@@ -1,7 +1,6 @@
 import { db } from "@lastmile/db/client";
 import data from "@lastmile/db/programmes/seed/data.json";
 import { batches, disbursements, programmes } from "@lastmile/db/schemas/programmes";
-import { eq } from "drizzle-orm";
 
 export async function seedProgrammes() {
   console.log("  Seeding programmes, batches & disbursements...");
@@ -90,7 +89,9 @@ export async function seedProgrammes() {
         deliveryMethod: d.deliveryMethod as "direct" | "proxy-led",
         otpHash: d.otpHash,
       });
-      console.log(`    Inserted disbursement for "${d.participantName}" (${d.amount} ${d.currency}).`);
+      console.log(
+        `    Inserted disbursement for "${d.participantName}" (${d.amount} ${d.currency}).`,
+      );
       disbCount++;
     } catch (e) {
       console.error(`    Failed to insert disbursement "${d.id}"`, e);

@@ -4,6 +4,7 @@ import type { Proxy as ProxyRecord } from "@lastmile/types/identity";
 import type { ColumnDef } from "@tanstack/react-table";
 import { UserCheck, UserMinus, UserX } from "lucide-react";
 import { parseAsString, useQueryState } from "nuqs";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -13,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToggleProxyStatus } from "@/features/proxies/services/mutations";
 import { useProxies } from "@/features/proxies/services/queries";
 import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
 import { DataTable } from "@/features/shared/components/table/DataTable";
@@ -23,6 +25,7 @@ import { useDataTablePagination } from "@/features/shared/hooks/useDataTablePagi
 
 export const ProxiesContent = () => {
   const { search, setSearch, clearFilters } = useDataTablePagination();
+  const toggleProxyStatus = useToggleProxyStatus();
 
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
 
@@ -86,18 +89,35 @@ export const ProxiesContent = () => {
             actions={[
               {
                 label: "View Profile",
-                onClick: () => {},
+                onClick: () =>
+                  toast.info(
+                    `${record.name} — ${record.role} — ${record.phone} — ${record.location} (${record.participantCount} participants)`,
+                  ),
               },
               {
                 label: record.status === "active" ? "Suspend Access" : "Restore Access",
                 destructive: record.status === "active",
+                requiresConfirm: true,
+                confirmTitle:
+                  record.status === "active" ? "Suspend this proxy?" : "Restore this proxy?",
+                confirmDescription: `Are you sure you want to ${record.status === "active" ? "suspend" : "restore"} ${record.name}?`,
                 icon:
                   record.status === "active" ? (
                     <UserMinus className="size-4" />
                   ) : (
                     <UserCheck className="size-4" />
                   ),
-                onClick: () => {},
+                onClick: () => {
+                  const newStatus = record.status === "active" ? "suspended" : "active";
+                  toggleProxyStatus.mutate(
+                    { proxyId: record.id, status: newStatus },
+                    {
+                      onSuccess: () =>
+                        toast.success(`Proxy ${newStatus === "active" ? "restored" : "suspended"}`),
+                      onError: () => toast.error("Failed to update proxy status"),
+                    },
+                  );
+                },
               },
             ]}
           />
@@ -106,7 +126,10 @@ export const ProxiesContent = () => {
     },
   ];
 
-  if (isError && ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)) {
+  if (
+    isError &&
+    ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)
+  ) {
     return <PermissionDenied />;
   }
 

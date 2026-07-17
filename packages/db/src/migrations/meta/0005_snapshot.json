@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "39806a78-2d2e-4f73-ad99-2ba145432c28",
-  "prevId": "ae2750d8-6818-4a7a-b729-6d121e98bc6f",
+  "id": "d739e878-66f4-4db7-a720-f12f1cd4c703",
+  "prevId": "39806a78-2d2e-4f73-ad99-2ba145432c28",
   "tables": {
     "audit_logs": {
       "name": "audit_logs",
@@ -521,6 +521,29 @@
           "notNull": true,
           "autoincrement": false
         },
+        "failed_attempts": {
+          "name": "failed_attempts",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "lockout_until": {
+          "name": "lockout_until",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "ussd_blocked": {
+          "name": "ussd_blocked",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "integer",
@@ -866,6 +889,14 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "amount": {
+          "name": "amount",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
         },
         "preferred_language": {
           "name": "preferred_language",

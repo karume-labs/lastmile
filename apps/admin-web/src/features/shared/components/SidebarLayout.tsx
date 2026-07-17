@@ -44,6 +44,7 @@ const NAV_ITEMS = [
   },
   { title: "Audits", url: "/admin/audits", icon: ClipboardList, id: "tour-audits" },
   { title: "Proxies", url: "/admin/proxies", icon: Users, id: "tour-proxies" },
+  { title: "Participants", url: "/admin/participants", icon: Users, id: "tour-participants" },
   { title: "Tours & Help", url: "/admin/tours", icon: HelpCircle, id: "tour-help" },
   { title: "SMS", url: "/admin/sms", icon: MessageSquare, id: "tour-sms" },
   { title: "Staff", url: "/admin/staff", icon: Users, id: "tour-staff" },
@@ -57,7 +58,10 @@ const AppSidebar = () => {
   return (
     <Sidebar collapsible="icon" className="border-border">
       <SidebarHeader className="border-b border-border/50">
-        <div className="flex flex-col justify-center gap-0.5 py-6 transition-all duration-200 px-6 group-data-[collapsible=icon]:px-2 items-start group-data-[collapsible=icon]:items-center h-20" style={{}}>
+        <div
+          className="flex flex-col justify-center gap-0.5 py-6 transition-all duration-200 px-6 group-data-[collapsible=icon]:px-2 items-start group-data-[collapsible=icon]:items-center h-20"
+          style={{}}
+        >
           <span
             className={cn(
               "text-lg font-semibold tracking-tight",

@@ -1,7 +1,6 @@
 import data from "@lastmile/db/auth/seed/data.json";
 import { db } from "@lastmile/db/client";
 import { user } from "@lastmile/db/schemas/auth";
-import { eq } from "drizzle-orm";
 
 export async function seedStaff() {
   console.log("  Seeding staff & field agent accounts...");

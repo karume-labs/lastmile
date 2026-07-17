@@ -27,6 +27,7 @@ export interface BeneficiaryRow {
   fullName: string;
   phoneNumber: string;
   currency: string;
+  amount: number;
   preferredLanguage: string;
   isProxy: boolean;
 }
@@ -68,57 +69,68 @@ export const BulkUploadZone = ({ onSuccess, className }: BulkUploadZoneProps = {
   const parseFile = async (file: File) => {
     const isCSV = file.name.endsWith(".csv");
 
+    const REQUIRED_COLUMNS = ["phonenumber", "amount"];
+
+    const validateHeaders = (headers: string[]) => {
+      const normalizedHeaders = headers.map((h) => h.toLowerCase().replace(/[\s_]/g, ""));
+      for (const col of REQUIRED_COLUMNS) {
+        if (
+          !normalizedHeaders.includes(col) &&
+          !normalizedHeaders.includes(col.replace("phonenumber", "phone"))
+        ) {
+          return false;
+        }
+      }
+      return true;
+    };
+
+    const mapRow = (row: Record<string, unknown>): BeneficiaryRow => {
+      const normalizedRow: Record<string, unknown> = {};
+      for (const key in row) {
+        const normalizedKey = key.toLowerCase().replace(/[\s_]/g, "");
+        normalizedRow[normalizedKey] = row[key];
+      }
+
+      return {
+        fullName: String(normalizedRow.fullname || normalizedRow.name || ""),
+        phoneNumber: String(normalizedRow.phonenumber || normalizedRow.phone || ""),
+        currency: String(normalizedRow.currency || "KES"),
+        amount: Number(normalizedRow.amount) || 0,
+        preferredLanguage: String(
+          normalizedRow.preferredlanguage || normalizedRow.language || "en",
+        ).toLowerCase(),
+        isProxy: String(normalizedRow.isproxy).toLowerCase() === "true",
+      };
+    };
+
     if (isCSV) {
       Papa.parse(file, {
         header: true,
         skipEmptyLines: true,
         complete: (results) => {
-          const parsed = (results.data as Record<string, unknown>[]).map((row) => {
-            // Create a normalized row object where keys are lowercase without spaces
-            const normalizedRow: Record<string, unknown> = {};
-            for (const key in row) {
-              const normalizedKey = key.toLowerCase().replace(/[\s_]/g, "");
-              normalizedRow[normalizedKey] = row[key];
-            }
-
-            return {
-              fullName: String(normalizedRow.fullname || normalizedRow.name || ""),
-              phoneNumber: String(normalizedRow.phonenumber || normalizedRow.phone || ""),
-              currency: String(normalizedRow.currency || "KES"), // Default to KES
-              preferredLanguage: String(
-                normalizedRow.preferredlanguage || normalizedRow.language || "en",
-              ).toLowerCase(),
-              isProxy: String(normalizedRow.isproxy).toLowerCase() === "true",
-            };
-          });
+          if (!validateHeaders(results.meta.fields || [])) {
+            toast.error("Invalid file: Missing required columns (phoneNumber, amount).");
+            setData([]);
+            return;
+          }
+          const parsed = (results.data as Record<string, unknown>[]).map(mapRow);
           setData(parsed);
         },
       });
     } else {
-      // Excel parse
       const buffer = await file.arrayBuffer();
       const workbook = XLSX.read(buffer, { type: "array" });
       const sheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[sheetName];
       const json = XLSX.utils.sheet_to_json<Record<string, unknown>>(worksheet);
 
-      const parsed = json.map((row) => {
-        const normalizedRow: Record<string, unknown> = {};
-        for (const key in row) {
-          const normalizedKey = key.toLowerCase().replace(/[\s_]/g, "");
-          normalizedRow[normalizedKey] = row[key];
-        }
+      if (json.length > 0 && !validateHeaders(Object.keys(json[0]))) {
+        toast.error("Invalid file: Missing required columns (phoneNumber, amount).");
+        setData([]);
+        return;
+      }
 
-        return {
-          fullName: String(normalizedRow.fullname || normalizedRow.name || ""),
-          phoneNumber: String(normalizedRow.phonenumber || normalizedRow.phone || ""),
-          currency: String(normalizedRow.currency || "KES"),
-          preferredLanguage: String(
-            normalizedRow.preferredlanguage || normalizedRow.language || "en",
-          ).toLowerCase(),
-          isProxy: String(normalizedRow.isproxy).toLowerCase() === "true",
-        };
-      });
+      const parsed = json.map(mapRow);
       setData(parsed);
     }
   };
@@ -177,15 +189,17 @@ export const BulkUploadZone = ({ onSuccess, className }: BulkUploadZoneProps = {
             maxFiles: 1,
           }}
           title="Drag and drop your file here"
-          subtitle="Supports .csv, .xls, .xlsx"
+          subtitle="Required columns: fullName, phoneNumber, currency, amount. Optional: preferredLanguage, isProxy"
         />
 
         {data.length > 0 && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Preview ({data.length} rows)</h3>
-              <Button 
-                onClick={() => mutation.mutate({ programmeTitle, targetCurrency, baseAmount, records: data })} 
+              <Button
+                onClick={() =>
+                  mutation.mutate({ programmeTitle, targetCurrency, baseAmount, records: data })
+                }
                 disabled={mutation.isPending || !programmeTitle}
               >
                 {mutation.isPending ? "Submitting..." : "Submit Batch"}
@@ -199,6 +213,7 @@ export const BulkUploadZone = ({ onSuccess, className }: BulkUploadZoneProps = {
                     <TableHead>Full Name</TableHead>
                     <TableHead>Phone Number</TableHead>
                     <TableHead>Currency</TableHead>
+                    <TableHead>Amount</TableHead>
                     <TableHead>Is Proxy</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -208,6 +223,7 @@ export const BulkUploadZone = ({ onSuccess, className }: BulkUploadZoneProps = {
                       <TableCell>{row.fullName}</TableCell>
                       <TableCell>{row.phoneNumber}</TableCell>
                       <TableCell>{row.currency}</TableCell>
+                      <TableCell>{row.amount}</TableCell>
                       <TableCell>
                         {row.isProxy ? (
                           <CheckCircle2 className="w-4 h-4 text-primary" />

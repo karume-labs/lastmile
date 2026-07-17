@@ -4,6 +4,7 @@ import type { Programme } from "@lastmile/types/programmes";
 import type { ColumnDef } from "@tanstack/react-table";
 import { parseAsString, useQueryState } from "nuqs";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -13,6 +14,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DisburseDialog } from "@/features/programmes/components/DisburseDialog";
+import {
+  useDeleteProgramme,
+  useToggleProgrammeStatus,
+} from "@/features/programmes/services/mutations";
 import { useProgrammes } from "@/features/programmes/services/queries";
 import { PermissionDenied } from "@/features/shared/components/PermissionDenied";
 import { DataTable } from "@/features/shared/components/table/DataTable";
@@ -30,6 +35,8 @@ const STATUS_STYLES: Record<string, string> = {
 export const ProgrammeGrid = () => {
   const [disburseConfirmTarget, setDisburseConfirmTarget] = useState<Programme | null>(null);
   const { search, setSearch, clearFilters } = useDataTablePagination();
+  const toggleStatus = useToggleProgrammeStatus();
+  const deleteProgramme = useDeleteProgramme();
 
   const [statusFilter, setStatusFilter] = useQueryState("status", parseAsString.withDefault(""));
 
@@ -88,11 +95,14 @@ export const ProgrammeGrid = () => {
             actions={[
               {
                 label: "View Details",
-                onClick: () => {},
+                onClick: () =>
+                  toast.info(
+                    `${record.name} — ${record.targetAudience} — Budget: $${record.budget.toLocaleString()} — Status: ${record.status}`,
+                  ),
               },
               {
                 label: "Edit Programme",
-                onClick: () => {},
+                onClick: () => toast.info("Edit functionality coming soon"),
               },
               {
                 label: "Disburse Batch",
@@ -102,12 +112,30 @@ export const ProgrammeGrid = () => {
               },
               {
                 label: record.status === "Active" ? "Pause" : "Resume",
-                onClick: () => {},
+                onClick: () => {
+                  const newStatus = record.status === "Active" ? "Draft" : "Active";
+                  toggleStatus.mutate(
+                    { programmeId: record.id, status: newStatus },
+                    {
+                      onSuccess: () =>
+                        toast.success(`Programme ${newStatus === "Active" ? "resumed" : "paused"}`),
+                      onError: () => toast.error("Failed to update programme status"),
+                    },
+                  );
+                },
               },
               {
                 label: "Delete",
                 destructive: true,
-                onClick: () => {},
+                requiresConfirm: true,
+                confirmTitle: "Delete this programme?",
+                confirmDescription: `Are you sure you want to delete "${record.name}"? This action cannot be undone.`,
+                onClick: () => {
+                  deleteProgramme.mutate(record.id, {
+                    onSuccess: () => toast.success("Programme deleted"),
+                    onError: () => toast.error("Failed to delete programme"),
+                  });
+                },
               },
             ]}
           />
@@ -116,7 +144,10 @@ export const ProgrammeGrid = () => {
     },
   ];
 
-  if (isError && ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)) {
+  if (
+    isError &&
+    ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)
+  ) {
     return <PermissionDenied />;
   }
 
