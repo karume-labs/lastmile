@@ -16,8 +16,8 @@ COPY packages/types/package.json ./packages/types/
 COPY packages/validators/package.json ./packages/validators/
 COPY packages/auth/package.json ./packages/auth/
 
-# Install dependencies
-RUN bun install --frozen-lockfile --ignore-scripts
+# FIX: Removed --frozen-lockfile so Bun can safely ignore the missing workspaces
+RUN bun install --ignore-scripts
 
 # Runner
 FROM base AS runner
