@@ -42,3 +42,8 @@ export const CreateBatchRequestSchema = z.object({
   targetCurrency: z.string().min(1, "Currency is required"),
   batchSize: z.number().min(1, "Batch size must be at least 1"),
 });
+
+// ── Bulk Notify ──
+export const ProgrammeNotifyRequestSchema = z.object({
+  template: z.enum(["3_days_before", "1_day_before", "today"]),
+});

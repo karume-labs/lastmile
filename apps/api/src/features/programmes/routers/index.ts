@@ -10,6 +10,7 @@ import {
   ClawbackRequestSchema,
   CreateBatchRequestSchema,
   DisbursementTriggerRequestSchema,
+  ProgrammeNotifyRequestSchema,
 } from "@lastmile/validators/programmes";
 import { and, eq } from "drizzle-orm";
 import { Router } from "express";
@@ -110,7 +111,7 @@ router.post("/disburse", requireRole("admin"), async (req, res, next) => {
         reg.preferredLanguage === "tu"
           ? reg.preferredLanguage
           : "en";
-      sendDisbursementSms(reg.phoneNumber, reg.referenceId, otp, lang).catch(console.error);
+      sendDisbursementSms(reg.phoneNumber, reg.referenceId, otp, amountUsdc, lang).catch(console.error);
     }
 
     // Insert all disbursements in a single query
