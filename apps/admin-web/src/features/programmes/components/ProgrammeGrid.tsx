@@ -68,7 +68,9 @@ export const ProgrammeGrid = () => {
       accessorKey: "budget",
       header: "Budget",
       cell: ({ row }) => (
-        <span className="font-medium">${row.original.budget.toLocaleString()}</span>
+        <span className="font-medium">
+          {row.original.budget.toLocaleString()} {row.original.targetCurrency}
+        </span>
       ),
     },
     {

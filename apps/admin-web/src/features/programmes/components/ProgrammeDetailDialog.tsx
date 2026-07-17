@@ -40,7 +40,11 @@ export const ProgrammeDetailDialog = ({
 
         <div className="space-y-3">
           <DetailRow label="Target Audience" value={programme.targetAudience} />
-          <DetailRow label="Budget" value={`$${programme.budget.toLocaleString()}`} />
+          <DetailRow label="Target Currency" value={programme.targetCurrency} />
+          <DetailRow
+            label="Budget"
+            value={`${programme.budget.toLocaleString()} ${programme.targetCurrency}`}
+          />
           <DetailRow
             label="Start Date"
             value={new Date(programme.startDate).toLocaleDateString()}

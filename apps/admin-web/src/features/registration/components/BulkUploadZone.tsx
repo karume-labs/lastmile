@@ -13,6 +13,13 @@ import { Dropzone } from "@/components/ui/dropzone";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -41,7 +48,7 @@ export const BulkUploadZone = ({ onSuccess, className }: BulkUploadZoneProps = {
   const queryClient = useQueryClient();
   const [data, setData] = useState<BeneficiaryRow[]>([]);
   const [programmeTitle, setProgrammeTitle] = useState("");
-  const [targetCurrency, setTargetCurrency] = useState("USDC");
+  const [targetCurrency, setTargetCurrency] = useState("KES");
   const [baseAmount, setBaseAmount] = useState(10);
 
   const mutation = useMutation({
@@ -159,15 +166,19 @@ export const BulkUploadZone = ({ onSuccess, className }: BulkUploadZoneProps = {
           </div>
           <div className="space-y-2">
             <Label htmlFor="targetCurrency">Target Currency</Label>
-            <Input
-              id="targetCurrency"
-              placeholder="e.g. USDC"
-              value={targetCurrency}
-              onChange={(e) => setTargetCurrency(e.target.value)}
-            />
+            <Select value={targetCurrency} onValueChange={(val) => { if (val) setTargetCurrency(val); }}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select currency" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="KES">KES — Kenyan Shilling (Turkana)</SelectItem>
+                <SelectItem value="SSP">SSP — South Sudanese Pound</SelectItem>
+                <SelectItem value="ETB">ETB — Ethiopian Birr (Southern Ethiopia)</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="baseAmount">Base Amount (USDC)</Label>
+            <Label htmlFor="baseAmount">Base Amount</Label>
             <Input
               id="baseAmount"
               type="number"
