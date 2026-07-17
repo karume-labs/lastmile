@@ -34,7 +34,7 @@ export interface BeneficiaryRow {
   fullName: string;
   phoneNumber: string;
   currency: string;
-  amount?: number;
+  amount: number;
   preferredLanguage: string;
   isProxy: boolean;
 }
@@ -49,11 +49,13 @@ export const BulkUploadZone = ({ onSuccess, className }: BulkUploadZoneProps = {
   const [data, setData] = useState<BeneficiaryRow[]>([]);
   const [programmeTitle, setProgrammeTitle] = useState("");
   const [targetCurrency, setTargetCurrency] = useState("KES");
+  const [baseAmount, setBaseAmount] = useState(10);
 
   const mutation = useMutation({
     mutationFn: async (payload: {
       programmeTitle: string;
       targetCurrency: string;
+      baseAmount: number;
       records: BeneficiaryRow[];
     }) => {
       const response = await axios.post("/api/registration/bulk-upload", payload);
@@ -100,7 +102,7 @@ export const BulkUploadZone = ({ onSuccess, className }: BulkUploadZoneProps = {
         fullName: String(normalizedRow.fullname || normalizedRow.name || ""),
         phoneNumber: String(normalizedRow.phonenumber || normalizedRow.phone || ""),
         currency: String(normalizedRow.currency || "KES"),
-        amount: normalizedRow.amount ? Number(normalizedRow.amount) : undefined,
+        amount: Number(normalizedRow.amount) || 0,
         preferredLanguage: String(
           normalizedRow.preferredlanguage || normalizedRow.language || "en",
         ).toLowerCase(),
@@ -152,7 +154,7 @@ export const BulkUploadZone = ({ onSuccess, className }: BulkUploadZoneProps = {
         <CardTitle>Bulk Upload Beneficiaries</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label htmlFor="programmeTitle">Programme Title</Label>
             <Input
@@ -164,7 +166,12 @@ export const BulkUploadZone = ({ onSuccess, className }: BulkUploadZoneProps = {
           </div>
           <div className="space-y-2">
             <Label htmlFor="targetCurrency">Target Currency</Label>
-            <Select value={targetCurrency} onValueChange={(val) => { if (val) setTargetCurrency(val); }}>
+            <Select
+              value={targetCurrency}
+              onValueChange={(val) => {
+                if (val) setTargetCurrency(val);
+              }}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select currency" />
               </SelectTrigger>
@@ -174,6 +181,16 @@ export const BulkUploadZone = ({ onSuccess, className }: BulkUploadZoneProps = {
                 <SelectItem value="ETB">ETB — Ethiopian Birr (Southern Ethiopia)</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="baseAmount">Base Amount</Label>
+            <Input
+              id="baseAmount"
+              type="number"
+              placeholder="10"
+              value={baseAmount}
+              onChange={(e) => setBaseAmount(Number(e.target.value))}
+            />
           </div>
         </div>
 
@@ -196,13 +213,9 @@ export const BulkUploadZone = ({ onSuccess, className }: BulkUploadZoneProps = {
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-semibold">Preview ({data.length} rows)</h3>
               <Button
-                onClick={() => {
-                  const recordsWithAmount = data.map(record => ({
-                    ...record,
-                    amount: record.amount || 0
-                  }));
-                  mutation.mutate({ programmeTitle, targetCurrency, records: recordsWithAmount as any });
-                }}
+                onClick={() =>
+                  mutation.mutate({ programmeTitle, targetCurrency, baseAmount, records: data })
+                }
                 disabled={mutation.isPending || !programmeTitle}
               >
                 {mutation.isPending ? "Submitting..." : "Submit Batch"}
@@ -226,7 +239,7 @@ export const BulkUploadZone = ({ onSuccess, className }: BulkUploadZoneProps = {
                       <TableCell>{row.fullName}</TableCell>
                       <TableCell>{row.phoneNumber}</TableCell>
                       <TableCell>{row.currency}</TableCell>
-                      <TableCell>{row.amount || 0}</TableCell>
+                      <TableCell>{row.amount}</TableCell>
                       <TableCell>
                         {row.isProxy ? (
                           <CheckCircle2 className="w-4 h-4 text-primary" />

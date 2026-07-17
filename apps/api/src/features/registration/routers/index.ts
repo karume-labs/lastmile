@@ -1,19 +1,19 @@
 import crypto from "node:crypto";
+import { requireRole } from "@lastmile/api/middlewares/authorize";
 import { db } from "@lastmile/db/client";
 import { identities } from "@lastmile/db/schemas/identity";
 import { programmes } from "@lastmile/db/schemas/programmes";
 import { registrations } from "@lastmile/db/schemas/registration";
 import { BulkUploadRequestSchema } from "@lastmile/validators/registration";
+import { eq } from "drizzle-orm";
 import { Router } from "express";
 import { z } from "zod/v4";
-import { requireRole } from "@lastmile/api/middlewares/authorize";
-import { eq } from "drizzle-orm";
 
 const router = Router();
 
 router.post("/bulk-upload", async (req, res, next) => {
   try {
-    const { programmeTitle, targetCurrency, records } = BulkUploadRequestSchema.parse(
+    const { programmeTitle, targetCurrency, baseAmount, records } = BulkUploadRequestSchema.parse(
       req.body,
     );
 
@@ -49,14 +49,12 @@ router.post("/bulk-upload", async (req, res, next) => {
 
     // 2. Execute queries inside the transaction
     await db.transaction(async (tx) => {
-      const totalBudget = records.reduce((acc, r) => acc + (r.amount || 0), 0);
-
       // Insert the programme
       await tx.insert(programmes).values({
         id: programmeId,
         name: programmeTitle,
         targetCurrency: targetCurrency,
-        budget: totalBudget, // Calculated from CSV rows
+        budget: baseAmount * records.length, // Rough budget based on baseAmount * participants
         status: "Active",
       });
 

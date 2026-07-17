@@ -10,22 +10,10 @@ export const sendDisbursementSms = async (
   referenceId: string,
   otp: string,
   amount: number,
-  programName: string,
   lang: SupportedLanguage = "en",
 ) => {
-  const getMessage = () => {
-    switch (lang) {
-      case "sw":
-        return `LastMile: Umepokea Ksh ${amount} kutoka kwa mradi wa ${programName}. Namba yako ya kumbukumbu (Ref) ni ${referenceId}. OTP yako ni ${otp}. Piga *340# kudai.`;
-      case "tu":
-        return `LastMile: Iyokino Ksh ${amount} an program a ${programName}. Ref kon nge ${referenceId}. OTP nge ${otp}. Piga *340# kudai.`;
-      case "en":
-      default:
-        return `LastMile: You have received Ksh ${amount} from the ${programName} program. Your Ref ID is ${referenceId}. Your OTP is ${otp}. Dial *340# to claim.`;
-    }
-  };
-
-  const message = getMessage();
+  // Use the dictionary to format the message dynamically based on user's language
+  const message = `${dictionary[lang].successClaim} Ref: ${referenceId}. Amount: ${amount}. OTP: ${otp}. Dial *340# to claim.`;
 
   console.log(`\n💬 [SMS DISPATCH to ${phoneNumber} (${lang})]:`);
   console.log(`"${message}"\n`);
@@ -41,7 +29,7 @@ export const sendConfirmationSms = async (
   lang: SupportedLanguage = "en",
 ) => {
   // Use the dictionary's successClaim message
-  const message = `${dictionary[lang].successClaim} Ref: ${referenceId}. Ksh ${amount}`;
+  const message = `${dictionary[lang].successClaim} Ref: ${referenceId}. Amount: ${amount}`;
 
   console.log(`\n💬 [SMS DISPATCH (CONFIRMATION) to ${phoneNumber} (${lang})]:`);
   console.log(`"${message}"\n`);
