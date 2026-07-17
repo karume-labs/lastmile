@@ -21,13 +21,27 @@ import helmet from "helmet";
 const PORT = Number(process.env.PORT || "8000");
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 
+// Build the list of allowed CORS origins: always include FRONTEND_URL,
+// plus any extras from the comma-separated CORS_ORIGINS env var.
+const allowedOrigins: string[] = [
+  FRONTEND_URL,
+  ...(process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(",").map((o) => o.trim()).filter(Boolean)
+    : []),
+];
+
 const app = express();
 
 // Security and middleware
 app.use(helmet());
 app.use(
   cors({
-    origin: FRONTEND_URL,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (server-to-server, curl, etc.)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      callback(new Error(`CORS: origin '${origin}' not allowed`));
+    },
     credentials: true,
   }),
 );

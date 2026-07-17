@@ -3,6 +3,8 @@ import { z } from "zod/v4";
 const envSchema = z.object({
   PORT: z.string().default("8000"),
   FRONTEND_URL: z.url().default("http://localhost:3000"),
+  // Optional: comma-separated list of extra CORS origins (e.g. LAN IP access)
+  CORS_ORIGINS: z.string().optional(),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 });
 

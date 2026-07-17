@@ -20,7 +20,15 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  trustedOrigins: [env.NEXT_PUBLIC_APP_URL, env.EXPO_PUBLIC_APP_URL, "exp://"],
+  trustedOrigins: [
+    env.NEXT_PUBLIC_APP_URL,
+    env.EXPO_PUBLIC_APP_URL,
+    "exp://",
+    // Support extra origins from comma-separated CORS_ORIGINS env var (e.g. LAN IP)
+    ...(process.env.CORS_ORIGINS
+      ? process.env.CORS_ORIGINS.split(",").map((o) => o.trim()).filter(Boolean)
+      : []),
+  ],
   advanced: {
     crossSubDomainCookies: {
       enabled: false,
