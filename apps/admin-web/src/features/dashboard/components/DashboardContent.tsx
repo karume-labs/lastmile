@@ -1,5 +1,6 @@
 "use client";
 
+import axios from "axios";
 import { AlertTriangle, Clock, DollarSign, Send, TrendingUp, Users } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -39,7 +40,8 @@ export const DashboardContent = () => {
 
   if (
     isError &&
-    ((error as any)?.response?.status === 401 || (error as any)?.response?.status === 403)
+    axios.isAxiosError(error) &&
+    (error.response?.status === 401 || error.response?.status === 403)
   ) {
     return <PermissionDenied />;
   }

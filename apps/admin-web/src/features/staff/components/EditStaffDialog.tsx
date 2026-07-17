@@ -45,6 +45,7 @@ export const EditStaffDialog = ({ open, onOpenChange, staff }: EditStaffDialogPr
   const updateStaffMutation = useUpdateStaff();
 
   const form = useForm<EditStaffFormValues>({
+    // biome-ignore lint/suspicious/noExplicitAny: zod v4 schema type incompatible with zodResolver typing
     resolver: zodResolver(UpdateStaffSchema as any),
     defaultValues: {
       name: "",

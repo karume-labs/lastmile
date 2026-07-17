@@ -12,7 +12,12 @@ type DictionaryKeys =
   | "invalidRef"
   | "invalidOtp"
   | "accountBlocked"
-  | "tryAgainLater";
+  | "tryAgainLater"
+  | "refLabel"
+  | "amountLabel"
+  | "otpLabel"
+  | "dialToClaim"
+  | "offrampFailed";
 
 export const dictionary: Record<SupportedLanguage, Record<DictionaryKeys, string>> = {
   en: {
@@ -29,6 +34,11 @@ export const dictionary: Record<SupportedLanguage, Record<DictionaryKeys, string
     accountBlocked:
       "Your account is permanently blocked due to too many failed attempts. Contact Admin.",
     tryAgainLater: "Too many failed attempts. Please wait {seconds} seconds and try again.",
+    refLabel: "Ref",
+    amountLabel: "Amount",
+    otpLabel: "OTP",
+    dialToClaim: "Dial *340# to claim.",
+    offrampFailed: "Failed to process payout. Please try again later.",
   },
   sw: {
     welcome: "Karibu LastMile.\n1. Dai Pesa\n2. Badilisha Lugha",
@@ -45,6 +55,11 @@ export const dictionary: Record<SupportedLanguage, Record<DictionaryKeys, string
       "Akaunti yako imefungwa kwa sababu ya majaribio mengi yaliyoshindwa. Wasiliana na msimamizi.",
     tryAgainLater:
       "Majaribio mengi yameshindwa. Tafadhali subiri sekunde {seconds} kisha ujaribu tena.",
+    refLabel: "Ref",
+    amountLabel: "Kiasi",
+    otpLabel: "OTP",
+    dialToClaim: "Piga *340# ili uchukue pesa.",
+    offrampFailed: "Imeshindikana kusindika malipo. Tafadhali jaribu tena baadaye.",
   },
   tu: {
     welcome: "Yokak LastMile.\n1. Ng'alakin Ng'aropiyen\n2. Ng'alakin Ng'ajore",
@@ -59,5 +74,10 @@ export const dictionary: Record<SupportedLanguage, Record<DictionaryKeys, string
     invalidOtp: "OTP erono.",
     accountBlocked: "Egolokino akaunti kon. Tojuma ng'akiro ka admin.",
     tryAgainLater: "Ikorite akidwang'a. Todar ng'isekondin {seconds} kinywang'a nabo.",
+    refLabel: "Ref",
+    amountLabel: "Ng'aropiyen",
+    otpLabel: "OTP",
+    dialToClaim: "Dial *340# na ng'alakin ng'aropiyen.",
+    offrampFailed: "Emio ng'aropiyen ongekeyo. Todar nabo.",
   },
 };

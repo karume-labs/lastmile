@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { AxiosError } from "axios";
 import { toast } from "sonner";
 import { apiClient } from "@/lib/api-client";
 
@@ -25,7 +26,7 @@ export const useToggleBan = () => {
       queryClient.invalidateQueries({ queryKey: ["staff"] });
       toast.success(variables.banned ? "User has been banned" : "User has been unbanned");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ error?: string }>) => {
       toast.error(error?.response?.data?.error || "Failed to update ban status");
     },
   });
@@ -43,7 +44,7 @@ export const useUpdateStaff = () => {
       queryClient.invalidateQueries({ queryKey: ["staff"] });
       toast.success("Staff member updated successfully");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosError<{ error?: string }>) => {
       toast.error(error?.response?.data?.error || "Failed to update staff member");
     },
   });

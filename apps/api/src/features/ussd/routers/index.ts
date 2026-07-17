@@ -54,7 +54,7 @@ router.post("/session", async (req, res, next) => {
     if (!userReg || userReg.length === 0) {
       // Unregistered users get instantly dropped. No menu.
       res.setHeader("Content-Type", "text/plain");
-      res.status(200).send(`END ${dictionary.en.unregistered}`);
+      res.status(200).send(`END ${dictionary[lang].unregistered}`);
       return;
     }
 
@@ -227,7 +227,7 @@ router.post("/session", async (req, res, next) => {
 
                 response_msg = `END ${dictionary[lang].successClaim}`;
               } else {
-                response_msg = `END Failed to process payout: ${offrampRes.error}`;
+                response_msg = `END ${dictionary[lang].offrampFailed}`;
               }
             } else {
               handleFailedAttempt(userReg[0].identityId, userReg[0].failedAttempts);
