@@ -80,13 +80,17 @@ export async function seedProgrammes() {
         currency: d.currency,
         status: d.status as
           | "pending"
+          | "processing"
           | "sent"
           | "delivered"
           | "failed"
+          | "completed"
           | "claimed"
           | "stagnant"
           | "clawed_back",
         deliveryMethod: d.deliveryMethod as "direct" | "proxy-led",
+        kotaniTxId: d.kotaniTxId || null,
+        txHash: d.txHash || null,
         otpHash: d.otpHash,
       });
       console.log(
