@@ -150,7 +150,7 @@ export const SmsContent = () => {
           <DialogTrigger render={<Button />}>
             <Plus className="mr-2 h-4 w-4" /> Send SMS
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Send SMS Message</DialogTitle>
             </DialogHeader>

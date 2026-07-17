@@ -1,6 +1,62 @@
-# LastMile
+# Lastmile
 
-A secure, offline-first delivery layer for humanitarian cash assistance. LastMile bridges the gap between digital aid disbursement and physical cash handover for digitally excluded communities — no smartphones or internet required for end beneficiaries.
+Monorepo for Lastmile services and applications.
+
+## Contents
+
+- Packages
+    - [packages/auth/README.md](packages/auth/README.md)
+    - [packages/db/README.md](packages/db/README.md)
+    - [packages/types/README.md](packages/types/README.md)
+    - [packages/validators/README.md](packages/validators/README.md)
+
+- Applications
+    - [apps/admin-web/README.md](apps/admin-web/README.md)
+    - [apps/api/README.md](apps/api/README.md)
+    - [apps/contract/README.md](apps/contract/README.md)
+    - [apps/participant-ussd/README.md](apps/participant-ussd/README.md)
+    - [apps/staff-mobile/README.md](apps/staff-mobile/README.md)
+
+## System Architecture
+
+```mermaid
+flowchart LR
+    subgraph Apps
+        AW[admin-web]
+        API[api]
+        CT[contract]
+        USSD[participant-ussd]
+        SM[staff-mobile]
+    end
+
+    subgraph Packages
+        AUTH[packages/auth]
+        DB[packages/db]
+        TYPES[packages/types]
+        VAL[packages/validators]
+    end
+
+    AW -->|API calls| API
+    CT -->|API calls| API
+    USSD -->|API calls| API
+    SM -->|API calls| API
+
+    API -->|auth| AUTH
+    API -->|db| DB
+    API -->|types| TYPES
+    API -->|validation| VAL
+
+    DB -->|migrations & data| TYPES
+```
+
+## How to use
+
+- See individual READMEs above for package and app-specific setup and development instructions.
+
+## Contributing
+
+- Open an issue or PR; follow the repository contribution conventions.
+
 
 ## How It Works
 
