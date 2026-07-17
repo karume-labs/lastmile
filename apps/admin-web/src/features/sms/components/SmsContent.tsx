@@ -150,82 +150,82 @@ export const SmsContent = () => {
           <DialogTrigger render={<Button />}>
             <Plus className="mr-2 h-4 w-4" /> Send SMS
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Send SMS Message</DialogTitle>
             </DialogHeader>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                <fieldset disabled={createSms.isPending} className="space-y-5">
-                  <FormField
-                    control={form.control}
-                    name="recipient"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs font-bold text-foreground">
-                          Recipient Phone Number
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="+1234567890"
-                            className="bg-muted/50 rounded-xl"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                  <fieldset disabled={createSms.isPending} className="space-y-5">
+                    <FormField
+                      control={form.control}
+                      name="recipient"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs font-bold text-foreground">
+                            Recipient Phone Number
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="+1234567890"
+                              className="bg-muted/50 rounded-xl"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="content"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs font-bold text-foreground">
-                          Message Content
-                        </FormLabel>
-                        <Select
-                          onValueChange={(value) => {
-                            if (typeof value === "string") form.setValue("content", value);
-                          }}
-                        >
-                          <SelectTrigger className="bg-muted/50 rounded-xl">
-                            <SelectValue placeholder="Quick Templates" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="You have received funds in your LastMile account. Dial *340# to claim.">
-                              Disbursement
-                            </SelectItem>
-                            <SelectItem value="Registration for the upcoming relief program starts next week in your area. Keep your ID ready.">
-                              Sensitization
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormControl>
-                          <Textarea
-                            className="bg-muted/50 rounded-xl min-h-20"
-                            placeholder="Type your message here..."
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="content"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-xs font-bold text-foreground">
+                            Message Content
+                          </FormLabel>
+                          <Select
+                            onValueChange={(value) => {
+                              if (typeof value === "string") form.setValue("content", value);
+                            }}
+                          >
+                            <SelectTrigger className="bg-muted/50 rounded-xl">
+                              <SelectValue placeholder="Quick Templates" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="You have received funds in your LastMile account. Dial *340# to claim.">
+                                Disbursement
+                              </SelectItem>
+                              <SelectItem value="Registration for the upcoming relief program starts next week in your area. Keep your ID ready.">
+                                Sensitization
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormControl>
+                            <Textarea
+                              className="bg-muted/50 rounded-xl min-h-20"
+                              placeholder="Type your message here..."
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <div className="pt-2">
-                    <Button
-                      type="submit"
-                      className="w-full rounded-xl font-medium py-6"
-                      disabled={createSms.isPending}
-                    >
-                      {createSms.isPending ? "Sending..." : "Send Message"}
-                    </Button>
-                  </div>
-                </fieldset>
-              </form>
-            </Form>
+                    <div className="pt-2">
+                      <Button
+                        type="submit"
+                        className="w-full rounded-xl font-medium py-6"
+                        disabled={createSms.isPending}
+                      >
+                        {createSms.isPending ? "Sending..." : "Send Message"}
+                      </Button>
+                    </div>
+                  </fieldset>
+                </form>
+              </Form>
           </DialogContent>
         </Dialog>
       </div>
