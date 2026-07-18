@@ -49,6 +49,7 @@ export const disbursements = sqliteTable(
       .notNull()
       .default("direct"),
     otpHash: text("otp_hash"),
+    txHash: text("tx_hash"),
     createdAt: integer("created_at", { mode: "timestamp" })
       .default(sql`(strftime('%s', 'now'))`)
       .notNull(),

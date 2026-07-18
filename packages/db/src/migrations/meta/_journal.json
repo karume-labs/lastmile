@@ -43,6 +43,13 @@
       "when": 1784261545251,
       "tag": "0005_absurd_the_order",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1784339602074,
+      "tag": "0006_simple_chamber",
+      "breakpoints": true
     }
   ]
 }

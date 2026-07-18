@@ -88,6 +88,7 @@ export async function seedProgrammes() {
           | "clawed_back",
         deliveryMethod: d.deliveryMethod as "direct" | "proxy-led",
         otpHash: d.otpHash,
+        txHash: d.txHash ?? null,
       });
       console.log(
         `    Inserted disbursement for "${d.participantName}" (${d.amount} ${d.currency}).`,

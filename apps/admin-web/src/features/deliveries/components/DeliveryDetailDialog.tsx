@@ -54,6 +54,19 @@ export const DeliveryDetailDialog = ({
               {delivery.status.charAt(0).toUpperCase() + delivery.status.slice(1)}
             </Badge>
           </div>
+          {delivery.txHash && (
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-muted-foreground">Tx Hash</span>
+              <a
+                href={`https://stellar.expert/explorer/testnet/tx/${delivery.txHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-medium text-primary underline truncate max-w-[180px]"
+              >
+                {delivery.txHash.slice(0, 6)}...{delivery.txHash.slice(-4)}
+              </a>
+            </div>
+          )}
           <DetailRow label="Created" value={new Date(delivery.createdAt).toLocaleString()} />
         </div>
 
