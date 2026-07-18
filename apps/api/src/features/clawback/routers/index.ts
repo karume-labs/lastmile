@@ -4,6 +4,7 @@ import { db } from "@lastmile/db/client";
 import { disbursements } from "@lastmile/db/schemas/programmes";
 import { ClawbackRequestSchema } from "@lastmile/validators/programmes";
 import { eq, or } from "drizzle-orm";
+import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
 
 const router = Router();
@@ -14,7 +15,7 @@ const router = Router();
  * Queries disbursements where status = 'stagnant' (or pending > 7 days),
  * returns Reference ID, amount, and daysPending.
  */
-const getStagnantFunds = async (_req: any, res: any, next: any) => {
+const getStagnantFunds = async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const list = await db
       .select({

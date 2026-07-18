@@ -8,8 +8,14 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   AT_USERNAME: z.string().default("sandbox"),
   AT_API_KEY: z.string().min(1, "AT_API_KEY is required"),
-  STELLAR_TREASURY_SECRET: z.string().min(56, "Must be a valid secret key").default("S_DUMMY_SECRET_KEY"),
-  SOROBAN_CONTRACT_ID: z.string().min(56, "Must be a valid contract ID").default("C_DUMMY_CONTRACT_ID"),
+  STELLAR_TREASURY_SECRET: z
+    .string()
+    .min(56, "Must be a valid secret key")
+    .default("S_DUMMY_SECRET_KEY"),
+  SOROBAN_CONTRACT_ID: z
+    .string()
+    .min(56, "Must be a valid contract ID")
+    .default("C_DUMMY_CONTRACT_ID"),
   STELLAR_NETWORK: z.enum(["testnet", "public"]).default("testnet"),
   STELLAR_RPC_URL: z.string().default("https://soroban-testnet.stellar.org:443"),
 });

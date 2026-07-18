@@ -7,11 +7,9 @@ export const useCreateSms = () => {
 
   return useMutation({
     mutationFn: async (data: SmsCreateRequest) => {
-      const response = await axios.post<{ success: boolean; data: SmsMessage }>(
-        "/api/sms",
-        data,
-        { withCredentials: true },
-      );
+      const response = await axios.post<{ success: boolean; data: SmsMessage }>("/api/sms", data, {
+        withCredentials: true,
+      });
       return response.data;
     },
     onSuccess: () => {

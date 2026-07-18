@@ -21,13 +21,15 @@ export const auth = betterAuth({
     enabled: true,
   },
   trustedOrigins: [
-    env.NEXT_PUBLIC_APP_URL,          // e.g. https://lastmile-ke.vercel.app
+    env.NEXT_PUBLIC_APP_URL, // e.g. https://lastmile-ke.vercel.app
     "https://lastmile-ke.vercel.app", // explicit Vercel production URL
     env.EXPO_PUBLIC_APP_URL,
     "exp://",
     // Support extra origins from comma-separated CORS_ORIGINS env var (e.g. LAN IP)
     ...(process.env.CORS_ORIGINS
-      ? process.env.CORS_ORIGINS.split(",").map((o) => o.trim()).filter(Boolean)
+      ? process.env.CORS_ORIGINS.split(",")
+          .map((o) => o.trim())
+          .filter(Boolean)
       : []),
   ],
   advanced: {

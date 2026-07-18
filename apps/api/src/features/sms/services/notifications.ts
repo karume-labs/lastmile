@@ -48,7 +48,7 @@ export async function dispatchAlert(
           Accept: "application/json",
           "Content-Type": "application/x-www-form-urlencoded",
         },
-      }
+      },
     );
 
     console.log(` Dispatched alert to ${phoneNumber} successfully.`);

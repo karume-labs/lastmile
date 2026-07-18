@@ -4,16 +4,17 @@
  * disbursement claims and stagnant fund clawbacks.
  */
 
+import { env } from "@lastmile/api/env";
 import {
+  Contract,
   Keypair,
   Networks,
-  TransactionBuilder,
-  Contract,
   nativeToScVal,
+  rpc,
+  TransactionBuilder,
 } from "@stellar/stellar-sdk";
-import { Server } from "@stellar/stellar-sdk/lib/soroban";
-import { env } from "../env";
 
+const { Server } = rpc;
 const server = new Server(env.STELLAR_RPC_URL);
 
 function getTreasuryKeypair(): Keypair {
@@ -42,7 +43,7 @@ export const stellarRelayer = {
    * Submits the Soroban transaction to claim and release escrowed USDC funds.
    */
   async executeDisbursementClaim(
-    referenceId: string,
+    _referenceId: string,
     amountUsdc: number,
   ): Promise<{ success: boolean; transactionHash: string }> {
     try {

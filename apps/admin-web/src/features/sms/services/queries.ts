@@ -14,10 +14,9 @@ export const useSmsMessages = () => {
   return useQuery({
     queryKey: ["smsMessages"],
     queryFn: async () => {
-      const response = await axios.get<{ success: boolean; data: SmsMessage[] }>(
-        "/api/sms",
-        { withCredentials: true },
-      );
+      const response = await axios.get<{ success: boolean; data: SmsMessage[] }>("/api/sms", {
+        withCredentials: true,
+      });
       return response.data;
     },
   });

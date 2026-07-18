@@ -26,7 +26,9 @@ const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 const allowedOrigins: string[] = [
   FRONTEND_URL,
   ...(process.env.CORS_ORIGINS
-    ? process.env.CORS_ORIGINS.split(",").map((o) => o.trim()).filter(Boolean)
+    ? process.env.CORS_ORIGINS.split(",")
+        .map((o) => o.trim())
+        .filter(Boolean)
     : []),
 ];
 
